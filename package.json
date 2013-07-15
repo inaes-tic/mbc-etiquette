@@ -1,0 +1,19 @@
+{
+  "name" : "webvfx-dynamic-filters",
+  "description" : "Dynamic filters for melt or melted using webvfx and node express server",
+  "version" : "0.0.1",
+  "author" : "Juan Martin Runge <jmrunge@gmail.com>",
+  "contributors" : [ ],
+  "repository" : {
+      "type" : "git",
+      "url" : "https://github.com/inaes-tic/webvfx-dynamic-filters"
+  },
+  "dependencies" : {
+      "express"    : "3.x",
+      "underscore" : "1.4.x"
+  },
+  "license" : "agplv3",
+  "engines" : {
+      "node" : ">=0.8"
+  }
+}

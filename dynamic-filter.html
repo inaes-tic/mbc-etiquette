@@ -1,0 +1,182 @@
+<html>
+<head>
+<style type="text/css">
+body, html {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+#image {
+    position: absolute;
+}
+#banner {
+    position: fixed;
+    bottom: 0;
+    background-color: rgba(90%,90%,90%,0.8);
+    color: #000;
+    text-align: left;
+    font-smooth: always;
+    height: 1em;
+    width: 100%;
+}
+#title {
+    font-size: 1.2em;
+    margin-top: 0.2em;
+    margin-right: 0.6em;
+    margin-left: 0.6em;
+}
+/* No wordwrap - we will measure and shrink to fit */
+.shrinkfit {
+    white-space: nowrap;
+    -webkit-transform-origin: top left;
+}
+/*Animations*/
+.animated {
+    -webkit-animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+}
+
+.animated.hinge {
+    -webkit-animation-duration: 2s;
+}
+@-webkit-keyframes flash {
+    0%, 50%, 100% {opacity: 1;}
+    25%, 75% {opacity: 0;}
+}
+.flash {
+    -webkit-animation-name: flash;
+}
+@-webkit-keyframes rotateIn {
+    0% {
+        -webkit-transform-origin: center center;
+        -webkit-transform: rotate(-200deg);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform-origin: center center;
+        -webkit-transform: rotate(0);
+        opacity: 1;
+    }
+}
+.rotateIn {
+    -webkit-animation-name: rotateIn;
+}
+</style>
+
+<script type="text/javascript" src="qrc:/webvfx/scripts/easing.js"></script>
+
+<script type="text/javascript">
+function Banner() {
+    this.image = document.getElementById("image");
+    this.banner = document.getElementById("banner");
+
+    var fadeIn = webvfx.getNumberParameter("FadeIn");
+    if (fadeIn > 0) {
+        this.easeFadeIn = new WebVfx.Easing.Linear(0, 1, fadeIn);
+        this.fadeIn = fadeIn;
+    }
+    var fadeOut = webvfx.getNumberParameter("FadeOut");
+    if (fadeOut > 0) {
+        this.easeFadeOut = new WebVfx.Easing.Linear(0, 1, fadeOut);
+        this.fadeOut = fadeOut;
+    }
+}
+
+Banner.prototype.render = function (time) {
+    webvfx.getImage("sourceImage").assignToHTMLImageElement(this.image);
+    if (time <= this.fadeIn)
+        this.banner.style.opacity = this.easeFadeIn.ease(time);
+    else if (time >= 1 - this.fadeOut)
+        this.banner.style.opacity = this.easeFadeOut.ease(1 - time);
+    else
+        this.banner.style.opacity = 1;
+}
+
+Banner.prototype.read = function() {
+
+//document.getElementById("title").innerText = "ENTRO";
+
+    xhr = new XMLHttpRequest();
+    xhr.overrideMimeType("application/json"); 
+    xhr.open("GET","http://localhost:3100/events",true);
+    xhr.onload = function (e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var event = JSON.parse(xhr.responseText);
+                if (event.type === 'add') {
+                    document.getElementById("title").innerText = event.image.src;
+                    shrinkToFit(document.getElementById("title"));
+                    var image = document.createElement("img");
+                    image.id = event.image.id;
+                    image.src = event.image.src;
+                    image.style.position = "fixed";
+                    image.style.top = event.image.top;
+                    image.style.width = event.image.width;
+                    image.style.height = event.image.height;
+                    image.style.left = event.image.left;
+                    image.style.right = event.image.right;
+                    image.style.bottom = event.image.bottom;
+                    document.getElementById("body").appendChild(image);
+                } else if (event.type === 'remove') {
+                    var image = document.getElementById(event.image.id);
+                    document.getElementById("body").removeChild(image);
+                } else if (event.type === 'animation') {
+                    var image = document.getElementById(event.image.id);
+                    image.setAttribute('class', 'animated ' + event.animation.name);
+                    image.addEventListener('webkitAnimationEnd', function() {
+                        this.setAttribute('class', '');
+                    }, false);
+                }
+            } else {
+                var fileContent = xhr.statusText;
+                document.getElementById("title").innerText = fileContent;
+            }
+        }
+    };
+    xhr.onerror = function (e) {
+        var fileContent = xhr.statusText;
+        document.getElementById("title").innerText = fileContent;
+    };
+    xhr.send(null);
+};
+
+function init() {
+    // Set these before we resize
+    document.getElementById("title").innerText = webvfx.getStringParameter("Title");
+
+    resize();
+
+    var banner = new Banner();
+    webvfx.renderRequested.connect(banner, Banner.prototype.render);
+    webvfx.imageTypeMap = { "sourceImage" : webvfx.SourceImageType };
+    webvfx.readyRender(true);
+    setInterval(banner.read, 200);
+}
+
+function shrinkToFit(element) {
+    element.style.webkitTransform = null;
+    if (element.scrollWidth > element.clientWidth)
+        element.style.webkitTransform = "scale(" + (element.clientWidth / element.scrollWidth) + ")";
+}
+
+function resize() {
+    // Set base font-size to 10% of window height
+    document.body.style.fontSize = (window.innerHeight * 0.1) + "px";
+
+    // Scale text - shrink to fit - if needed
+    shrinkToFit(document.getElementById("title"));
+}
+
+window.addEventListener("resize", resize, false);
+window.addEventListener("load", init, false);
+</script>
+</head>
+<body id="body">
+    <img id="image"/>
+    <div id="banner">
+        <div id="title" class="shrinkfit"></div>
+    </div>
+    <!--div id="parent"></div-->
+</body>
+</html>

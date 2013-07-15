@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export DISPLAY=${DISPLAY:-:0}
+melt -verbose green.mlt out=22299 -filter webvfx:dynamic-filter.html out=22299
