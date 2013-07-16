@@ -1,5 +1,7 @@
 var express = require("express"),
-    _       = require("underscore");
+    _       = require("underscore"),
+    fs      = require('fs'),
+    watchr  = require('watchr');
 
 var server = express();
 var event = false;
