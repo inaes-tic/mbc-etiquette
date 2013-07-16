@@ -23,7 +23,8 @@ Check it on [joyent wiki](https://github.com/joyent/node/wiki/Installing-Node.js
    apt-get install melt libmlt-dev libmlt++-dev pkg-config
 ```
 
-### webvfx (See [webvfx](https://github.com/rectalogic/webvfx) for howto install it)
+### webvfx 
+See [webvfx](https://github.com/rectalogic/webvfx) for howto install it
 
 ## Install
 
