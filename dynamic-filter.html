@@ -1064,6 +1064,9 @@ Banner.prototype.read = function() {
                 } else if (event.type === 'animation') {
                     var image = document.getElementById(event.image.id);
                     image.setAttribute('class', 'animated ' + event.animation.name);
+                    image.style.setProperty('-webkit-animation-duration', event.animation.duration);
+                    image.style.setProperty('-webkit-animation-iteration-count', event.animation.iterations);
+                    image.style.setProperty('-webkit-animation-delay', event.animation.delay);
                     image.addEventListener('webkitAnimationEnd', function() {
                         this.setAttribute('class', '');
                     }, false);
