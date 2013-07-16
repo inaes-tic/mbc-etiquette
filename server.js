@@ -6,6 +6,7 @@ var express = require("express"),
 var server = express();
 var event = false;
 var images = [];
+var imageFiles = [];
 
 server.configure(function(){
     server.use(express.static(__dirname + '/public'));
@@ -33,7 +34,11 @@ server.get("/", function(req, res) {
     res.write("<form id='addImage' action='addImage' method='post'>");
     res.write("<table border='0'>")
     res.write("<tr><td>Id: </td><td><input type='text' name='id'/></td>");
-    res.write("<tr><td>Image: </td><td><input type='text' name='image'/></td>");
+    res.write("<tr><td>Image: </td><td><select name='images'/>");
+    imageFiles.forEach(function(item) {
+        res.write("<option>" + item + "</option>");
+    });
+    res.write("</select></td></tr>");
     res.write("<tr><td>Top: </td><td><input type='text' name='top'/></td>");
     res.write("<tr><td>Left: </td><td><input type='text' name='left'/></td>");
     res.write("<tr><td>Bottom: </td><td><input type='text' name='bottom'/></td>");
@@ -68,7 +73,7 @@ server.get("/", function(req, res) {
 server.post('/addImage', function(req, res){
     var image = {};
     image.id = req.body.id;
-    image.src = 'http://localhost:3100/images/' + req.body.image;
+    image.src = 'http://localhost:3100/images/' + req.body.images;
     image.top = req.body.top;
     image.left = req.body.left;
     image.bottom = req.body.bottom;
@@ -109,6 +114,9 @@ server.post('/images', function(req, res){
     }
     res.redirect('/');
 });
-
+var files = fs.readdirSync("./public/images");
+files.forEach(function(element){
+    imageFiles.push(element);
+});
 
 server.listen(3100);
