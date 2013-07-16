@@ -1070,6 +1070,10 @@ Banner.prototype.read = function() {
                     image.addEventListener('webkitAnimationEnd', function() {
                         this.setAttribute('class', '');
                     }, false);
+                } else if (event.type === 'move') {
+                    var image = document.getElementById(event.image.id);
+                    image.style.setProperty('-webkit-transform', 'translate(' + event.move.x + ',' + event.move.y + ')');
+                    image.style.setProperty('-webkit-transition', event.move.duration);
                 }
             } else {
                 var fileContent = xhr.statusText;
