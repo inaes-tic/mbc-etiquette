@@ -51,4 +51,6 @@ From another terminal, enter webvfx-dynamic-filter directory and run
    ./mlt_dynamic_filter
 ```
 
+### PS
 
+Thanks to [@daneden](http://daneden.me/animate/) for the animations!
