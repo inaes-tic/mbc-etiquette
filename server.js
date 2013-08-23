@@ -29,6 +29,7 @@ server.all('/events', function(req, res, next) {
  
 server.get("/events", function(req, res) {
     if (event) {
+        console.log(new Date(), event);
         res.json(event);
         event = false;
     } else {
