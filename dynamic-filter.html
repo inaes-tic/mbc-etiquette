@@ -18,6 +18,8 @@ body, html {
     font-smooth: always;
     height: 1em;
     width: 100%;
+    visibility: hidden;
+    display: none;
 }
 #title {
     font-size: 1.2em;
@@ -1009,96 +1011,305 @@ body, html {
 <script type="text/javascript">
 function Banner() {
     this.image = document.getElementById("image");
-    this.banner = document.getElementById("banner");
+    //this.banner = document.getElementById("banner");
 
-    var fadeIn = webvfx.getNumberParameter("FadeIn");
-    if (fadeIn > 0) {
-        this.easeFadeIn = new WebVfx.Easing.Linear(0, 1, fadeIn);
-        this.fadeIn = fadeIn;
-    }
-    var fadeOut = webvfx.getNumberParameter("FadeOut");
-    if (fadeOut > 0) {
-        this.easeFadeOut = new WebVfx.Easing.Linear(0, 1, fadeOut);
-        this.fadeOut = fadeOut;
-    }
+    //var fadeIn = webvfx.getNumberParameter("FadeIn");
+    //if (fadeIn > 0) {
+    //    this.easeFadeIn = new WebVfx.Easing.Linear(0, 1, fadeIn);
+    //    this.fadeIn = fadeIn;
+    //}
+    //var fadeOut = webvfx.getNumberParameter("FadeOut");
+    //if (fadeOut > 0) {
+    //    this.easeFadeOut = new WebVfx.Easing.Linear(0, 1, fadeOut);
+    //    this.fadeOut = fadeOut;
+    //}
 }
 
-Banner.prototype.render = function (time) {
-    webvfx.getImage("sourceImage").assignToHTMLImageElement(this.image);
-    if (time <= this.fadeIn)
-        this.banner.style.opacity = this.easeFadeIn.ease(time);
-    else if (time >= 1 - this.fadeOut)
-        this.banner.style.opacity = this.easeFadeOut.ease(1 - time);
-    else
-        this.banner.style.opacity = 1;
-}
+Banner.prototype.addElement = function(elem) {
+    document.getElementById("title").innerText = "addElement (" + elem.type + ") - " + new Date();
+    resize();
+    
+    var element;
+    if (elem.type === 'image') {
+        document.getElementById("title").innerText = "Adding image - " + new Date();
+        resize();
+        element = document.createElement("img");
+        element.src = elem.src;
+        this.setCommonProperties(element, elem);
+        document.getElementById("body").appendChild(element);
+    } else if (elem.type === 'banner') {
+        document.getElementById("title").innerText = "Adding banner - " + new Date();
+        resize();
+        element = document.createElement("div");
+        element.style.backgroundColor = elem.background_color;
+        element.color = elem.color;
+        element.fontSmooth = "always";
+        if (!elem.scroll) {
+            var bannerText = document.createElement("div");
+            bannerText.id = elem.id + "Text";
+            bannerText.setAttribute('class', 'shrinkfit');
+            bannerText.innerText = elem.text;
+            element.appendChild(bannerText);
+            this.setCommonProperties(element, elem);
+            document.getElementById("body").appendChild(element);
+            resize(bannerText);
+        } else {
+            element.style.overflow = "hidden";
+            var container = document.createElement("div");
+            container.style.position = "absolute";
+            container.style.left = parseInt(elem.left) + parseInt(elem.width) + 10;
+            container.style.top = "0px";
+            container.style.whiteSpace = "nowrap";
+            container.style.fontSize = parseInt(elem.height) - 5;
+            var text = document.createElement("span");
+            text.innerText = elem.text;
+            container.appendChild(text);
+            element.appendChild(container);
+            this.setCommonProperties(element, elem);
+            document.getElementById("body").appendChild(element);
+            setInterval(function() {
+                scroll(container, text);
+            }, 50);
+        }
+    }
+};
+
+Banner.prototype.setCommonProperties = function(target, source) {
+    target.id = source.id;
+    target.style.position = "fixed";
+    target.style.top = source.top;
+    target.style.width = source.width;
+    target.style.height = source.height;
+    target.style.left = source.left;
+    target.style.right = source.right;
+    target.style.bottom = source.bottom;
+};
+
+Banner.prototype.removeElement = function(elem) {
+    var element = document.getElementById(elem.id);
+    document.getElementById("body").removeChild(element);
+};
+
+Banner.prototype.moveElement = function(event) {
+    var element = document.getElementById(event.element.id);
+    element.style.setProperty('-webkit-transform', 'translate(' + event.move.x + ',' + event.move.y + ')');
+    element.style.setProperty('-webkit-transition', event.move.duration);
+};
+
+Banner.prototype.animateElement = function(event) {
+    var element = document.getElementById(event.element.id);
+    var clazz = element.getAttribute('class');
+    element.setAttribute('class', clazz + ' animated ' + event.animation.name);
+    element.style.setProperty('-webkit-animation-duration', event.animation.duration);
+    element.style.setProperty('-webkit-animation-iteration-count', event.animation.iterations);
+    element.style.setProperty('-webkit-animation-delay', event.animation.delay);
+    element.addEventListener('webkitAnimationEnd', function() {
+        var oldClazz = element.getAttribute('class').trim();
+        var index = oldClazz.indexOf(' ');
+        oldClazz = oldClazz.substring(0, index);
+        if (oldClazz === 'animation') oldClazz = '';
+        this.setAttribute('class', oldClazz);
+    }, false);
+};
+
+//Banner.prototype.render = function (time) {
+//    webvfx.getImage("sourceImage").assignToHTMLImageElement(this.image);
+//    if (time <= this.fadeIn)
+//        this.banner.style.opacity = this.easeFadeIn.ease(time);
+//    else if (time >= 1 - this.fadeOut)
+//        this.banner.style.opacity = this.easeFadeOut.ease(1 - time);
+//    else
+//        this.banner.style.opacity = 1;
+//};
 
 Banner.prototype.read = function() {
+    webvfx.getImage("sourceImage").assignToHTMLImageElement(this.image);
 
-//document.getElementById("title").innerText = "ENTRO";
+    //document.getElementById("title").innerText = "call - " + new Date();
+    //resize();
 
-    xhr = new XMLHttpRequest();
+    var self = this;
+    
+    var xhr = new XMLHttpRequest();
     xhr.overrideMimeType("application/json"); 
     xhr.open("GET","http://localhost:3100/events",true);
     xhr.onload = function (e) {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 var event = JSON.parse(xhr.responseText);
-                if (event.type === 'add') {
-                    document.getElementById("title").innerText = event.image.src;
-                    shrinkToFit(document.getElementById("title"));
-                    var image = document.createElement("img");
-                    image.id = event.image.id;
-                    image.src = event.image.src;
-                    image.style.position = "fixed";
-                    image.style.top = event.image.top;
-                    image.style.width = event.image.width;
-                    image.style.height = event.image.height;
-                    image.style.left = event.image.left;
-                    image.style.right = event.image.right;
-                    image.style.bottom = event.image.bottom;
-                    document.getElementById("body").appendChild(image);
+                //document.getElementById("title").innerText = event.type + " - " + new Date();
+                //resize();
+                if (event.type === 'addImage') {
+                    document.getElementById("title").innerText = "addImage - " + new Date();
+                    resize();
+                    //var image = document.createElement("img");
+                    //image.id = event.element.id;
+                    //image.src = event.element.src;
+                    //image.style.position = "fixed";
+                    //image.style.top = event.element.top;
+                    //image.style.width = event.element.width;
+                    //image.style.height = event.element.height;
+                    //image.style.left = event.element.left;
+                    //image.style.right = event.element.right;
+                    //image.style.bottom = event.element.bottom;
+                    //document.getElementById("body").appendChild(image);
+                    self.addElement(event.element);
+                } else if (event.type === 'addBanner') {
+                    document.getElementById("title").innerText = "addBanner - " + new Date();
+                    resize();
+                    //var banner = document.createElement("div");
+                    //banner.id = event.element.id;
+                    //banner.src = event.element.src;
+                    //banner.style.position = "fixed";
+                    //banner.style.top = event.element.top;
+                    //banner.style.width = event.element.width;
+                    //banner.style.height = event.element.height;
+                    //banner.style.left = event.element.left;
+                    //banner.style.right = event.element.right;
+                    //banner.style.bottom = event.element.bottom;
+                    //banner.style.backgroundColor = event.element.background_color;
+                    //banner.style.color = event.element.color;
+                    //banner.style.fontSmooth = "always";
+                    //if (!event.element.scroll) {
+                    //    var bannerText = document.createElement("div");
+                    //    bannerText.id = banner.id + "Text";
+                    //    bannerText.setAttribute('class', 'shrinkfit');
+                    //    bannerText.innerText = event.element.text;
+                    //    banner.appendChild(bannerText);
+                    //    document.getElementById("body").appendChild(banner);
+                    //    resize(bannerText);
+                    //} else {
+                    //    banner.style.overflow = "hidden";
+                    //    var container = document.createElement("div");
+                    //    container.style.position = "absolute";
+                    //    container.style.left = parseInt(event.element.left) + parseInt(event.element.width) + 10;
+                    //    container.style.top = "0px";
+                    //    container.style.whiteSpace = "nowrap";
+                    //    container.style.fontSize = parseInt(event.element.height) - 5;
+                    //    var text = document.createElement("span");
+                    //    text.innerText = event.element.text;
+                    //    container.appendChild(text);
+                    //    banner.appendChild(container);
+                    //    document.getElementById("body").appendChild(banner);
+                    //    setInterval(function() {
+                    //        scroll(container, text);
+                    //    }, 50);
+                    //}
+                    self.addElement(event.element);
                 } else if (event.type === 'remove') {
-                    var image = document.getElementById(event.image.id);
-                    document.getElementById("body").removeChild(image);
+                    document.getElementById("title").innerText = "remove - " + new Date();
+                    resize();
+                    //var element = document.getElementById(event.element.id);
+                    //document.getElementById("body").removeChild(element);
+                    self.removeElement(event.element);
                 } else if (event.type === 'animation') {
-                    var image = document.getElementById(event.image.id);
-                    image.setAttribute('class', 'animated ' + event.animation.name);
-                    image.style.setProperty('-webkit-animation-duration', event.animation.duration);
-                    image.style.setProperty('-webkit-animation-iteration-count', event.animation.iterations);
-                    image.style.setProperty('-webkit-animation-delay', event.animation.delay);
-                    image.addEventListener('webkitAnimationEnd', function() {
-                        this.setAttribute('class', '');
-                    }, false);
+                    document.getElementById("title").innerText = "animation - " + new Date();
+                    resize();
+                    //var element = document.getElementById(event.element.id);
+                    //var clazz = element.getAttribute('class');
+                    //element.setAttribute('class', clazz + ' animated ' + event.animation.name);
+                    //element.style.setProperty('-webkit-animation-duration', event.animation.duration);
+                    //element.style.setProperty('-webkit-animation-iteration-count', event.animation.iterations);
+                    //element.style.setProperty('-webkit-animation-delay', event.animation.delay);
+                    //element.addEventListener('webkitAnimationEnd', function() {
+                    //    var oldClazz = element.getAttribute('class').trim();
+                    //    var index = oldClazz.indexOf(' ');
+                    //    oldClazz = oldClazz.substring(0, index);
+                    //    if (oldClazz === 'animation') oldClazz = '';
+                    //    this.setAttribute('class', oldClazz);
+                    //}, false);
+                    self.animateElement(event);
                 } else if (event.type === 'move') {
-                    var image = document.getElementById(event.image.id);
-                    image.style.setProperty('-webkit-transform', 'translate(' + event.move.x + ',' + event.move.y + ')');
-                    image.style.setProperty('-webkit-transition', event.move.duration);
+                    document.getElementById("title").innerText = "move - " + new Date();
+                    resize();
+                    //var element = document.getElementById(event.element.id);
+                    //element.style.setProperty('-webkit-transform', 'translate(' + event.move.x + ',' + event.move.y + ')');
+                    //element.style.setProperty('-webkit-transition', event.move.duration);
+                    self.moveElement(event);
+                } else {
+                    //document.getElementById("title").innerText = "NOTHING - " + new Date();
+                    //resize();
                 }
             } else {
-                var fileContent = xhr.statusText;
-                document.getElementById("title").innerText = fileContent;
+                var status = xhr.statusText;
+                document.getElementById("title").innerText = "Error - Status: " + status;
+                resize();
             }
+        } else {
+            var state = xhr.readyState;
+            document.getElementById("title").innerText = "Error - State " + state;
+            resize();
         }
     };
     xhr.onerror = function (e) {
-        var fileContent = xhr.statusText;
-        document.getElementById("title").innerText = fileContent;
+        document.getElementById("title").innerText = "Error: " + e;
+        resize();
+    };
+    xhr.send(null);
+};
+
+Banner.prototype.loadElements = function() {
+    document.getElementById("title").innerText = "Load";
+    resize();
+    var self = this;
+    var xhr = new XMLHttpRequest();
+    xhr.overrideMimeType("application/json"); 
+    xhr.open("GET","http://localhost:3100/init",true);
+    xhr.onload = function (e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                document.getElementById("title").innerText = "Adding elements";
+                resize();
+                var elements = JSON.parse(xhr.responseText);
+                elements.elements.forEach(function(element) {
+                    document.getElementById("title").innerText = "Adding " + element.id;
+                    resize();
+                    //if (element.type === 'image') {
+                    //    var image = document.createElement("img");
+                    //    image.id = element.id;
+                    //    image.src = element.src;
+                    //    image.style.position = "fixed";
+                    //    image.style.top = element.top;
+                    //    image.style.width = element.width;
+                    //    image.style.height = element.height;
+                    //    image.style.left = element.left;
+                    //    image.style.right = element.right;
+                    //    image.style.bottom = element.bottom;
+                    //    document.getElementById("body").appendChild(image);
+                    //}
+                    self.addElement(element);
+                });
+            } else {
+                var status = xhr.statusText;
+                document.getElementById("title").innerText = "Error - Status: " + status;
+                resize();
+            }
+        } else {
+            var state = xhr.readyState;
+            document.getElementById("title").innerText = "Error - State " + state;
+            resize();
+        }
+    };
+    xhr.onerror = function (e) {
+        document.getElementById("title").innerText = "Error: " + e;
+        resize();
     };
     xhr.send(null);
 };
 
 function init() {
     // Set these before we resize
-    document.getElementById("title").innerText = webvfx.getStringParameter("Title");
+    //document.getElementById("title").innerText = webvfx.getStringParameter("Title");
 
-    resize();
+    //resize();
 
     var banner = new Banner();
-    webvfx.renderRequested.connect(banner, Banner.prototype.render);
+    webvfx.renderRequested.connect(banner, Banner.prototype.read);
     webvfx.imageTypeMap = { "sourceImage" : webvfx.SourceImageType };
     webvfx.readyRender(true);
-    setInterval(banner.read, 200);
+    banner.loadElements();
+    //setTimeout(banner.loadElements, 1);
+    //setInterval(banner.read, 1000);
 }
 
 function shrinkToFit(element) {
@@ -1107,12 +1318,20 @@ function shrinkToFit(element) {
         element.style.webkitTransform = "scale(" + (element.clientWidth / element.scrollWidth) + ")";
 }
 
-function resize() {
+function resize(element) {
+    if (!element)
+        element = document.getElementById("title");
     // Set base font-size to 10% of window height
     document.body.style.fontSize = (window.innerHeight * 0.1) + "px";
 
     // Scale text - shrink to fit - if needed
-    shrinkToFit(document.getElementById("title"));
+    shrinkToFit(element);
+}
+
+function scroll(container, text) {
+    var mq = container; 
+    var aw = text.offsetWidth; 
+    mq.style.left = (parseInt(mq.style.left)>(-10 - aw)) ? parseInt(mq.style.left)-3+"px" : parseInt(300)+10+"px";
 }
 
 window.addEventListener("resize", resize, false);
@@ -1124,6 +1343,12 @@ window.addEventListener("load", init, false);
     <div id="banner">
         <div id="title" class="shrinkfit"></div>
     </div>
+    <!--div style="position:relative;width:300px;height:25px;overflow:hidden;background-color:red">
+        <div id="mq" style="position:absolute;left:310px;top:0px;font-family:arial;font-size:20px;white-space:nowrap;">
+            <span id="tx">Are you looking for loads of useful information <a href="http://javascript.about.com/">About Javascript</a>? Well now you've found it.</span>
+        </div>
+    </div-->
     <!--div id="parent"></div-->
 </body>
 </html>
+
