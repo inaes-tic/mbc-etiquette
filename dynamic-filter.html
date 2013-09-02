@@ -1023,6 +1023,7 @@ function Banner() {
     //    this.easeFadeOut = new WebVfx.Easing.Linear(0, 1, fadeOut);
     //    this.fadeOut = fadeOut;
     //}
+    this.scrolls = [];
 }
 
 Banner.prototype.addElement = function(elem) {
@@ -1056,6 +1057,7 @@ Banner.prototype.addElement = function(elem) {
         } else {
             element.style.overflow = "hidden";
             var container = document.createElement("div");
+            container.id = elem.id + "Container";
             container.style.position = "absolute";
             var offset;
             var width = elem.width.replace(/[^\d.]/g, "");
@@ -1080,14 +1082,18 @@ Banner.prototype.addElement = function(elem) {
             container.style.whiteSpace = "nowrap";
             container.style.fontSize = parseInt(elem.height) - 5;
             var text = document.createElement("span");
+            text.id = elem.id + "Text";
             text.innerText = elem.text;
             container.appendChild(text);
             element.appendChild(container);
             this.setCommonProperties(element, elem);
             document.getElementById("body").appendChild(element);
-            setInterval(function() {
-                scroll(container, text);
-            }, 50);
+            var aux = {};
+            aux.id = elem.id;
+            aux.container = container.id;
+            aux.text = text.id;
+            aux.offset = offset;
+            this.scrolls.push(aux);
         }
     }
 };
@@ -1106,6 +1112,7 @@ Banner.prototype.setCommonProperties = function(target, source) {
 Banner.prototype.removeElement = function(elem) {
     var element = document.getElementById(elem.id);
     document.getElementById("body").removeChild(element);
+    this.removeScrollElement(elem.id);
 };
 
 Banner.prototype.moveElement = function(event) {
@@ -1140,9 +1147,34 @@ Banner.prototype.animateElement = function(event) {
 //        this.banner.style.opacity = 1;
 //};
 
-Banner.prototype.read = function() {
+Banner.prototype.process = function() {
     webvfx.getImage("sourceImage").assignToHTMLImageElement(this.image);
+    this.scrollElements();
+    this.read();
+};
 
+Banner.prototype.scrollElements = function() {
+    this.scrolls.forEach(function(item) {
+        var container = document.getElementById(item.container);
+        var text = document.getElementById(item.text);
+        var offset = item.offset;
+        scroll(offset, container, text);
+    });
+};
+
+Banner.prototype.removeScrollElement = function(id) {
+    var index = false;
+    this.scrolls.forEach(function(item, idx) {
+        if (item.id.toString() === id.toString()) {
+            if (!index)
+                index = idx;
+        }
+    });
+    if (index) 
+        this.scrolls.splice(index, 1);
+};
+
+Banner.prototype.read = function() {
     //document.getElementById("title").innerText = "call - " + new Date();
     //resize();
 
@@ -1238,11 +1270,10 @@ Banner.prototype.loadElements = function() {
 function init() {
     // Set these before we resize
     //document.getElementById("title").innerText = webvfx.getStringParameter("Title");
-
     //resize();
 
     var banner = new Banner();
-    webvfx.renderRequested.connect(banner, Banner.prototype.read);
+    webvfx.renderRequested.connect(banner, Banner.prototype.process);
     webvfx.imageTypeMap = { "sourceImage" : webvfx.SourceImageType };
     webvfx.readyRender(true);
     banner.loadElements();
@@ -1266,10 +1297,14 @@ function resize(element) {
     shrinkToFit(element);
 }
 
-function scroll(container, text) {
-    var mq = container; 
-    var aw = text.offsetWidth; 
-    mq.style.left = (parseInt(mq.style.left)>(-10 - aw)) ? parseInt(mq.style.left)-3+"px" : parseInt(300)+10+"px";
+function scroll(offset, container, text) {
+    //var mq = container; 
+    //var aw = text.offsetWidth; 
+    //mq.style.left = (parseInt(mq.style.left)>(-10 - aw)) ? parseInt(mq.style.left)-3+"px" : parseInt(width)+10+"px";
+    if ((parseInt(container.style.left) + parseInt(text.offsetWidth)) > 0)
+        container.style.left = (parseInt(container.style.left) - 3) + "px";
+    else
+        container.style.left = offset + "px";
 }
 
 window.addEventListener("resize", resize, false);
