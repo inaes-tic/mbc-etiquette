@@ -1057,7 +1057,25 @@ Banner.prototype.addElement = function(elem) {
             element.style.overflow = "hidden";
             var container = document.createElement("div");
             container.style.position = "absolute";
-            container.style.left = parseInt(elem.left) + parseInt(elem.width) + 10;
+            var offset;
+            var width = elem.width.replace(/[^\d.]/g, "");
+            if (elem.width.indexOf("%") !== -1) 
+                width = (document.width / 100) * width;
+            var left = 0;
+            if (elem.left !== "") {
+                left = elem.left.replace(/[^\d.]/g, "");
+                if (elem.left.indexOf("%") !== -1) 
+                    left = (document.width / 100) * left;
+            } else {
+                if (elem.right !== "") {
+                    var right = elem.right.replace(/[^\d.]/g, "");
+                    if (elem.right.indexOf("%") !== -1) 
+                        right = (document.width / 100) * right;
+                    left = document.width - right - width;
+                }
+            }
+            offset = parseInt(width) + 10;
+            container.style.left = offset;
             container.style.top = "0px";
             container.style.whiteSpace = "nowrap";
             container.style.fontSize = parseInt(elem.height) - 5;
