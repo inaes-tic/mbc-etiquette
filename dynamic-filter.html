@@ -1160,89 +1160,22 @@ Banner.prototype.read = function() {
                 if (event.type === 'addImage') {
                     document.getElementById("title").innerText = "addImage - " + new Date();
                     resize();
-                    //var image = document.createElement("img");
-                    //image.id = event.element.id;
-                    //image.src = event.element.src;
-                    //image.style.position = "fixed";
-                    //image.style.top = event.element.top;
-                    //image.style.width = event.element.width;
-                    //image.style.height = event.element.height;
-                    //image.style.left = event.element.left;
-                    //image.style.right = event.element.right;
-                    //image.style.bottom = event.element.bottom;
-                    //document.getElementById("body").appendChild(image);
                     self.addElement(event.element);
                 } else if (event.type === 'addBanner') {
                     document.getElementById("title").innerText = "addBanner - " + new Date();
                     resize();
-                    //var banner = document.createElement("div");
-                    //banner.id = event.element.id;
-                    //banner.src = event.element.src;
-                    //banner.style.position = "fixed";
-                    //banner.style.top = event.element.top;
-                    //banner.style.width = event.element.width;
-                    //banner.style.height = event.element.height;
-                    //banner.style.left = event.element.left;
-                    //banner.style.right = event.element.right;
-                    //banner.style.bottom = event.element.bottom;
-                    //banner.style.backgroundColor = event.element.background_color;
-                    //banner.style.color = event.element.color;
-                    //banner.style.fontSmooth = "always";
-                    //if (!event.element.scroll) {
-                    //    var bannerText = document.createElement("div");
-                    //    bannerText.id = banner.id + "Text";
-                    //    bannerText.setAttribute('class', 'shrinkfit');
-                    //    bannerText.innerText = event.element.text;
-                    //    banner.appendChild(bannerText);
-                    //    document.getElementById("body").appendChild(banner);
-                    //    resize(bannerText);
-                    //} else {
-                    //    banner.style.overflow = "hidden";
-                    //    var container = document.createElement("div");
-                    //    container.style.position = "absolute";
-                    //    container.style.left = parseInt(event.element.left) + parseInt(event.element.width) + 10;
-                    //    container.style.top = "0px";
-                    //    container.style.whiteSpace = "nowrap";
-                    //    container.style.fontSize = parseInt(event.element.height) - 5;
-                    //    var text = document.createElement("span");
-                    //    text.innerText = event.element.text;
-                    //    container.appendChild(text);
-                    //    banner.appendChild(container);
-                    //    document.getElementById("body").appendChild(banner);
-                    //    setInterval(function() {
-                    //        scroll(container, text);
-                    //    }, 50);
-                    //}
                     self.addElement(event.element);
                 } else if (event.type === 'remove') {
                     document.getElementById("title").innerText = "remove - " + new Date();
                     resize();
-                    //var element = document.getElementById(event.element.id);
-                    //document.getElementById("body").removeChild(element);
                     self.removeElement(event.element);
                 } else if (event.type === 'animation') {
                     document.getElementById("title").innerText = "animation - " + new Date();
                     resize();
-                    //var element = document.getElementById(event.element.id);
-                    //var clazz = element.getAttribute('class');
-                    //element.setAttribute('class', clazz + ' animated ' + event.animation.name);
-                    //element.style.setProperty('-webkit-animation-duration', event.animation.duration);
-                    //element.style.setProperty('-webkit-animation-iteration-count', event.animation.iterations);
-                    //element.style.setProperty('-webkit-animation-delay', event.animation.delay);
-                    //element.addEventListener('webkitAnimationEnd', function() {
-                    //    var oldClazz = element.getAttribute('class').trim();
-                    //    var index = oldClazz.indexOf(' ');
-                    //    oldClazz = oldClazz.substring(0, index);
-                    //    if (oldClazz === 'animation') oldClazz = '';
-                    //    this.setAttribute('class', oldClazz);
-                    //}, false);
                     self.animateElement(event);
                 } else if (event.type === 'move') {
                     document.getElementById("title").innerText = "move - " + new Date();
                     resize();
-                    //var element = document.getElementById(event.element.id);
-                    //element.style.setProperty('-webkit-transform', 'translate(' + event.move.x + ',' + event.move.y + ')');
-                    //element.style.setProperty('-webkit-transition', event.move.duration);
                     self.moveElement(event);
                 } else {
                     //document.getElementById("title").innerText = "NOTHING - " + new Date();
@@ -1282,19 +1215,6 @@ Banner.prototype.loadElements = function() {
                 elements.elements.forEach(function(element) {
                     document.getElementById("title").innerText = "Adding " + element.id;
                     resize();
-                    //if (element.type === 'image') {
-                    //    var image = document.createElement("img");
-                    //    image.id = element.id;
-                    //    image.src = element.src;
-                    //    image.style.position = "fixed";
-                    //    image.style.top = element.top;
-                    //    image.style.width = element.width;
-                    //    image.style.height = element.height;
-                    //    image.style.left = element.left;
-                    //    image.style.right = element.right;
-                    //    image.style.bottom = element.bottom;
-                    //    document.getElementById("body").appendChild(image);
-                    //}
                     self.addElement(element);
                 });
             } else {
