@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 10px;
+        padding: 10px;
+      }
+      #container {
+        width: 960px;
+        height: 540px;
+        border: dashed 2px gray;
+      }
+      #elements {
+        float: right;
+        border: solid 1px gray;
+        width: 200px;
+      }
+      #info {
+        background: #eee;
+        border: solid 1px gray;
+        width: 400px;
+        height: 200px;
+      }
+    </style>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/kinetic-v4.5.2.min.js"></script>
+    <script src="js/editor.js"></script>
+  </head>
+  <body onmousedown="return false;">
+    <div id="elements"><h3>Elements</h3><ul></ul></div>
+    <div id="container"></div>
+
+    <input type="file" id="files" multiple>
+    <input type="text" id="text"><button id="add">Add text</button>
+
+    <div id="info"></div>
+  </body>
+</html>

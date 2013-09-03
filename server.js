@@ -165,6 +165,10 @@ server.get("/", function(req, res) {
     res.end();
 });
 
+server.get("/editor", function(req, res) {
+    res.redirect('/editor.html');
+});
+
 server.post('/addImage', function(req, res){
     var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'images/' + req.body.images });
     var element = {};
