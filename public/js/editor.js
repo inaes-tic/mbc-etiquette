@@ -2,8 +2,8 @@ $(document).ready(function() {
 
     var stage = new Kinetic.Stage({
         container: 'container',
-        width: 960,
-        height: 540,
+        width: 768,
+        height: 576,
     });
     //window.stage = stage;
 
@@ -53,17 +53,32 @@ $(document).ready(function() {
             var reader = new FileReader();
             reader.onload = function(e) {
                 console.log('loaded ' + file.name);
+                uploadImage(file);
                 image = new Image();
                 image.name = file.name;
                 image.type = file.type;
                 image.src = e.target.result;
-                image.id = Date.now();
-                addImage(image);
+                addImageToCanvas(image);
             };
             reader.readAsDataURL(file);
         } else {
             alert('File format not supported');
         }
+    };
+
+    var uploadImage = function(file) {
+        var formdata = new FormData();
+        formdata.append('uploadedFile', file);
+        $.ajax({
+            url: 'uploadImage',
+            type: 'POST',
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                console.log('uploaded ' + file.name);
+            }
+        });
     };
 
     var addText = function(text) {
@@ -78,6 +93,7 @@ $(document).ready(function() {
             fill: 'black',
             draggable: true,
         });
+        ktext.id = Date.now();
         //window.ktext = ktext;
 
         ktext.on('dragend', function() {
@@ -85,20 +101,50 @@ $(document).ready(function() {
             var h = this.getHeight();
             var x = this.getX();
             var y = this.getY();
-            $('#info').html('<pre>text: ' + text + '\nwidth: ' + w +
-                            '\nheight: ' + h + '\nx: ' + x +
+            move(this.id, x, y, '');
+            $('#info').html('<pre>text: ' + text + '\nid: ' + this.id +
+                            '\nwidth: ' + w + '\nheight: ' + h + '\nx: ' + x +
                             '\ny: ' + y + '\n</pre>');
         });
 
         layer.add(ktext);
         stage.add(layer);
         addElement(ktext);
+        addBanner(ktext, 0, 0);
     };
 
-    var addImage = function(image) {
+    var addBanner = function(ktext, x, y) {
+        var formdata = new FormData();
+        formdata.append('text', ktext.attrs.text);
+        formdata.append('id', ktext.id);
+        formdata.append('top', x);
+        formdata.append('left', y);
+        formdata.append('bottom', '');
+        formdata.append('right', '');
+        formdata.append('width', '');
+        formdata.append('height', '');
+        formdata.append('background_color', '');
+        formdata.append('color', ktext.attrs.fill);
+        formdata.append('scroll', '');
+        $.ajax({
+            url: 'addBanner',
+            type: 'POST',
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                console.log('text added: ' + ktext.attrs.text);
+            }
+        });
+    };
+
+    var addImageToCanvas = function(image) {
+        var x = (stage.getWidth() / 2) - (image.width / 2);
+        var y = (stage.getHeight() / 2) - (image.height / 2);
+
         var group = new Kinetic.Group({
-            x: (stage.getWidth() / 2) - (image.width / 2),
-            y: (stage.getHeight() / 2) - (image.height / 2),
+            x: x,
+            y: y,
             draggable: true
         });
 
@@ -112,10 +158,12 @@ $(document).ready(function() {
             height: image.height,
             name: 'image'
         });
+        kimage.id = Date.now();
 
         layer.add(group);
         stage.add(layer);
         addElement(kimage);
+        addImage(kimage, x, y);
 
         group.add(kimage);
         addAnchor(group, 0, 0, 'topLeft');
@@ -130,12 +178,68 @@ $(document).ready(function() {
             var h = i.attrs.height;
             var x = this.getX();
             var y = this.getY();
-            $('#info').html('<pre>image: ' + name + '\nwidth: ' + w +
-                            '\nheight: ' + h + '\nx: ' + x +
+            move(i.id, x, y, '');
+            $('#info').html('<pre>image: ' + name + '\nid: ' + i.id +
+                            '\nwidth: ' + w + '\nheight: ' + h + '\nx: ' + x +
                             '\ny: ' + y + '\n</pre>');
         });
 
         stage.draw();
+    };
+
+    var addImage = function(kimage, x, y) {
+        var formdata = new FormData();
+        formdata.append('images', kimage.attrs.image.name);
+        formdata.append('id', kimage.id);
+        formdata.append('top', x);
+        formdata.append('left', y);
+        formdata.append('bottom', '');
+        formdata.append('right', '');
+        formdata.append('width', kimage.attrs.image.width);
+        formdata.append('height', kimage.attrs.image.height);
+        $.ajax({
+            url: 'addImage',
+            type: 'POST',
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                console.log('image added: ' + kimage.attrs.image.name);
+            }
+        });
+    };
+
+    var move = function(id, x, y, duration) {
+        var formdata = new FormData();
+        formdata.append('elements', id);
+        formdata.append('x', x);
+        formdata.append('y', y);
+        formdata.append('duration', duration);
+        $.ajax({
+            url: 'move',
+            type: 'POST',
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                console.log('moved ' + id);
+            }
+        });
+    };
+
+    var removeElement = function(id) {
+        var formdata = new FormData();
+        formdata.append('elements', id);
+        $.ajax({
+            url: 'remove',
+            type: 'POST',
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                console.log('removed ' + id);
+            }
+        });
     };
 
     var addAnchor = function(group, x, y, name) {
@@ -229,6 +333,7 @@ $(document).ready(function() {
 
     var addElement = function(el) {
         var a = $('<a/>').attr('href', '#').text('delete').click(function () {
+            removeElement(el.id);
             el.getLayer().destroy();
             $(this).parent().remove();
         });
