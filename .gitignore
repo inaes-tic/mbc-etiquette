@@ -1,2 +1,5 @@
 .nbrun
 node_modules
+*.jpg
+*.gif
+*.png

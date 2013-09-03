@@ -11,12 +11,16 @@
         height: 576px;
         border: dashed 2px gray;
       }
+      table {
+        width: 768px;
+      }
       #elements {
         float: right;
         border: solid 1px gray;
         width: 200px;
       }
       #info {
+        margin-top: 20px;
         background: #eee;
         border: solid 1px gray;
         width: 400px;
@@ -30,14 +34,13 @@
   <body onmousedown="return false;">
     <div id="elements"><h3>Elements</h3><ul></ul></div>
     <div id="container"></div>
-
     <table>
         <tr>
-            <td><input type="file" id="files" multiple></td>
+            <td>Upload images <input type="file" id="files" multiple></td>
             <td><input type="text" id="text"><button id="add">Add text</button></td>
+            <td style="text-align:right"><button id="update" disabled>Update video</button></td>
         </tr>
     </table>
-
     <div id="info"></div>
   </body>
 </html>
