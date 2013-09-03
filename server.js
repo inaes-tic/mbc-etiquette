@@ -41,7 +41,7 @@ server.get("/events", function(req, res) {
         console.log(new Date(), event);
     } else {
         res.json({"type": "none"});
-        console.log(new Date(), 'NONE');
+        //console.log(new Date(), 'NONE');
     }
 });
 
