@@ -141,6 +141,10 @@ server.get("/", function(req, res) {
     res.end();
 });
 
+server.get("/editor", function(req, res) {
+    res.redirect('/editor.html');
+});
+
 server.post('/addImage', function(req, res){
     var element = {};
     element.id = req.body.id;
