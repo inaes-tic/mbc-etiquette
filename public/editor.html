@@ -1,38 +1,13 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <style>
-      body {
-        margin: 10px;
-        padding: 10px;
-      }
-      #container {
-        width: 720px;
-        height: 570px;
-        border: dashed 2px gray;
-      }
-      table {
-        width: 720px;
-      }
-      #elements {
-        float: right;
-        border: solid 1px gray;
-        width: 200px;
-      }
-      #info {
-        margin-top: 20px;
-        background: #eee;
-        border: solid 1px gray;
-        width: 400px;
-        height: 200px;
-      }
-    </style>
+    <link rel="stylesheet" href="editor.css">
     <script src="js/jquery.min.js"></script>
     <script src="js/kinetic-v4.5.2.min.js"></script>
     <script src="js/editor.js"></script>
   </head>
   <body onmousedown="return false;">
-    <div id="elements"><h3>Elements</h3><ul></ul></div>
+    <div id="objects"><h3>Objects</h3><ul></ul></div>
     <div id="container"></div>
     <table>
         <tr>

@@ -11,14 +11,14 @@ $(document).ready(function() {
         console.log('update video');
         stage.getLayers().each(function(layer) {
             kobject = layer.children[0];
-            switch (kobject.getType()) {
+            switch (kobject.getClassName()) {
                 case "Group":
                     kimage = kobject.children[0];
                     removeElement(kimage.id);
                     kimage.id = Date.now();
                     addImage(kimage);
                     break;
-                case "Shape":
+                case "Text":
                     ktext = kobject;
                     removeElement(ktext.id);
                     ktext.id = Date.now();
@@ -111,7 +111,7 @@ $(document).ready(function() {
             x: 0,
             y: 0,
             text: text,
-            fontSize: 30,
+            fontSize: 36,
             fontFamily: 'Calibri',
             fill: 'black',
             draggable: true,
@@ -122,18 +122,46 @@ $(document).ready(function() {
         layer.add(ktext);
         stage.add(layer);
         addElement(ktext);
+        showInfo(ktext);
+
+        ktext.on('click', function() {
+            showInfo(this);
+        });
 
         ktext.on('dragend', function() {
             var aPos = this.getAbsolutePosition();
-            var w = this.getWidth();
-            var h = this.getHeight();
-            //move(this.id, aPos.x, aPos.y, '');
             console.log('dragend: to ' + aPos.x + ',' + aPos.y);
-            $('#info').html('<pre>text: ' + this.getText() + '\nid: ' + this.id +
-                            '\nwidth: ' + w + '\nheight: ' + h + '\nx: ' + aPos.x +
-                            '\ny: ' + aPos.y + '\n</pre>');
+            showInfo(this);
         });
     };
+
+    var showInfo = function(kobject) {
+        switch (kobject.getClassName()) {
+            case 'Text':
+                var aPos = kobject.getAbsolutePosition();
+                var info = [
+                    'text: ' + kobject.getText(),
+                    'id: ' + kobject.id,
+                    'width: ' + kobject.getWidth(),
+                    'height: ' + kobject.getHeight(),
+                    'x: ' + aPos.x + 'px',
+                    'y: ' + aPos.y + 'px',
+                ];
+                break;
+            case 'Image':
+                var aPos = kobject.getAbsolutePosition();
+                var info = [
+                    'image: ' + kobject.attrs.image.name,
+                    'id: ' + kobject.id,
+                    'width: ' + kobject.attrs.width,
+                    'height: ' + kobject.attrs.height,
+                    'x: ' + aPos.x + 'px',
+                    'y: ' + aPos.y + 'px',
+                ];
+                break;
+        }
+        $('#info').html('<pre>' + info.join('\n') + '</pre>');
+    }
 
     var addBanner = function(ktext) {
         var formdata = new FormData();
@@ -193,21 +221,19 @@ $(document).ready(function() {
         addAnchor(group, 0, image.height, 'bottomLeft');
 
         addElement(kimage);
+        showInfo(kimage);
+        stage.draw();
 
-        group.on('dragend', function() {
-            var i = this.get('.image')[0];
-            var aPos = i.getAbsolutePosition();
-            var name = i.attrs.image.name;
-            var w = i.attrs.width;
-            var h = i.attrs.height;
-            //move(i.id, aPos.x, aPos.y, '');
-            console.log('dragend: to ' + aPos.x + ',' + aPos.y);
-            $('#info').html('<pre>image: ' + name + '\nid: ' + i.id +
-                            '\nwidth: ' + w + '\nheight: ' + h + '\nx: ' + aPos.x +
-                            '\ny: ' + aPos.y + '\n</pre>');
+        kimage.on('click', function() {
+            showInfo(this);
         });
 
-        stage.draw();
+        group.on('dragend', function() {
+            var image = this.get('.image')[0];
+            var aPos = image.getAbsolutePosition();
+            console.log('dragend: to ' + aPos.x + ',' + aPos.y);
+            showInfo(image);
+        });
     };
 
     var addImage = function(kimage) {
@@ -368,7 +394,7 @@ $(document).ready(function() {
             liText = el.attrs.text + ' ';
         }
         var li = $('<li/>').text(liText).append(a);
-        $('#elements ul').append(li);
+        $('#objects ul').append(li);
     };
 
 });

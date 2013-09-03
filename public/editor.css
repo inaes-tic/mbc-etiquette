@@ -1,0 +1,40 @@
+body {
+    font-family: monospace;
+    color: #aaa;
+    margin: 10px;
+    padding: 10px;
+    background: #3d3c38;
+}
+a, a :visited, a :hover, a :focus {
+    color: #aaa;
+}
+h3 {
+    margin-top: 0;
+}
+table, #container, #info {
+    width: 720px;
+}
+#container, #info {
+    border: solid 2px #333230;
+}
+#container {
+    height: 570px;
+    background-image: url('bg.png');
+}
+#info {
+    margin-top: 20px;
+    background: #7c7978;
+    height: 120px;
+    color: #ddd;
+}
+#objects {
+    position: absolute;
+    margin-left: 760px;
+    border: solid 1px #7c7978;
+    min-width: 260px;
+    min-height: 550px;
+    padding: 10px;
+}
+pre {
+    margin: 10px;
+}
