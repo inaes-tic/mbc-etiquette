@@ -383,17 +383,39 @@ $(document).ready(function() {
     };
 
     var addElement = function(el) {
-        var a = $('<a/>').attr('href', '#').text('delete').click(function () {
+        var del = $('<a/>').attr('href', '#')
+                .attr('title', 'Delete').text('x');
+
+        del.click(function () {
             removeElement(el.id);
             el.getLayer().destroy();
             $(this).parent().remove();
         });
+
+        var toTop = $('<a/>').attr('href', '#')
+                .attr('title', 'MoveToTop').text('t');
+
+        toTop.click(function () {
+            el.getLayer().moveToTop();
+        });
+
+        var toBottom = $('<a/>').attr('href', '#')
+                .attr('title', 'MoveToBottom').text('b');
+
+        toBottom.click(function () {
+            el.getLayer().moveToBottom();
+        });
+
         if (el.className == 'Image') {
-            liText = el.attrs.image.name + ' ';
+            liText = el.attrs.image.name;
         } else {
-            liText = el.attrs.text + ' ';
+            liText = el.attrs.text;
         }
-        var li = $('<li/>').text(liText).append(a);
+
+        var li = $('<li/>').text(liText)
+                .append(' ').append(toTop)
+                .append(' ').append(toBottom)
+                .append(' ').append(del);
         $('#objects ul').append(li);
     };
 
