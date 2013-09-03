@@ -2,10 +2,31 @@ $(document).ready(function() {
 
     var stage = new Kinetic.Stage({
         container: 'container',
-        width: 768,
-        height: 576,
+        width: 720,
+        height: 570,
     });
-    //window.stage = stage;
+    window.stage = stage;
+
+    $('#update').click(function() {
+        console.log('update video');
+        stage.getLayers().each(function(layer) {
+            kobject = layer.children[0];
+            switch (kobject.getType()) {
+                case "Group":
+                    kimage = kobject.children[0];
+                    removeElement(kimage.id);
+                    kimage.id = Date.now();
+                    addImage(kimage);
+                    break;
+                case "Shape":
+                    ktext = kobject;
+                    removeElement(ktext.id);
+                    ktext.id = Date.now();
+                    addBanner(ktext);
+                    break;
+            }
+        });
+    });
 
     $('#add').click(function() {
         addText($('#text').val());
@@ -82,6 +103,8 @@ $(document).ready(function() {
     };
 
     var addText = function(text) {
+        if (text == '') return;
+
         var layer = new Kinetic.Layer();
 
         var ktext = new Kinetic.Text({
@@ -96,42 +119,33 @@ $(document).ready(function() {
         ktext.id = Date.now();
         //window.ktext = ktext;
 
-        ktext.on('dragstart', function() {
-            this.old_x = Math.round(this.getX());
-            this.old_y = Math.round(this.getY());
-            console.log('dragstart: from ' +this.old_x + ',' + this.old_y);
-        });
-
-        ktext.on('dragend', function() {
-            var w = this.getWidth();
-            var h = this.getHeight();
-            var x = Math.round(this.getX());
-            var y = Math.round(this.getY());
-            x_steps = x - this.old_x;
-            y_steps = y - this.old_y;
-            move(this.id, x_steps, y_steps, '');
-            console.log('dragend: to ' + x + ',' + y);
-            $('#info').html('<pre>text: ' + text + '\nid: ' + this.id +
-                            '\nwidth: ' + w + '\nheight: ' + h + '\nx: ' + x +
-                            '\ny: ' + y + '\n</pre>');
-        });
-
         layer.add(ktext);
         stage.add(layer);
         addElement(ktext);
-        addBanner(ktext, 0, 0);
+
+        ktext.on('dragend', function() {
+            var aPos = this.getAbsolutePosition();
+            var w = this.getWidth();
+            var h = this.getHeight();
+            //move(this.id, aPos.x, aPos.y, '');
+            console.log('dragend: to ' + aPos.x + ',' + aPos.y);
+            $('#info').html('<pre>text: ' + this.getText() + '\nid: ' + this.id +
+                            '\nwidth: ' + w + '\nheight: ' + h + '\nx: ' + aPos.x +
+                            '\ny: ' + aPos.y + '\n</pre>');
+        });
     };
 
-    var addBanner = function(ktext, x, y) {
+    var addBanner = function(ktext) {
         var formdata = new FormData();
-        formdata.append('text', ktext.attrs.text);
+        var aPos = ktext.getAbsolutePosition();
+        formdata.append('text', ktext.getText());
         formdata.append('id', ktext.id);
-        formdata.append('top', x);
-        formdata.append('left', y);
+        formdata.append('top', aPos.y + 'px');
+        formdata.append('left', aPos.x + 'px');
         formdata.append('bottom', '');
         formdata.append('right', '');
-        formdata.append('width', '');
-        formdata.append('height', '');
+        formdata.append('width', Math.round(ktext.getWidth()) + 'px');
+        formdata.append('height', Math.round(ktext.getHeight()) + 'px');
         formdata.append('background_color', '');
         formdata.append('color', ktext.attrs.fill);
         formdata.append('scroll', '');
@@ -148,8 +162,8 @@ $(document).ready(function() {
     };
 
     var addImageToCanvas = function(image) {
-        var x = (stage.getWidth() / 2) - (image.width / 2);
-        var y = (stage.getHeight() / 2) - (image.height / 2);
+        var x = Math.round((stage.getWidth() / 2) - (image.width / 2));
+        var y = Math.round((stage.getHeight() / 2) - (image.height / 2));
 
         var group = new Kinetic.Group({
             x: x,
@@ -171,8 +185,6 @@ $(document).ready(function() {
 
         layer.add(group);
         stage.add(layer);
-        addElement(kimage);
-        addImage(kimage, x, y);
 
         group.add(kimage);
         addAnchor(group, 0, 0, 'topLeft');
@@ -180,42 +192,36 @@ $(document).ready(function() {
         addAnchor(group, image.width, image.height, 'bottomRight');
         addAnchor(group, 0, image.height, 'bottomLeft');
 
-        group.on('dragstart', function() {
-            var i = this.get('.image')[0];
-            i.old_x = Math.round(this.getX());
-            i.old_y = Math.round(this.getY());
-            console.log('dragstart: from ' + i.old_x + ',' + i.old_y);
-        });
+        addElement(kimage);
 
         group.on('dragend', function() {
             var i = this.get('.image')[0];
+            var aPos = i.getAbsolutePosition();
             var name = i.attrs.image.name;
             var w = i.attrs.width;
             var h = i.attrs.height;
-            var x = Math.round(this.getX())
-            var y = Math.round(this.getY());
-            x_steps = x - i.old_x;
-            y_steps = y - i.old_y;
-            move(i.id, x_steps, y_steps, '');
-            console.log('dragend: to ' + x + ',' + y);
+            //move(i.id, aPos.x, aPos.y, '');
+            console.log('dragend: to ' + aPos.x + ',' + aPos.y);
             $('#info').html('<pre>image: ' + name + '\nid: ' + i.id +
-                            '\nwidth: ' + w + '\nheight: ' + h + '\nx: ' + x +
-                            '\ny: ' + y + '\n</pre>');
+                            '\nwidth: ' + w + '\nheight: ' + h + '\nx: ' + aPos.x +
+                            '\ny: ' + aPos.y + '\n</pre>');
         });
 
         stage.draw();
     };
 
-    var addImage = function(kimage, x, y) {
+    var addImage = function(kimage) {
+        var group = kimage.parent;
         var formdata = new FormData();
+        var aPos = kimage.getAbsolutePosition();
         formdata.append('images', kimage.attrs.image.name);
         formdata.append('id', kimage.id);
-        formdata.append('top', y);
-        formdata.append('left', x);
+        formdata.append('top', aPos.y + 'px');
+        formdata.append('left', aPos.x + 'px');
         formdata.append('bottom', '');
         formdata.append('right', '');
-        formdata.append('width', kimage.attrs.image.width);
-        formdata.append('height', kimage.attrs.image.height);
+        formdata.append('width', Math.round(kimage.getWidth()) + 'px');
+        formdata.append('height', Math.round(kimage.getHeight()) + 'px');
         $.ajax({
             url: 'addImage',
             type: 'POST',
