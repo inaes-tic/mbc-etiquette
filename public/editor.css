@@ -29,7 +29,7 @@ table, #container, #info {
 }
 #objects {
     position: absolute;
-    margin-left: 760px;
+    margin-left: 740px;
     border: solid 1px #7c7978;
     min-width: 260px;
     min-height: 550px;
