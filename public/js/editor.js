@@ -386,7 +386,7 @@ $(document).ready(function() {
         var del = $('<a/>').attr('href', '#')
                 .attr('title', 'Delete').text('x');
 
-        del.click(function () {
+        del.click(function() {
             removeElement(el.id);
             el.getLayer().destroy();
             $(this).parent().remove();
@@ -395,24 +395,26 @@ $(document).ready(function() {
         var toTop = $('<a/>').attr('href', '#')
                 .attr('title', 'MoveToTop').text('t');
 
-        toTop.click(function () {
+        toTop.click(function() {
             el.getLayer().moveToTop();
         });
 
         var toBottom = $('<a/>').attr('href', '#')
                 .attr('title', 'MoveToBottom').text('b');
 
-        toBottom.click(function () {
+        toBottom.click(function() {
             el.getLayer().moveToBottom();
         });
 
-        if (el.className == 'Image') {
-            liText = el.attrs.image.name;
-        } else {
-            liText = el.attrs.text;
-        }
+        var objName = (el.className == 'Image') ? el.attrs.image.name : el.attrs.text;
 
-        var li = $('<li/>').text(liText)
+        var object = $('<a/>').attr('href', '#')
+                .attr('title', 'ShowInfo').text(objName);
+        object.click(function() {
+            showInfo(el);
+        });
+
+        var li = $('<li/>').append(object)
                 .append(' ').append(toTop)
                 .append(' ').append(toBottom)
                 .append(' ').append(del);
