@@ -2,20 +2,17 @@
 <html>
   <head>
     <link rel="stylesheet" href="editor.css">
-    <script src="js/jquery.min.js"></script>
-    <script src="js/kinetic-v4.5.2.min.js"></script>
-    <script src="js/editor.js"></script>
+    <title>Webvfx Editor</title>
   </head>
-  <body onmousedown="return false;">
-    <div id="objects"><h3>Objects</h3><ul></ul></div>
+  <body>
+    <div id="webvfx-collection"></div>
     <div id="container"></div>
-    <table>
-        <tr>
-            <td>Upload images <input type="file" id="files" multiple></td>
-            <td><input type="text" id="text"><button id="add">Add text</button></td>
-            <td style="text-align:right"><button id="update">Update video</button></td>
-        </tr>
-    </table>
-    <div id="info"></div>
+    <script src="js/jquery-v1.7.2.min.js"></script>
+    <script src="js/jquery-ui-v1.10.2.min.js"></script>
+    <script src="js/kinetic-v4.5.2.min.js"></script>
+    <script src="js/underscore-v1.5.1.min.js"></script>
+    <script src="js/backbone-v1.0.0.min.js"></script>
+    <script src="js/models.js"></script>
+    <script src="js/editor.js"></script>
   </body>
 </html>
