@@ -5,9 +5,22 @@ window.WebvfxBase = Backbone.Model.extend({
     },
 
     createEvents: function(kobj) {
+        kobj.on('mouseover', function() {
+            document.body.style.cursor = 'pointer';
+        });
+
+        kobj.on('dragstart', function() {
+            document.body.style.cursor = 'move';
+        });
+
         kobj.on('dragend', function() {
             var aPos = kobj.getAbsolutePosition();
+            document.body.style.cursor = 'pointer';
             console.log('dragend to ' + aPos.x + ',' + aPos.y);
+        });
+
+        kobj.on('mouseout', function() {
+            document.body.style.cursor = 'default';
         });
     },
 
@@ -45,7 +58,7 @@ window.WebvfxCircle = WebvfxBase.extend({
     defaults: {
         x: 0,
         y: 0,
-        radius: 50,
+        radius: 25,
         fill: 'gray',
         stroke: 'black',
         name: self.cid,
