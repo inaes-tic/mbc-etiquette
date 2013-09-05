@@ -2,7 +2,6 @@ window.WebvfxBase = Backbone.Model.extend({
 
     initialize: function() {
         this.layer = stage.children[0];
-        this.createEvents(this.kobj);
     },
 
     createEvents: function(kobj) {
@@ -28,13 +27,41 @@ window.WebvfxRect = WebvfxBase.extend({
     },
 
     initialize: function() {
+        WebvfxRect.__super__.initialize.apply(this, arguments);
         this.kobj = new Kinetic.Rect(this.toJSON());
+        this.createEvents(this.kobj);
         this.layer.add(this.kobj);
         this.layer.draw();
     },
 
     getView: function() {
         return new WebvfxRectView({model: this});
+    }
+
+});
+
+window.WebvfxCircle = WebvfxBase.extend({
+
+    defaults: {
+        x: 0,
+        y: 0,
+        radius: 50,
+        fill: 'gray',
+        stroke: 'black',
+        name: self.cid,
+        draggable: true,
+    },
+
+    initialize: function() {
+        WebvfxCircle.__super__.initialize.apply(this, arguments);
+        this.kobj = new Kinetic.Circle(this.toJSON());
+        this.createEvents(this.kobj);
+        this.layer.add(this.kobj);
+        this.layer.draw();
+    },
+
+    getView: function() {
+        return new WebvfxCircleView({model: this});
     }
 
 });
