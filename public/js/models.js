@@ -3,7 +3,7 @@ window.WebvfxBase = Backbone.Model.extend({
     initialize: function() {
         this.layer = stage.children[0];
         self = this;
-        ['width', 'height', 'x', 'y', 'radius'].forEach(function(e) {
+        ['width', 'height', 'x', 'y', 'radius', 'strokeWidth'].forEach(function(e) {
             if (self.attributes[e] !== undefined) {
                 self.attributes[e] *= window.stageScale;
             }
@@ -35,13 +35,13 @@ window.WebvfxBase = Backbone.Model.extend({
 window.WebvfxRect = WebvfxBase.extend({
 
     defaults: {
-        id: Date.now(),
         x: 0,
         y: 0,
         width: 50,
         height: 50,
         fill: 'gray',
         stroke: 'black',
+        strokeWidth: 2,
         name: 'rect',
         draggable: true,
     },
@@ -63,12 +63,12 @@ window.WebvfxRect = WebvfxBase.extend({
 window.WebvfxCircle = WebvfxBase.extend({
 
     defaults: {
-        id: Date.now(),
         x: 0,
         y: 0,
         radius: 25,
         fill: 'gray',
         stroke: 'black',
+        strokeWidth: 2,
         name: 'circle',
         draggable: true,
     },
@@ -90,14 +90,12 @@ window.WebvfxCircle = WebvfxBase.extend({
 window.WebvfxImage = WebvfxBase.extend({
 
     defaults: {
-        id: Date.now(),
         x: 0,
         y: 0,
         image: null,
         width: null,
         height: null,
         name: 'image',
-        draggable: true,
     },
 
     initialize: function() {
@@ -188,7 +186,6 @@ window.WebvfxImage = WebvfxBase.extend({
         var anchorX = activeAnchor.getX();
         var anchorY = activeAnchor.getY();
 
-        // update anchor positions
         switch (activeAnchor.getName()) {
             case 'topLeft':
                 topRight.setY(anchorY);
@@ -220,6 +217,7 @@ window.WebvfxImage = WebvfxBase.extend({
     getView: function() {
         return new WebvfxImageView({model: this});
     }
+
 });
 
 window.WebvfxBaseView = Backbone.View.extend({
@@ -285,11 +283,12 @@ window.WebvfxCollectionView = Backbone.View.extend({
     render: function() {
         this.$el.empty();
         this.collection.each(function(webvfxObj) {
-            console.log(webvfxObj);
             var webvfxView = webvfxObj.getView();
             this.$el.prepend(webvfxView.el);
         }, this)
     }
 
 });
+
+// vim: set foldmethod=indent foldlevel=0 foldnestmax=1 :
 
