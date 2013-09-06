@@ -10,23 +10,30 @@ window.WebvfxBase = Backbone.Model.extend({
         });
     },
 
-    createEvents: function(kobj) {
-        kobj.on('mouseover', function() {
+    createEvents: function(kObj) {
+        kObj.on('mouseover', function() {
             document.body.style.cursor = 'pointer';
+            var info = kObj.webvfxObj.getInfo();
+            var pre = '';
+            for (var key in info) {
+                pre += key + ': ' + info[key] + '\n';
+            }
+            $('#info').html('<pre>' + pre + '</pre>');
         });
 
-        kobj.on('dragstart', function() {
+        kObj.on('dragstart', function() {
             document.body.style.cursor = 'move';
         });
 
-        kobj.on('dragend', function() {
-            var aPos = kobj.getAbsolutePosition();
+        kObj.on('dragend', function() {
+            var aPos = kObj.getAbsolutePosition();
             document.body.style.cursor = 'pointer';
             console.log('dragend to ' + aPos.x + ',' + aPos.y);
         });
 
-        kobj.on('mouseout', function() {
+        kObj.on('mouseout', function() {
             document.body.style.cursor = 'default';
+            $('#info').html('');
         });
     },
 
@@ -42,21 +49,26 @@ window.WebvfxRect = WebvfxBase.extend({
         fill: 'gray',
         stroke: 'black',
         strokeWidth: 2,
-        name: 'rect',
+        name: '',
         draggable: true,
     },
 
     initialize: function() {
         WebvfxRect.__super__.initialize.apply(this, arguments);
-        this.kobj = new Kinetic.Rect(this.toJSON());
-        this.createEvents(this.kobj);
-        this.layer.add(this.kobj);
+        this.kObj = new Kinetic.Rect(this.toJSON());
+        this.kObj.webvfxObj = this;
+        this.createEvents(this.kObj);
+        this.layer.add(this.kObj);
         this.layer.draw();
     },
 
     getView: function() {
         return new WebvfxRectView({model: this});
-    }
+    },
+
+    getInfo: function() {
+        return {error: 'getInfo not implemented on Rect ' + this.cid}
+    },
 
 });
 
@@ -69,21 +81,26 @@ window.WebvfxCircle = WebvfxBase.extend({
         fill: 'gray',
         stroke: 'black',
         strokeWidth: 2,
-        name: 'circle',
+        name: '',
         draggable: true,
     },
 
     initialize: function() {
         WebvfxCircle.__super__.initialize.apply(this, arguments);
-        this.kobj = new Kinetic.Circle(this.toJSON());
-        this.createEvents(this.kobj);
-        this.layer.add(this.kobj);
+        this.kObj = new Kinetic.Circle(this.toJSON());
+        this.kObj.webvfxObj = this;
+        this.createEvents(this.kObj);
+        this.layer.add(this.kObj);
         this.layer.draw();
     },
 
     getView: function() {
         return new WebvfxCircleView({model: this});
-    }
+    },
+
+    getInfo: function() {
+        return {error: 'getInfo not implemented on Circle ' + this.cid}
+    },
 
 });
 
@@ -93,23 +110,28 @@ window.WebvfxImage = WebvfxBase.extend({
         x: 0,
         y: 0,
         image: null,
-        width: null,
-        height: null,
-        name: 'image',
+        width: 0,
+        height: 0,
+        name: '',
     },
 
     initialize: function() {
         WebvfxImage.__super__.initialize.apply(this, arguments);
-        this.kobj = this.createImage();
-        this.createEvents(this.kobj);
-        this.layer.add(this.kobj);
+        this.kObj = this.createImage();
+        this.kObj.webvfxObj = this;
+        this.createEvents(this.kObj);
+        this.layer.add(this.kObj);
         this.layer.draw();
     },
 
     createImage: function() {
-        var kimage = new Kinetic.Image(this.toJSON());
-        var imageWidth = kimage.getWidth();
-        var imageHeight = kimage.getHeight();
+        var kImage = new Kinetic.Image(this.toJSON());
+        kImage.setSize(
+            kImage.getWidth() * window.stageScale,
+            kImage.getHeight() * window.stageScale
+        );
+        var imageWidth = kImage.getWidth();
+        var imageHeight = kImage.getHeight();
 
         var x = Math.round((stage.getWidth() / 2) - (imageWidth / 2));
         var y = Math.round((stage.getHeight() / 2) - (imageHeight / 2));
@@ -120,12 +142,25 @@ window.WebvfxImage = WebvfxBase.extend({
             draggable: true
         });
 
-        group.add(kimage);
+        group.on('mouseover', function() {
+            this.get('Circle').each(function(circle) {
+                circle.show();
+            });
+            this.getLayer().draw();
+        });
+
+        group.on('mouseout', function() {
+            this.get('Circle').each(function(circle) {
+                circle.hide();
+            });
+            this.getLayer().draw();
+        });
+
+        group.add(kImage);
         this.addAnchor(group, 0, 0, 'topLeft');
         this.addAnchor(group, imageWidth, 0, 'topRight');
         this.addAnchor(group, imageWidth, imageHeight, 'bottomRight');
         this.addAnchor(group, 0, imageHeight, 'bottomLeft');
-        window.group = group;
         return group;
     },
 
@@ -139,7 +174,7 @@ window.WebvfxImage = WebvfxBase.extend({
             radius: 6,
             name: name,
             draggable: true,
-            dragOnTop: false
+            dragOnTop: false,
         });
 
         var self = this;
@@ -181,7 +216,7 @@ window.WebvfxImage = WebvfxBase.extend({
         var topRight = group.get('.topRight')[0];
         var bottomRight = group.get('.bottomRight')[0];
         var bottomLeft = group.get('.bottomLeft')[0];
-        var image = group.get('.image')[0];
+        var image = group.children[0];
 
         var anchorX = activeAnchor.getX();
         var anchorY = activeAnchor.getY();
@@ -216,7 +251,19 @@ window.WebvfxImage = WebvfxBase.extend({
 
     getView: function() {
         return new WebvfxImageView({model: this});
-    }
+    },
+
+    getInfo: function() {
+        var kImage = this.kObj.children[0];
+        var aPos = kImage.getAbsolutePosition();
+        return {
+            name: kImage.attrs.name,
+            x: Math.round(aPos.x / window.stageScale),
+            y: Math.round(aPos.y / window.stageScale),
+            width: Math.round(kImage.getWidth() / window.stageScale),
+            height: Math.round(kImage.getHeight() / window.stageScale),
+        }
+    },
 
 });
 
@@ -237,7 +284,7 @@ window.WebvfxBaseView = Backbone.View.extend({
     },
 
     drop: function(event, index) {
-        this.model.kobj.setZIndex(index);
+        this.model.kObj.setZIndex(index);
         this.model.layer.draw();
         this.$el.trigger('updateSort', [this.model, index]);
     },
@@ -245,15 +292,15 @@ window.WebvfxBaseView = Backbone.View.extend({
 });
 
 window.WebvfxRectView = WebvfxBaseView.extend({
-    template: _.template('Rect <%= title %>, <%= fill %>'),
+    template: _.template('Rect <%= name %>, <%= fill %>'),
 });
 
 window.WebvfxCircleView = WebvfxBaseView.extend({
-    template: _.template('Circle <%= title %>, <%= fill %>'),
+    template: _.template('Circle <%= name %>, <%= fill %>'),
 });
 
 window.WebvfxImageView = WebvfxBaseView.extend({
-    template: _.template('Image <%= title %>'),
+    template: _.template('Image <%= name %>'),
 });
 
 window.WebvfxCollection = Backbone.Collection.extend({
