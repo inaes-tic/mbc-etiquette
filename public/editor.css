@@ -1,21 +1,29 @@
 body {
     font-family: monospace;
     color: #aaa;
-    margin: 10px;
-    padding: 10px;
     background: #3d3c38;
 }
 a, a :visited, a :hover, a :focus {
     color: #aaa;
 }
 #container {
+    position: absolute;
     background-image: url('bg.png');
     border: solid 2px #333230;
 }
 #webvfx-collection {
     position: absolute;
-    margin-left: 420px;
     border: solid 1px #7c7978;
     min-width: 260px;
     min-height: 300px;
+}
+#info {
+    position: absolute;
+    background: #7c7978;
+    border: solid 2px #333230;
+    min-height: 120px;
+    color: #ddd;
+}
+pre {
+    margin: 10px;
 }
