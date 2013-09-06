@@ -78,7 +78,7 @@ $(document).ready(function() {
                 image.name = file.name;
                 image.type = file.type;
                 image.src = e.target.result;
-                webvfxCollection.add(new WebvfxImage({image: image}));
+                webvfxCollection.add(new WebvfxImage({image: image, title: file.name}));
             };
             reader.readAsDataURL(file);
         } else {
@@ -109,4 +109,7 @@ $(document).ready(function() {
     webvfxCollection.add(new WebvfxRect({title: '5', x: 100, y: 100, fill: 'green'}));
 
     var webvfxCollectionView = new WebvfxCollectionView(webvfxCollection);
+
 });
+
+// vim: set foldmethod=indent foldlevel=1 foldnestmax=2 :
