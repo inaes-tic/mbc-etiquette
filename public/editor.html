@@ -3,10 +3,26 @@
   <head>
     <link rel="stylesheet" href="editor.css">
     <title>Webvfx Editor</title>
+    <script>
+    var getParameterByName = function(name, defaultValue) {
+        var name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        var results = regex.exec(location.search);
+        return results == null ? defaultValue : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    var width = getParameterByName('width', 640);
+    var height = getParameterByName('height', 480);
+
+    window.stageScale = getParameterByName('scale', 1);
+    window.stageWidth = Math.round(width * stageScale);
+    window.stageHeight = Math.round(height * stageScale);
+    </script>
   </head>
   <body>
     <div id="webvfx-collection"></div>
     <div id="container"></div>
+    <div id="info"></div>
     <script src="js/lib/jquery-v1.7.2.min.js"></script>
     <script src="js/lib/jquery-ui-v1.10.2.min.js"></script>
     <script src="js/lib/kinetic-v4.5.2.min.js"></script>
