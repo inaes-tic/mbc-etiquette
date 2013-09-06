@@ -78,7 +78,7 @@ $(document).ready(function() {
                 image.name = file.name;
                 image.type = file.type;
                 image.src = e.target.result;
-                webvfxCollection.add(new WebvfxImage({image: image, title: file.name}));
+                webvfxCollection.add(new WebvfxImage({image: image, name: file.name}));
             };
             reader.readAsDataURL(file);
         } else {
@@ -102,11 +102,11 @@ $(document).ready(function() {
     };
 
     window.webvfxCollection = new WebvfxCollection();
-    webvfxCollection.add(new WebvfxRect({title: '1', x: 20, y: 20, fill: 'red'}));
-    webvfxCollection.add(new WebvfxRect({title: '2', x: 40, y: 40, fill: 'yellow'}));
-    webvfxCollection.add(new WebvfxRect({title: '3', x: 60, y: 60, fill: 'blue'}));
-    webvfxCollection.add(new WebvfxCircle({title: '4', x: 100, y: 100, fill: 'orange'}));
-    webvfxCollection.add(new WebvfxRect({title: '5', x: 100, y: 100, fill: 'green'}));
+    webvfxCollection.add(new WebvfxRect({name: '1', x: 20, y: 20, fill: 'red'}));
+    webvfxCollection.add(new WebvfxRect({name: '2', x: 40, y: 40, fill: 'yellow'}));
+    webvfxCollection.add(new WebvfxRect({name: '3', x: 60, y: 60, fill: 'blue'}));
+    webvfxCollection.add(new WebvfxCircle({name: '4', x: 100, y: 100, fill: 'orange'}));
+    webvfxCollection.add(new WebvfxRect({name: '5', x: 100, y: 100, fill: 'green'}));
 
     var webvfxCollectionView = new WebvfxCollectionView(webvfxCollection);
 
