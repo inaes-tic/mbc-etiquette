@@ -106,7 +106,8 @@ $(document).ready(function() {
     webvfxCollection.add(new WebvfxRect({name: '2', x: 40, y: 40, fill: 'yellow'}));
     webvfxCollection.add(new WebvfxRect({name: '3', x: 60, y: 60, fill: 'blue'}));
     webvfxCollection.add(new WebvfxCircle({name: '4', x: 100, y: 100, fill: 'orange'}));
-    webvfxCollection.add(new WebvfxRect({name: '5', x: 100, y: 100, fill: 'green'}));
+    webvfxCollection.add(new WebvfxRect({name: '5', fill: 'green'}));
+    webvfxCollection.add(new WebvfxText({name: 'text1', text: 'hola mundo'}));
 
     var webvfxCollectionView = new WebvfxCollectionView(webvfxCollection);
 

@@ -3,7 +3,7 @@ window.WebvfxBase = Backbone.Model.extend({
     initialize: function() {
         this.layer = stage.children[0];
         self = this;
-        ['width', 'height', 'x', 'y', 'radius', 'strokeWidth'].forEach(function(e) {
+        ['width', 'height', 'x', 'y', 'radius', 'strokeWidth', 'fontSize'].forEach(function(e) {
             if (self.attributes[e] !== undefined) {
                 self.attributes[e] *= window.stageScale;
             }
@@ -37,6 +37,16 @@ window.WebvfxBase = Backbone.Model.extend({
         });
     },
 
+    setInitialPosition: function(args) {
+        if ( !('x' in args || 'y' in args) ) {
+            var size = this.kObj.getSize();
+            console.log(size);
+            var x = Math.round((stage.getWidth() / 2) - (size.width / 2));
+            var y = Math.round((stage.getHeight() / 2) - (size.height / 2));
+            this.kObj.setPosition(x, y);
+        }
+    },
+
 });
 
 window.WebvfxRect = WebvfxBase.extend({
@@ -57,6 +67,7 @@ window.WebvfxRect = WebvfxBase.extend({
         WebvfxRect.__super__.initialize.apply(this, arguments);
         this.kObj = new Kinetic.Rect(this.toJSON());
         this.kObj.webvfxObj = this;
+        this.setInitialPosition(arguments[0]);
         this.createEvents(this.kObj);
         this.layer.add(this.kObj);
         this.layer.draw();
@@ -89,6 +100,7 @@ window.WebvfxCircle = WebvfxBase.extend({
         WebvfxCircle.__super__.initialize.apply(this, arguments);
         this.kObj = new Kinetic.Circle(this.toJSON());
         this.kObj.webvfxObj = this;
+        this.setInitialPosition(arguments[0]);
         this.createEvents(this.kObj);
         this.layer.add(this.kObj);
         this.layer.draw();
@@ -119,6 +131,7 @@ window.WebvfxImage = WebvfxBase.extend({
         WebvfxImage.__super__.initialize.apply(this, arguments);
         this.kObj = this.createImage();
         this.kObj.webvfxObj = this;
+        this.setInitialPosition(arguments[0]);
         this.createEvents(this.kObj);
         this.layer.add(this.kObj);
         this.layer.draw();
@@ -133,12 +146,9 @@ window.WebvfxImage = WebvfxBase.extend({
         var imageWidth = kImage.getWidth();
         var imageHeight = kImage.getHeight();
 
-        var x = Math.round((stage.getWidth() / 2) - (imageWidth / 2));
-        var y = Math.round((stage.getHeight() / 2) - (imageHeight / 2));
-
         var group = new Kinetic.Group({
-            x: x,
-            y: y,
+            width: imageWidth,
+            height: imageHeight,
             draggable: true
         });
 
@@ -179,8 +189,8 @@ window.WebvfxImage = WebvfxBase.extend({
 
         var self = this;
 
-        anchor.on('dragmove', function() {
-            self.update(this);
+        anchor.on('dragmove', function(e) {
+            self.update(this, e.shiftKey);
             self.layer.draw();
         });
 
@@ -209,7 +219,7 @@ window.WebvfxImage = WebvfxBase.extend({
         group.add(anchor);
     },
 
-    update: function(activeAnchor) {
+    update: function(activeAnchor, fixed) {
         var group = activeAnchor.getParent();
 
         var topLeft = group.get('.topLeft')[0];
@@ -267,6 +277,48 @@ window.WebvfxImage = WebvfxBase.extend({
 
 });
 
+window.WebvfxText = WebvfxBase.extend({
+
+    defaults: {
+        x: 0,
+        y: 0,
+        text: '',
+        fontSize: 36,
+        fontFamily: 'Calibri',
+        fill: 'black',
+        name: '',
+        draggable: true,
+    },
+
+    initialize: function() {
+        WebvfxText.__super__.initialize.apply(this, arguments);
+        this.kObj = new Kinetic.Text(this.toJSON());
+        this.kObj.webvfxObj = this;
+        this.setInitialPosition(arguments[0]);
+        this.createEvents(this.kObj);
+        this.layer.add(this.kObj);
+        this.layer.draw();
+    },
+
+    getView: function() {
+        return new WebvfxTextView({model: this});
+    },
+
+    getInfo: function() {
+        var aPos = this.kObj.getAbsolutePosition();
+        var size = this.kObj.getSize();
+        return {
+            name: this.kObj.attrs.name,
+            text: this.kObj.attrs.text,
+            x: Math.round(aPos.x / window.stageScale),
+            y: Math.round(aPos.y / window.stageScale),
+            width: Math.round(size.width / window.stageScale),
+            height: Math.round(size.height / window.stageScale),
+        }
+    },
+
+});
+
 window.WebvfxBaseView = Backbone.View.extend({
 
     tagName: 'div',
@@ -301,6 +353,10 @@ window.WebvfxCircleView = WebvfxBaseView.extend({
 
 window.WebvfxImageView = WebvfxBaseView.extend({
     template: _.template('Image <%= name %>'),
+});
+
+window.WebvfxTextView = WebvfxBaseView.extend({
+    template: _.template('Text <%= name %>'),
 });
 
 window.WebvfxCollection = Backbone.Collection.extend({
