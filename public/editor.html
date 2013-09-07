@@ -11,8 +11,8 @@
         return results == null ? defaultValue : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
 
-    var width = getParameterByName('width', 640);
-    var height = getParameterByName('height', 480);
+    var width = getParameterByName('width', 720);
+    var height = getParameterByName('height', 570);
 
     window.stageScale = getParameterByName('scale', 1);
     window.stageWidth = Math.round(width * stageScale);

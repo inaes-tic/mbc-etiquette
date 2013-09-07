@@ -68,6 +68,12 @@ $(document).ready(function() {
     window.realTimeEdition = false;
     $('#realTime').on('click', function() {
         window.realTimeEdition = $(this).is(':checked') ? true : false;
+        console.log('real time edition ' + (window.realTimeEdition ? 'on' : 'off'));
+    });
+
+    $('#update').click(function() {
+        console.log('manual update');
+        webvfxCollection.sendAll();
     });
 
     var dropzone = $('#container');
@@ -108,7 +114,7 @@ $(document).ready(function() {
      */
     var processFiles = function(files) {
         if (files && typeof FileReader !== "undefined") {
-            for(var i = 0; i < files.length; i++) {
+            for (var i = 0; i < files.length; i++) {
                 readFile(files[i]);
             }
         }
