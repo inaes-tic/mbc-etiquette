@@ -11,18 +11,19 @@ window.WebvfxBase = Backbone.Model.extend({
     },
 
     createEvents: function(kObj) {
+        self = this;
+
         kObj.on('mouseover', function() {
             document.body.style.cursor = 'pointer';
-            var info = kObj.webvfxObj.getInfo();
-            var pre = '';
-            for (var key in info) {
-                pre += key + ': ' + info[key] + '\n';
-            }
-            $('#info').html('<pre>' + pre + '</pre>');
+            self.showInfo(kObj);
         });
 
         kObj.on('dragstart', function() {
             document.body.style.cursor = 'move';
+        });
+
+        kObj.on('dragmove', function() {
+            self.showInfo(kObj);
         });
 
         kObj.on('dragend', function() {
@@ -37,10 +38,18 @@ window.WebvfxBase = Backbone.Model.extend({
         });
     },
 
+    showInfo: function(kObj) {
+        var info = kObj.webvfxObj.getInfo();
+        var pre = '';
+        for (var key in info) {
+            pre += key + ': ' + info[key] + '\n';
+        }
+        $('#info').html('<pre>' + pre + '</pre>');
+    },
+
     setInitialPosition: function(args) {
         if ( !('x' in args || 'y' in args) ) {
             var size = this.kObj.getSize();
-            console.log(size);
             var x = Math.round((stage.getWidth() / 2) - (size.width / 2));
             var y = Math.round((stage.getHeight() / 2) - (size.height / 2));
             this.kObj.setPosition(x, y);
@@ -220,6 +229,7 @@ window.WebvfxImage = WebvfxBase.extend({
     },
 
     update: function(activeAnchor, fixed) {
+        if (fixed) console.log('Shift key pressed!');
         var group = activeAnchor.getParent();
 
         var topLeft = group.get('.topLeft')[0];
@@ -268,10 +278,10 @@ window.WebvfxImage = WebvfxBase.extend({
         var aPos = kImage.getAbsolutePosition();
         return {
             name: kImage.attrs.name,
-            x: Math.round(aPos.x / window.stageScale),
-            y: Math.round(aPos.y / window.stageScale),
-            width: Math.round(kImage.getWidth() / window.stageScale),
-            height: Math.round(kImage.getHeight() / window.stageScale),
+            x: Math.round(aPos.x / window.stageScale) + ' px',
+            y: Math.round(aPos.y / window.stageScale) + ' px',
+            width: Math.round(kImage.getWidth() / window.stageScale) + ' px',
+            height: Math.round(kImage.getHeight() / window.stageScale) + ' px',
         }
     },
 
@@ -310,10 +320,10 @@ window.WebvfxText = WebvfxBase.extend({
         return {
             name: this.kObj.attrs.name,
             text: this.kObj.attrs.text,
-            x: Math.round(aPos.x / window.stageScale),
-            y: Math.round(aPos.y / window.stageScale),
-            width: Math.round(size.width / window.stageScale),
-            height: Math.round(size.height / window.stageScale),
+            x: Math.round(aPos.x / window.stageScale) + ' px',
+            y: Math.round(aPos.y / window.stageScale) + ' px',
+            width: Math.round(size.width / window.stageScale) + ' px',
+            height: Math.round(size.height / window.stageScale) + ' px',
         }
     },
 
