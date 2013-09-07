@@ -1,7 +1,45 @@
+window.webvfxClient = {
+
+    remove: function(data) {
+        this.request('remove', data, function(res) {
+            console.log('remove webvfxObj ' + data.id);
+        });
+    },
+
+    addImage: function(data) {
+        this.request('addImage', data, function(res) {
+            console.log('image added: ' + data.name);
+        });
+    },
+
+    addText: function(data) {
+        this.request('addBanner', data, function(res) {
+            console.log('text added: ' + data.text);
+        });
+    },
+
+    request: function(url, data, callback) {
+        var formdata = new FormData();
+        for (var key in data) {
+            formdata.append(key, data[key]);
+        }
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: callback
+        });
+    }
+
+};
+
 window.WebvfxBase = Backbone.Model.extend({
 
     initialize: function() {
         this.layer = stage.children[0];
+        this.id = this.cid + Date.now();
         self = this;
         ['width', 'height', 'x', 'y', 'radius', 'strokeWidth', 'fontSize'].forEach(function(e) {
             if (self.attributes[e] !== undefined) {
@@ -27,6 +65,9 @@ window.WebvfxBase = Backbone.Model.extend({
         });
 
         kObj.on('dragend', function() {
+            if (window.realTimeEdition) {
+               kObj.webvfxObj.send();
+            }
             var aPos = kObj.getAbsolutePosition();
             document.body.style.cursor = 'pointer';
             console.log('dragend to ' + aPos.x + ',' + aPos.y);
@@ -36,6 +77,10 @@ window.WebvfxBase = Backbone.Model.extend({
             document.body.style.cursor = 'default';
             $('#info').html('');
         });
+    },
+
+    getRealValue: function(value) {
+        return Math.round(value / window.stageScale);
     },
 
     showInfo: function(kObj) {
@@ -54,6 +99,10 @@ window.WebvfxBase = Backbone.Model.extend({
             var y = Math.round((stage.getHeight() / 2) - (size.height / 2));
             this.kObj.setPosition(x, y);
         }
+    },
+
+    remove: function() {
+        webvfxClient.remove({elements: this.id});
     },
 
 });
@@ -144,6 +193,9 @@ window.WebvfxImage = WebvfxBase.extend({
         this.createEvents(this.kObj);
         this.layer.add(this.kObj);
         this.layer.draw();
+        if (window.realTimeEdition) {
+           this.send();
+        }
     },
 
     createImage: function() {
@@ -278,11 +330,28 @@ window.WebvfxImage = WebvfxBase.extend({
         var aPos = kImage.getAbsolutePosition();
         return {
             name: kImage.attrs.name,
-            top: Math.round(aPos.y / window.stageScale) + 'px',
-            left: Math.round(aPos.x / window.stageScale) + 'px',
-            width: Math.round(kImage.getWidth() / window.stageScale) + 'px',
-            height: Math.round(kImage.getHeight() / window.stageScale) + 'px',
+            top: this.getRealValue(aPos.y) + 'px',
+            left: this.getRealValue(aPos.x) + 'px',
+            width: this.getRealValue(kImage.getWidth()) + 'px',
+            height: this.getRealValue(kImage.getHeight()) + 'px',
         }
+    },
+
+    send: function() {
+        this.remove();
+        var kImage = this.kObj.children[0];
+        var aPos = kImage.getAbsolutePosition();
+        webvfxClient.addImage({
+            images: kImage.attrs.name,
+            name: kImage.attrs.name,
+            id: this.id,
+            top: this.getRealValue(aPos.y) + 'px',
+            left: this.getRealValue(aPos.x) + 'px',
+            bottom: '',
+            right: '',
+            width: this.getRealValue(kImage.getWidth()) + 'px',
+            height: this.getRealValue(kImage.getHeight()) + 'px',
+        });
     },
 
 });
@@ -297,6 +366,7 @@ window.WebvfxText = WebvfxBase.extend({
         fontFamily: 'Calibri',
         fill: 'black',
         name: '',
+        scroll: false,
         draggable: true,
     },
 
@@ -308,6 +378,9 @@ window.WebvfxText = WebvfxBase.extend({
         this.createEvents(this.kObj);
         this.layer.add(this.kObj);
         this.layer.draw();
+        if (window.realTimeEdition) {
+           this.send();
+        }
     },
 
     getView: function() {
@@ -320,11 +393,29 @@ window.WebvfxText = WebvfxBase.extend({
         return {
             name: this.kObj.attrs.name,
             text: this.kObj.attrs.text,
-            top: Math.round(aPos.y / window.stageScale) + 'px',
-            left: Math.round(aPos.x / window.stageScale) + 'px',
-            width: Math.round(size.width / window.stageScale) + 'px',
-            height: Math.round(size.height / window.stageScale) + 'px',
+            top: this.getRealValue(aPos.y) + 'px',
+            left: this.getRealValue(aPos.x) + 'px',
+            width: this.getRealValue(size.width) + 'px',
+            height: this.getRealValue(size.height) + 'px',
         }
+    },
+
+    send: function() {
+        this.remove();
+        var aPos = this.kObj.getAbsolutePosition();
+        webvfxClient.addText({
+            text: this.kObj.getText(),
+            id: this.id,
+            top: this.getRealValue(aPos.y) + 'px',
+            left: this.getRealValue(aPos.x) + 'px',
+            bottom: '',
+            right: '',
+            width: this.getRealValue(this.kObj.getWidth()) + 'px',
+            height: this.getRealValue(this.kObj.getHeight()) + 'px',
+            background_color: '',
+            color: this.kObj.getFill(),
+            scroll: '',
+        });
     },
 
 });
@@ -370,6 +461,13 @@ window.WebvfxTextView = WebvfxBaseView.extend({
 });
 
 window.WebvfxCollection = Backbone.Collection.extend({
+
+    sendAll: function() {
+        this.each(function(e) {
+            e.send();
+        });
+    },
+
 });
 
 window.WebvfxCollectionView = Backbone.View.extend({
@@ -391,6 +489,9 @@ window.WebvfxCollectionView = Backbone.View.extend({
     updateSort: function(event, model, index) {
         this.collection.remove(model);
         this.collection.add(model, {at: index});
+        if (window.realTimeEdition) {
+            this.collection.sendAll();
+        }
     },
 
     render: function() {
