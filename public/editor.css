@@ -17,8 +17,15 @@ a, a :visited, a :hover, a :focus {
     min-width: 260px;
     min-height: 300px;
 }
-#info {
+#footer {
     position: absolute;
+}
+#mouse-position {
+    text-align: right;
+    margin-top: 2px;
+    margin-bottom: 10px;
+}
+#info {
     background: #7c7978;
     border: solid 2px #333230;
     min-height: 120px;

@@ -278,10 +278,10 @@ window.WebvfxImage = WebvfxBase.extend({
         var aPos = kImage.getAbsolutePosition();
         return {
             name: kImage.attrs.name,
-            x: Math.round(aPos.x / window.stageScale) + ' px',
-            y: Math.round(aPos.y / window.stageScale) + ' px',
-            width: Math.round(kImage.getWidth() / window.stageScale) + ' px',
-            height: Math.round(kImage.getHeight() / window.stageScale) + ' px',
+            top: Math.round(aPos.y / window.stageScale) + 'px',
+            left: Math.round(aPos.x / window.stageScale) + 'px',
+            width: Math.round(kImage.getWidth() / window.stageScale) + 'px',
+            height: Math.round(kImage.getHeight() / window.stageScale) + 'px',
         }
     },
 
@@ -320,10 +320,10 @@ window.WebvfxText = WebvfxBase.extend({
         return {
             name: this.kObj.attrs.name,
             text: this.kObj.attrs.text,
-            x: Math.round(aPos.x / window.stageScale) + ' px',
-            y: Math.round(aPos.y / window.stageScale) + ' px',
-            width: Math.round(size.width / window.stageScale) + ' px',
-            height: Math.round(size.height / window.stageScale) + ' px',
+            top: Math.round(aPos.y / window.stageScale) + 'px',
+            left: Math.round(aPos.x / window.stageScale) + 'px',
+            width: Math.round(size.width / window.stageScale) + 'px',
+            height: Math.round(size.height / window.stageScale) + 'px',
         }
     },
 

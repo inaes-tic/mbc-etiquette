@@ -22,7 +22,21 @@
   <body>
     <div id="webvfx-collection"></div>
     <div id="container"></div>
-    <div id="info"></div>
+    <div id="footer">
+        <div id="main-controls">
+        <div id="mouse-position">(0px,0px)</div>
+        <fieldset>
+            <label for="files">Upload images</label>
+            <input type="file" id="files" multiple>
+            <input type="text" id="text">
+            <button id="addText">Add text</button>
+            <label for="realTime">Real Time Edition</label>
+            <input type="checkbox" id="realTime">
+            <button id="update">Update video</button>
+        </fieldset>
+        </div>
+        <div id="info"></div>
+    </div>
     <script src="js/lib/jquery-v1.7.2.min.js"></script>
     <script src="js/lib/jquery-ui-v1.10.2.min.js"></script>
     <script src="js/lib/kinetic-v4.5.2.min.js"></script>
