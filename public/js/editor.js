@@ -38,17 +38,20 @@ $(document).ready(function() {
      * Widgets behaviour
      */
     $("#webvfx-collection").sortable({
+        cursor: 'move',
         stop: function(event, ui) {
-            var total = $('#webvfx-collection div').length - 1;
+            var total = $('.webvfx-obj').length - 1;
             var index = ui.item.index();
             ui.item.trigger('drop', total - index);
         }
     });
+    //$("#webvfx-collection").disableSelection();
 
     var addText = function() {
         var text = $('#text').val();
         if (text != '') {
-            webvfxCollection.add( new WebvfxText({text: text}) );
+            webvfxCollection.new = true;
+            webvfxCollection.add(new WebvfxText({text: text}));
             $('#text').val('');
         }
     };
@@ -130,11 +133,9 @@ $(document).ready(function() {
                 image.name = file.name;
                 image.type = file.type;
                 image.src = e.target.result;
+                webvfxCollection.new = true;
                 webvfxCollection.add(
-                    new WebvfxImage({
-                        image: image,
-                        name: file.name
-                    })
+                    new WebvfxImage({image: image, name: file.name})
                 );
             };
             reader.readAsDataURL(file);
