@@ -2,7 +2,7 @@ window.webvfxClient = {
 
     remove: function(data) {
         this.request('remove', data, function(res) {
-            console.log('remove webvfxObj ' + data.id);
+            console.log('remove object ' + data.elements);
         });
     },
 
@@ -15,6 +15,18 @@ window.webvfxClient = {
     addText: function(data) {
         this.request('addBanner', data, function(res) {
             console.log('text added: ' + data.text);
+        });
+    },
+
+    addEffect: function(data) {
+        this.request('addEffect', data, function(res) {
+            console.log('effect ' + data.effects + ' added on ' + data.elements);
+        });
+    },
+
+    move: function(data) {
+        this.request('move', data, function(res) {
+            console.log('moved object ' + data.elements);
         });
     },
 
@@ -39,7 +51,7 @@ window.WebvfxBase = Backbone.Model.extend({
 
     initialize: function() {
         this.layer = stage.children[0];
-        this.id = this.cid + Date.now();
+        this.id = this.cid;
         self = this;
         ['width', 'height', 'x', 'y', 'radius', 'strokeWidth', 'fontSize'].forEach(function(e) {
             if (self.attributes[e] !== undefined) {
@@ -77,6 +89,11 @@ window.WebvfxBase = Backbone.Model.extend({
             document.body.style.cursor = 'default';
             $('#info').html('');
         });
+
+        kObj.on('mousedown', function() {
+            $('.webvfx-obj div').hide();
+            $('#webvfx-data-' + kObj.webvfxObj.id).show();
+        });
     },
 
     getRealValue: function(value) {
@@ -84,12 +101,33 @@ window.WebvfxBase = Backbone.Model.extend({
     },
 
     showInfo: function(kObj) {
+        var id = kObj.webvfxObj.id;
         var info = kObj.webvfxObj.getInfo();
         var pre = '';
+        var unit = '';
         for (var key in info) {
-            pre += key + ': ' + info[key] + '\n';
+            unit = (key == 'type') ? '' : 'px'
+            pre += key + ': ' + info[key] + unit + '\n';
         }
         $('#info').html('<pre>' + pre + '</pre>');
+        $('#width-' + id).val(info.width);
+        $('#height-' + id).val(info.height);
+        $('#top-' + id).val(info.top);
+        $('#left-' + id).val(info.left);
+        $('#right-' + id).val(info.right);
+        $('#bottom-' + id).val(info.bottom);
+    },
+
+    getInfo: function() {
+        return {
+            type: this.getType(),
+            width: this.getRealValue(this.getWidth()),
+            height: this.getRealValue(this.getHeight()),
+            top: this.getRealValue(this.getTop()),
+            left: this.getRealValue(this.getLeft()),
+            right: this.getRealValue(this.getRight()),
+            bottom: this.getRealValue(this.getBottom()),
+        }
     },
 
     setInitialPosition: function(args) {
@@ -101,8 +139,34 @@ window.WebvfxBase = Backbone.Model.extend({
         }
     },
 
+    addEffect: function(id, effect, duration, iterations, delay) {
+        webvfxClient.addEffect({
+            elements: id,
+            effects: effect,
+            duration: duration,
+            iterations: iterations,
+            delay: delay,
+        });
+    },
+
+    move: function(id, x, y, duration) {
+        webvfxClient.move({
+            elements: id,
+            x: x + 'px',
+            y: y + 'px',
+            duration: duration,
+        });
+    },
+
     remove: function() {
         webvfxClient.remove({elements: this.id});
+    },
+
+    destroy: function() {
+        this.remove();
+        this.kObj.destroy();
+        this.layer.draw();
+        webvfxCollection.remove(this);
     },
 
 });
@@ -321,36 +385,102 @@ window.WebvfxImage = WebvfxBase.extend({
         }
     },
 
+    getName: function() {
+        return this.kObj.children[0].attrs.name;
+    },
+
+    getType: function() {
+        return 'Image';
+    },
+
+    getWidth: function() {
+        return this.kObj.children[0].getWidth();
+    },
+
+    getHeight: function() {
+        return this.kObj.children[0].getHeight();
+    },
+
+    getTop: function() {
+        return this.kObj.children[0].getAbsolutePosition()['y'];
+    },
+
+    getLeft: function() {
+        return this.kObj.children[0].getAbsolutePosition()['x'];
+    },
+
+    getRight: function() {
+        return window.stageWidth - this.getLeft() - this.getWidth();
+    },
+
+    getBottom: function() {
+        return window.stageHeight - this.getTop() - this.getHeight();
+    },
+
     getView: function() {
         return new WebvfxImageView({model: this});
     },
 
-    getInfo: function() {
-        var kImage = this.kObj.children[0];
-        var aPos = kImage.getAbsolutePosition();
-        return {
-            name: kImage.attrs.name,
-            top: this.getRealValue(aPos.y) + 'px',
-            left: this.getRealValue(aPos.x) + 'px',
-            width: this.getRealValue(kImage.getWidth()) + 'px',
-            height: this.getRealValue(kImage.getHeight()) + 'px',
+    setWidth: function(width) {
+        var realWidth = width * window.stageScale;
+        this.kObj.children[0].setWidth(realWidth);
+        var leftX = this.kObj.get('.topLeft')[0].getX();
+        this.kObj.get('.topRight')[0].setX(leftX + realWidth);
+        this.kObj.get('.bottomRight')[0].setX(leftX + realWidth);
+        this.draw();
+    },
+
+    setHeight: function(height) {
+        var realHeight = height * window.stageScale;
+        this.kObj.children[0].setHeight(realHeight);
+        var topY = this.kObj.get('.topLeft')[0].getY();
+        this.kObj.get('.bottomLeft')[0].setY(topY + realHeight);
+        this.kObj.get('.bottomRight')[0].setY(topY + realHeight);
+        this.draw();
+    },
+
+    setTop: function(top) {
+        this.kObj.setY(top * window.stageScale);
+        this.draw();
+    },
+
+    setLeft: function(left) {
+        this.kObj.setX(left * window.stageScale);
+        this.draw();
+    },
+
+    setRight: function(right) {
+        var realRight = right * window.stageScale;
+        this.kObj.setX(window.stageWidth - right - this.getWidth());
+        this.draw();
+    },
+
+    setBottom: function(bottom) {
+        var realBottom = bottom * window.stageScale;
+        this.kObj.setY(window.stageHeight - bottom - this.getHeight());
+        this.draw();
+    },
+
+    draw: function() {
+        this.layer.draw();
+        if (window.realTimeEdition) {
+            this.send();
         }
     },
 
     send: function() {
         this.remove();
         var kImage = this.kObj.children[0];
-        var aPos = kImage.getAbsolutePosition();
         webvfxClient.addImage({
             images: kImage.attrs.name,
             name: kImage.attrs.name,
             id: this.id,
-            top: this.getRealValue(aPos.y) + 'px',
-            left: this.getRealValue(aPos.x) + 'px',
-            bottom: '',
-            right: '',
-            width: this.getRealValue(kImage.getWidth()) + 'px',
-            height: this.getRealValue(kImage.getHeight()) + 'px',
+            top: this.getRealValue(this.getTop()) + 'px',
+            left: this.getRealValue(this.getLeft()) + 'px',
+            right: this.getRealValue(this.getRight()) + 'px',
+            bottom: this.getRealValue(this.getBottom()) + 'px',
+            width: this.getRealValue(this.getWidth()) + 'px',
+            height: this.getRealValue(this.getHeight()) + 'px',
         });
     },
 
@@ -383,35 +513,92 @@ window.WebvfxText = WebvfxBase.extend({
         }
     },
 
+    getName: function() {
+        text = this.kObj.getText();
+        if (text.split(' ').length > 5) {
+            return text.split(' ').slice(0, 5).join(' ') + '...';
+        }
+        return text;
+    },
+
+    getType: function() {
+        return 'Text';
+    },
+
+    getWidth: function() {
+        return this.kObj.getSize()['width'];
+    },
+
+    getHeight: function() {
+        return this.kObj.getSize()['height'];
+    },
+
+    getTop: function() {
+        return this.kObj.getAbsolutePosition()['y'];
+    },
+
+    getLeft: function() {
+        return this.kObj.getAbsolutePosition()['x'];
+    },
+
+    getRight: function() {
+        return window.stageWidth - this.getLeft() - this.getWidth();
+    },
+
+    getBottom: function() {
+        return window.stageHeight - this.getTop() - this.getHeight();
+    },
+
+    setWidth: function(width) {
+    },
+
+    setHeight: function(height) {
+    },
+
+    setTop: function(top) {
+        this.kObj.setY(top * window.stageScale);
+        this.draw();
+    },
+
+    setLeft: function(left) {
+        this.kObj.setX(left * window.stageScale);
+        this.draw();
+    },
+
+    setRight: function(right) {
+        var realRight = right * window.stageScale;
+        this.kObj.setX(window.stageWidth - right - this.getWidth());
+        this.draw();
+    },
+
+    setBottom: function(bottom) {
+        var realBottom = bottom * window.stageScale;
+        this.kObj.setY(window.stageHeight - bottom - this.getHeight());
+        this.draw();
+    },
+
+    draw: function() {
+        this.layer.draw();
+        if (window.realTimeEdition) {
+            this.send();
+        }
+    },
+
     getView: function() {
         return new WebvfxTextView({model: this});
     },
 
-    getInfo: function() {
-        var aPos = this.kObj.getAbsolutePosition();
-        var size = this.kObj.getSize();
-        return {
-            name: this.kObj.attrs.name,
-            text: this.kObj.attrs.text,
-            top: this.getRealValue(aPos.y) + 'px',
-            left: this.getRealValue(aPos.x) + 'px',
-            width: this.getRealValue(size.width) + 'px',
-            height: this.getRealValue(size.height) + 'px',
-        }
-    },
-
     send: function() {
         this.remove();
-        var aPos = this.kObj.getAbsolutePosition();
         webvfxClient.addText({
             text: this.kObj.getText(),
             id: this.id,
-            top: this.getRealValue(aPos.y) + 'px',
-            left: this.getRealValue(aPos.x) + 'px',
-            bottom: '',
-            right: '',
-            width: this.getRealValue(this.kObj.getWidth()) + 'px',
-            height: this.getRealValue(this.kObj.getHeight()) + 'px',
+            top: this.getRealValue(this.getTop()) + 'px',
+            left: this.getRealValue(this.getLeft()) + 'px',
+            bottom: this.getRealValue(this.getBottom()) + 'px',
+            right: this.getRealValue(this.getRight()) + 'px',
+            width: this.getRealValue(this.getWidth()) + 'px',
+            height: this.getRealValue(this.getHeight()) + 'px',
             background_color: '',
             color: this.kObj.getFill(),
             scroll: '',
@@ -423,23 +610,132 @@ window.WebvfxText = WebvfxBase.extend({
 window.WebvfxBaseView = Backbone.View.extend({
 
     tagName: 'div',
+    className: 'webvfx-obj',
+
+    colors: [
+        'black', 'red', 'blue', 'green', 'pink', 'orange'
+    ],
+
+    effects: [
+        "flash", "bounce", "shake", "tada", "swing", "wobble",
+        "wiggle", "pulse", "flip", "flipInX", "flipOutX", "flipInY",
+        "flipOutY", "fadeIn", "fadeInUp", "fadeInDown", "fadeInLeft",
+        "fadeInRight", "fadeInUpBig", "fadeInDownBig", "fadeInLeftBig",
+        "fadeInRightBig", "fadeOut", "fadeOutUp", "fadeOutDown", 
+        "fadeOutLeft", "fadeOutRight", "fadeOutUpBig", "fadeOutDownBig",
+        "fadeOutLeftBig", "fadeOutRightBig", "bounceIn", "bounceInDown",
+        "bounceInUp", "bounceInLeft", "bounceInRight", "bounceOut",
+        "bounceOutDown", "bounceOutUp", "bounceOutLeft", "bounceOutRight",
+        "rotateIn", "rotateInDownLeft", "rotateInDownRight",
+        "rotateInUpLeft", "rotateInUpRight", "rotateOut", "rotateOutDownLeft",
+        "rotateOutDownRight", "rotateOutUpLeft", "rotateOutUpRight",
+        "lightSpeedIn", "lightSpeedOut", "hinge", "rollIn", "rollOut"
+    ],
 
     events: {
         drop: 'drop'
     },
+
+    elements: [],
 
     initialize: function() {
         this.render();
     },
 
     render: function() {
-        this.$el.html(this.template(this.model.toJSON()));
+        this.$el.html(this.template({
+            id: this.model.id,
+            model: this.model,
+            colors: this.colors,
+            effects: this.effects,
+        }));
+        if (this.elements.indexOf(this.model.id) < 0) {
+            this.elements.push(this.model.id);
+            this.addCommonEvents(this.model);
+            this.addEvents(this.model);
+        }
     },
 
     drop: function(event, index) {
         this.model.kObj.setZIndex(index);
         this.model.layer.draw();
         this.$el.trigger('updateSort', [this.model, index]);
+    },
+
+    $: function(name, id) {
+        return $('#' + name + '-' + id);
+    },
+
+    addCommonEvents: function(model) {
+
+        var id = model.id;
+        var self = this;
+
+        this.$('title', id).live('click', function() {
+            var selfId = self.$('webvfx-data', id).attr('id');
+            $('.webvfx-obj div').each(function() {
+                console.log(selfId);
+                if ($(this).attr('id') != selfId) {
+                    console.log('hide ' + $(this).attr('id'));
+                    $(this).hide();
+                }
+            });
+            self.$('webvfx-data', id).toggle();
+        });
+
+        this.$('width', id).live('keyup', function() {
+            model.setWidth($(this).val());
+            self.$('right', id).val(model.getRealValue(model.getRight()));
+        });
+
+        this.$('height', id).live('keyup', function() {
+            model.setHeight($(this).val());
+            self.$('bottom', id).val(model.getRealValue(model.getBottom()));
+        });
+
+        this.$('top', id).live('keyup', function() {
+            model.setTop($(this).val());
+            self.$('bottom', id).val(model.getRealValue(model.getBottom()));
+        });
+
+        this.$('left', id).live('keyup', function() {
+            model.setLeft($(this).val());
+            self.$('right', id).val(model.getRealValue(model.getRight()));
+        });
+
+        this.$('right', id).live('keyup', function() {
+            model.setRight($(this).val());
+            self.$('left', id).val(model.getRealValue(model.getLeft()));
+        });
+
+        this.$('bottom', id).live('keyup', function() {
+            model.setBottom($(this).val());
+            self.$('top', id).val(model.getRealValue(model.getTop()));
+        });
+
+        this.$('add-effect', id).live('click', function() {
+            model.addEffect(
+                id,
+                self.$('effect', id).val(),
+                self.$('duration', id).val(),
+                self.$('iterations', id).val(),
+                self.$('delay', id).val()
+            );
+        });
+
+        this.$('move', id).live('click', function() {
+            model.move(
+                id,
+                self.$('x', id).val(),
+                self.$('y', id).val(),
+                self.$('move-duration', id).val()
+            );
+        });
+
+        this.$('remove', id).live('click', function() {
+            model.destroy();
+        });
+
     },
 
 });
@@ -453,11 +749,42 @@ window.WebvfxCircleView = WebvfxBaseView.extend({
 });
 
 window.WebvfxImageView = WebvfxBaseView.extend({
-    template: _.template('Image <%= name %>'),
+
+    template: _.template($('#webvfx-obj-template').html()),
+
+    addEvents: function(model) {
+
+    },
+
 });
 
 window.WebvfxTextView = WebvfxBaseView.extend({
-    template: _.template('Text <%= name %>'),
+
+    template: _.template($('#webvfx-obj-template').html()),
+
+    addEvents: function(model) {
+
+        var id = model.id;
+        var self = this;
+
+        this.$('text', id).live('keyup', function() {
+            model.kObj.setText($(this).val());
+            model.layer.draw();
+            if (window.realTimeEdition) {
+                model.send();
+            }
+        });
+
+        this.$('fill', id).live('change', function() {
+            model.kObj.setFill($(this).val());
+            model.layer.draw();
+            if (window.realTimeEdition) {
+                model.send();
+            }
+        });
+
+    },
+
 });
 
 window.WebvfxCollection = Backbone.Collection.extend({
@@ -499,7 +826,14 @@ window.WebvfxCollectionView = Backbone.View.extend({
         this.collection.each(function(webvfxObj) {
             var webvfxView = webvfxObj.getView();
             this.$el.prepend(webvfxView.el);
-        }, this)
+        }, this);
+
+        // Show data for the last added object
+        if (this.collection.new) {
+            this.collection.new = false;
+            var lastId = this.collection.models[this.collection.length -1].id
+            $('#webvfx-data-' + lastId).show();
+        }
     }
 
 });
