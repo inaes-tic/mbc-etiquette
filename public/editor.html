@@ -22,19 +22,33 @@
   <body>
     <div id="webvfx-collection"></div>
     <div id="container"></div>
-    <div id="footer">
-        <div id="main-controls">
+    <div id="main-controls">
         <div id="mouse-position">(0px,0px)</div>
-        <fieldset>
-            <input type="file" id="files" multiple>
-            <input type="text" id="text">
-            <button id="addText">Add text</button>
-            <label for="realTime">Real Time Edition</label>
-            <input type="checkbox" id="realTime">
-            <button id="update">Update video</button>
-        </fieldset>
-        </div>
-        <div id="info"></div>
+        <table>
+        <tr>
+            <td>
+            <fieldset>
+            <legend>Add images</legend>
+                <input type="file" id="files" value="files" multiple>
+            </fieldset>
+            <fieldset>
+            <legend>Add text</legend>
+                <input type="text" id="text" style="width:200px">
+            </fieldset>
+            </td>
+            <td>
+            <fieldset>
+            <legend>Sync</legend>
+                <label for="real-time">real time</label>
+                <select id="real-time">
+                    <option>no</option>
+                    <option>yes</option>
+                </select>
+                <button id="update">update video</button>
+            </fieldset>
+            </td>
+        </tr>
+        </table>
     </div>
     <script type="text/template" id="webvfx-obj-template">
             <h3 id="title-<%= id %>"><%= model.getType() %> <%= id %></h3>
@@ -48,7 +62,7 @@
                 <table>
                     <tr>
                         <th><label for="text-<%= id %>">text</label></th>
-                        <td><input type="text" id="text-<%= id %>" value="<%= model.kObj.getText() %>" style="width:120px"></td>
+                        <td><input type="text" id="text-<%= id %>" value="<%= model.kObj.getText() %>" style="width:80px"></td>
                     </tr>
                     <tr>
                         <th><label for="fill-<%= id %>">color</label></th>
@@ -153,7 +167,7 @@
                             <label for="effect-<%= id %>">effect</label>
                         </th>
                         <td>
-                            <select id="effect-<%= id %>" style="width:120px">
+                            <select id="effect-<%= id %>" style="width:90px">
                                 <% _.each(effects, function(effect) { %>
                                     <option><%= effect %></option>
                                 <% }); %>

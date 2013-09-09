@@ -68,20 +68,15 @@ window.WebvfxBase = Backbone.Model.extend({
             self.showInfo(kObj);
         });
 
-        kObj.on('dragstart', function() {
-            document.body.style.cursor = 'move';
-        });
-
         kObj.on('dragmove', function() {
             self.showInfo(kObj);
         });
 
         kObj.on('dragend', function() {
             if (window.realTimeEdition) {
-               kObj.webvfxObj.send();
+                window.webvfxCollection.sendAll();
             }
             var aPos = kObj.getAbsolutePosition();
-            document.body.style.cursor = 'pointer';
             console.log('dragend to ' + aPos.x + ',' + aPos.y);
         });
 
@@ -103,13 +98,6 @@ window.WebvfxBase = Backbone.Model.extend({
     showInfo: function(kObj) {
         var id = kObj.webvfxObj.id;
         var info = kObj.webvfxObj.getInfo();
-        var pre = '';
-        var unit = '';
-        for (var key in info) {
-            unit = (key == 'type') ? '' : 'px'
-            pre += key + ': ' + info[key] + unit + '\n';
-        }
-        $('#info').html('<pre>' + pre + '</pre>');
         $('#width-' + id).val(info.width);
         $('#height-' + id).val(info.height);
         $('#top-' + id).val(info.top);
@@ -258,7 +246,7 @@ window.WebvfxImage = WebvfxBase.extend({
         this.layer.add(this.kObj);
         this.layer.draw();
         if (window.realTimeEdition) {
-           this.send();
+            this.send();
         }
     },
 
@@ -464,7 +452,7 @@ window.WebvfxImage = WebvfxBase.extend({
     draw: function() {
         this.layer.draw();
         if (window.realTimeEdition) {
-            this.send();
+            window.webvfxCollection.sendAll();
         }
     },
 
@@ -509,7 +497,7 @@ window.WebvfxText = WebvfxBase.extend({
         this.layer.add(this.kObj);
         this.layer.draw();
         if (window.realTimeEdition) {
-           this.send();
+            this.send();
         }
     },
 
@@ -580,7 +568,7 @@ window.WebvfxText = WebvfxBase.extend({
     draw: function() {
         this.layer.draw();
         if (window.realTimeEdition) {
-            this.send();
+            window.webvfxCollection.sendAll();
         }
     },
 
@@ -683,6 +671,14 @@ window.WebvfxBaseView = Backbone.View.extend({
             self.$('webvfx-data', id).toggle();
         });
 
+        this.$('title', id).live('mouseover', function() {
+            document.body.style.cursor = 'pointer';
+        });
+
+        this.$('title', id).live('mouseout', function() {
+            document.body.style.cursor = 'default';
+        });
+
         this.$('width', id).live('keyup', function() {
             model.setWidth($(this).val());
             self.$('right', id).val(model.getRealValue(model.getRight()));
@@ -771,7 +767,7 @@ window.WebvfxTextView = WebvfxBaseView.extend({
             model.kObj.setText($(this).val());
             model.layer.draw();
             if (window.realTimeEdition) {
-                model.send();
+                window.webvfxCollection.sendAll();
             }
         });
 
@@ -779,7 +775,7 @@ window.WebvfxTextView = WebvfxBaseView.extend({
             model.kObj.setFill($(this).val());
             model.layer.draw();
             if (window.realTimeEdition) {
-                model.send();
+                window.webvfxCollection.sendAll();
             }
         });
 
@@ -823,10 +819,14 @@ window.WebvfxCollectionView = Backbone.View.extend({
 
     render: function() {
         this.$el.empty();
-        this.collection.each(function(webvfxObj) {
-            var webvfxView = webvfxObj.getView();
-            this.$el.prepend(webvfxView.el);
-        }, this);
+        if (this.collection.length) {
+            this.collection.each(function(webvfxObj) {
+                var webvfxView = webvfxObj.getView();
+                this.$el.prepend(webvfxView.el);
+            }, this);
+        } else {
+            this.$el.prepend($('<h3/>').text('No objects'));
+        }
 
         // Show data for the last added object
         if (this.collection.new) {
