@@ -23,7 +23,7 @@ $(document).ready(function() {
         height: window.stageHeight + 'px'
     });
 
-    $('#footer').css({
+    $('#main-controls').css({
         top: (window.stageHeight + top) + 'px',
         left: left + 'px',
         width: window.stageWidth + 'px'
@@ -69,8 +69,8 @@ $(document).ready(function() {
     });
 
     window.realTimeEdition = false;
-    $('#realTime').on('click', function() {
-        window.realTimeEdition = $(this).is(':checked') ? true : false;
+    $('#real-time').on('change', function() {
+        window.realTimeEdition = $(this).val() == 'yes' ? true : false;
         console.log('real time edition ' + (window.realTimeEdition ? 'on' : 'off'));
     });
 
