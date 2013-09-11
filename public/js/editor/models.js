@@ -284,7 +284,6 @@ window.WebvfxImage = WebvfxBase.extend({
     },
 
     update: function(activeAnchor, fixed) {
-        if (fixed) console.log('Shift key pressed!');
         var group = activeAnchor.getParent();
 
         var topLeft = group.get('.topLeft')[0];
@@ -296,24 +295,61 @@ window.WebvfxImage = WebvfxBase.extend({
         var anchorX = activeAnchor.getX();
         var anchorY = activeAnchor.getY();
 
+        if (fixed) {
+            console.log('Shift key pressed!');
+        }
+
         switch (activeAnchor.getName()) {
             case 'topLeft':
-                topRight.setY(anchorY);
-                bottomLeft.setX(anchorX);
+                if (fixed) {
+                    var newWidth = bottomRight.getX() - anchorX;
+                    var newHeight = newWidth * image.getHeight() / image.getWidth();
+                    activeAnchor.setY(bottomRight.getY() - newHeight);
+                    topRight.setY(bottomRight.getY() - newHeight);
+                    bottomLeft.setX(anchorX);
+                } else {
+                    topRight.setY(anchorY);
+                    bottomLeft.setX(anchorX);
+                }
                 break;
             case 'topRight':
-                topLeft.setY(anchorY);
-                bottomRight.setX(anchorX);
+                if (fixed) {
+                    var newWidth = anchorX - bottomLeft.getX();
+                    var newHeight = newWidth * image.getHeight() / image.getWidth();
+                    activeAnchor.setY(bottomLeft.getY() - newHeight);
+                    topLeft.setY(bottomLeft.getY() - newHeight);
+                    bottomRight.setX(anchorX);
+                } else {
+                    topLeft.setY(anchorY);
+                    bottomRight.setX(anchorX);
+                }
                 break;
             case 'bottomRight':
-                bottomLeft.setY(anchorY);
-                topRight.setX(anchorX); 
+                if (fixed) {
+                    var newWidth = anchorX - topLeft.getX();
+                    var newHeight = newWidth * image.getHeight() / image.getWidth();
+                    activeAnchor.setY(topLeft.getY() + newHeight);
+                    bottomLeft.setY(topLeft.getY() + newHeight);
+                    topRight.setX(anchorX);
+                } else {
+                    bottomLeft.setY(anchorY);
+                    topRight.setX(anchorX); 
+                }
                 break;
             case 'bottomLeft':
-                bottomRight.setY(anchorY);
-                topLeft.setX(anchorX); 
+                if (fixed) {
+                    var newWidth = topRight.getX() - anchorX;
+                    var newHeight = newWidth * image.getHeight() / image.getWidth();
+                    activeAnchor.setY(topRight.getY() + newHeight);
+                    bottomRight.setY(topRight.getY() + newHeight);
+                    topLeft.setX(anchorX);
+                } else {
+                    bottomRight.setY(anchorY);
+                    topLeft.setX(anchorX); 
+                }
                 break;
         }
+
 
         image.setPosition(topLeft.getPosition());
 
