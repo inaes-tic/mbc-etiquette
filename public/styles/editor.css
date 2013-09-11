@@ -2,49 +2,58 @@ body {
     font-family: monospace;
     font-size: 12px;
     color: #aaa;
-    /*background: #3d3c38;*/
     background: #2c2b29;
 }
+
 a, a :visited, a :hover, a :focus {
     color: #aaa;
 }
+
 #container {
     position: absolute;
     border-radius: 5px 5px 0 0;
     border: solid 2px #222;
-    background-image: url('bg.png');
+    background-image: url('../bg.png');
 }
+
 #webvfx-collection {
     position: absolute;
     background: #3d3c38;
-    /*border: solid 1px #7c7978;*/
     border: solid 2px #222;
     border-radius: 5px;
     min-width: 120px;
     min-height: 120px;
 }
+
 #main-controls {
     position: absolute;
     border: solid 2px #222;
     background: #353430;
     border-radius: 0 0 5px 5px;
 }
+
 #mouse-position {
     margin-top: 2px;
     text-align: right;
 }
+
 .webvfx-obj {
     font-size: .9em;
 }
+
 h3 {
     margin: 0;
     padding: 3px;
+    color: #222;
 }
+
 .webvfx-obj h3 {
+    color: #aaa;
     background: #444;
     border-top: solid 2px #555;
     border-bottom: solid 2px #333;
 }
+
 fieldset {
     border-radius: 4px;
     font-weight: bold;
@@ -52,27 +61,34 @@ fieldset {
     margin: 10px;
     border: dashed 1px #555;
 }
+
 .webvfx-obj label {
 }
+
 .webvfx-obj table {
     width: 100%;
     font-weight: normal;
     color: #888;
 }
+
 .webvfx-obj input {
     width: 60px;
 }
+
 .webvfx-obj select {
     width: 70px;
 }
+
 .webvfx-obj th {
     width: 80px;
     font-weight: normal;
     text-align: left;
 }
+
 .webvfx-obj .button {
     text-align: right;
 }
+
 input, select, button {
     border-radius: 4px;
     color: #fff;
@@ -81,9 +97,11 @@ input, select, button {
     font-size: 10px;
     padding: 3px;
 }
+
 td {
     vertical-align: top;
 }
+
 .disabled {
     color: #333;
 }
