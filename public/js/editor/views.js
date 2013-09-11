@@ -139,14 +139,6 @@ window.WebvfxBaseView = Backbone.View.extend({
 
 });
 
-window.WebvfxRectView = WebvfxBaseView.extend({
-    template: _.template('Rect <%= name %>, <%= fill %>'),
-});
-
-window.WebvfxCircleView = WebvfxBaseView.extend({
-    template: _.template('Circle <%= name %>, <%= fill %>'),
-});
-
 window.WebvfxImageView = WebvfxBaseView.extend({
 
     template: _.template($('#webvfx-obj-template').html()),

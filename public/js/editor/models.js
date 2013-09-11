@@ -16,7 +16,6 @@ window.WebvfxBase = Backbone.Model.extend({
 
         kObj.on('mouseover', function() {
             document.body.style.cursor = 'pointer';
-            self.showInfo(kObj);
         });
 
         kObj.on('dragmove', function() {
@@ -106,73 +105,6 @@ window.WebvfxBase = Backbone.Model.extend({
         this.kObj.destroy();
         this.layer.draw();
         webvfxCollection.remove(this);
-    },
-
-});
-
-window.WebvfxRect = WebvfxBase.extend({
-
-    defaults: {
-        x: 0,
-        y: 0,
-        width: 50,
-        height: 50,
-        fill: 'gray',
-        stroke: 'black',
-        strokeWidth: 2,
-        name: '',
-        draggable: true,
-    },
-
-    initialize: function() {
-        WebvfxRect.__super__.initialize.apply(this, arguments);
-        this.kObj = new Kinetic.Rect(this.toJSON());
-        this.kObj.webvfxObj = this;
-        this.setInitialPosition(arguments[0]);
-        this.createEvents(this.kObj);
-        this.layer.add(this.kObj);
-        this.layer.draw();
-    },
-
-    getView: function() {
-        return new WebvfxRectView({model: this});
-    },
-
-    getInfo: function() {
-        return {error: 'getInfo not implemented on Rect ' + this.cid}
-    },
-
-});
-
-window.WebvfxCircle = WebvfxBase.extend({
-
-    defaults: {
-        x: 0,
-        y: 0,
-        radius: 25,
-        fill: 'gray',
-        stroke: 'black',
-        strokeWidth: 2,
-        name: '',
-        draggable: true,
-    },
-
-    initialize: function() {
-        WebvfxCircle.__super__.initialize.apply(this, arguments);
-        this.kObj = new Kinetic.Circle(this.toJSON());
-        this.kObj.webvfxObj = this;
-        this.setInitialPosition(arguments[0]);
-        this.createEvents(this.kObj);
-        this.layer.add(this.kObj);
-        this.layer.draw();
-    },
-
-    getView: function() {
-        return new WebvfxCircleView({model: this});
-    },
-
-    getInfo: function() {
-        return {error: 'getInfo not implemented on Circle ' + this.cid}
     },
 
 });
