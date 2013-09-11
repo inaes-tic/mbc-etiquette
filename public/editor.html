@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <link rel="stylesheet" href="editor.css">
+    <link rel="stylesheet" href="styles/editor.css">
     <title>Webvfx Editor</title>
     <script>
     var getParameterByName = function(name, defaultValue) {
@@ -51,222 +51,224 @@
         </table>
     </div>
     <script type="text/template" id="webvfx-obj-template">
-            <h3 id="title-<%= id %>"><%= model.getType() %> <%= id %></h3>
-            <div id="webvfx-data-<%= id %>" style="display:none">
+        <h3 id="title-<%= id %>"><%= model.getType() %> <%= id %></h3>
+        <div id="webvfx-data-<%= id %>" style="display:none">
 
-            <% if (model.getType() == "Text") { %>
+        <% if (model.getType() == "Text") { %>
 
-                <fieldset>
-                <legend>Text</legend>
+            <fieldset>
+            <legend>Text</legend>
 
-                <table>
-                    <tr>
-                        <th><label for="text-<%= id %>">text</label></th>
-                        <td><input type="text" id="text-<%= id %>" value="<%= model.kObj.getText() %>" style="width:80px"></td>
-                    </tr>
-                    <tr>
-                        <th><label for="fill-<%= id %>">color</label></th>
-                        <td>
-                            <select id="fill-<%= id %>">
+            <table>
+                <tr>
+                    <th><label for="text-<%= id %>">text</label></th>
+                    <td><input type="text" id="text-<%= id %>" value="<%= model.kObj.getText() %>" style="width:80px"></td>
+                </tr>
+                <tr>
+                    <th><label for="fill-<%= id %>">color</label></th>
+                    <td>
+                        <select id="fill-<%= id %>">
+                        <% _.each(colors, function(color) { %>
+                            <option <% if (color == model.kObj.getFill()) { %>selected<% } %>><%= color %></option>
+                        <% }); %>
+                        <select>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="background-<%= id %>">background</label></th>
+                    <td>
+                        <select id="background-<%= id %>" class="disabled" disabled>
                             <% _.each(colors, function(color) { %>
-                                <option <% if (color == model.kObj.getFill()) { %>selected<% } %>><%= color %></option>
+                                <option><%= color %></option>
                             <% }); %>
-                            <select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th><label for="background-<%= id %>">background</label></th>
-                        <td>
-                            <select id="background-<%= id %>" class="disabled" disabled>
-                                <% _.each(colors, function(color) { %>
-                                    <option><%= color %></option>
-                                <% }); %>
-                            <select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th><label for="scroll-<%= id %>">scroll</label></th>
-                        <td>
-                            <select id="scroll-<%= id %>" class="disabled" disabled>
-                                <option>no</option>
-                                <option>yes</option>
-                            <select>
-                        </td>
-                    </tr>
+                        <select>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="scroll-<%= id %>">scroll</label></th>
+                    <td>
+                        <select id="scroll-<%= id %>" class="disabled" disabled>
+                            <option>no</option>
+                            <option>yes</option>
+                        <select>
+                    </td>
+                </tr>
 
-            <% } else { %>
+        <% } else { %>
 
-                <fieldset>
-                <legend>Image</legend>
+            <fieldset>
+            <legend>Image</legend>
 
-                <table>
+            <table>
 
-                    <tr>
-                        <td colspan="2" style="text-align:center;padding:5px;">
-                            <img src="<%= model.kObj.children[0].attrs.image.src %>" id="image-<%= id %>" width="100">
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center;padding:5px;">
+                        <img src="<%= model.kObj.children[0].attrs.image.src %>" id="image-<%= id %>" width="100">
+                    </td>
+                </tr>
 
-            <% } %>
+        <% } %>
 
-                    <tr>
-                        <th>
-                            <label for="width-<%= id %>">width</label>
-                        </th>
-                        <td>
-                            <input type="text" id="width-<%= id %>" value="<%= model.getRealValue(model.getWidth()) %>" <% if (model.getType() == "Text") { %>disabled class="disabled"<% } %>> px
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            <label for="height-<%= id %>">height</label>
-                        </th>
-                        <td>
-                            <input type="text" id="height-<%= id %>" value="<%= model.getRealValue(model.getHeight()) %>" <% if (model.getType() == "Text") { %>disabled class="disabled"<% } %>> px
-                        </td>
-                    </tr>
-                    <tr>
-                        <th><label for="top-<%= id %>">top</label></th>
-                        <td>
-                            <input type="text" id="top-<%= id %>" value="<%= model.getRealValue(model.getTop()) %>"> px
-                        </td>
-                    </tr>
-                    <tr>
-                        <th><label for="left-<%= id %>">left</label></th>
-                        <td>
-                            <input type="text" id="left-<%= id %>" value="<%= model.getRealValue(model.getLeft()) %>"> px
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            <label for="right-<%= id %>">right</label>
-                        </th>
-                        <td>
-                            <input type="text" id="right-<%= id %>" value="<%= model.getRealValue(model.getRight()) %>"> px
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            <label for="bottom-<%= id %>">bottom</label>
-                        </th>
-                        <td>
-                            <input type="text" id="bottom-<%= id %>" value="<%= model.getRealValue(model.getBottom()) %>"> px
-                        </td>
-                    </tr>
-                </table>
+                <tr>
+                    <th>
+                        <label for="width-<%= id %>">width</label>
+                    </th>
+                    <td>
+                        <input type="text" id="width-<%= id %>" value="<%= model.getRealValue(model.getWidth()) %>" <% if (model.getType() == "Text") { %>disabled class="disabled"<% } %>> px
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="height-<%= id %>">height</label>
+                    </th>
+                    <td>
+                        <input type="text" id="height-<%= id %>" value="<%= model.getRealValue(model.getHeight()) %>" <% if (model.getType() == "Text") { %>disabled class="disabled"<% } %>> px
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="top-<%= id %>">top</label></th>
+                    <td>
+                        <input type="text" id="top-<%= id %>" value="<%= model.getRealValue(model.getTop()) %>"> px
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="left-<%= id %>">left</label></th>
+                    <td>
+                        <input type="text" id="left-<%= id %>" value="<%= model.getRealValue(model.getLeft()) %>"> px
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="right-<%= id %>">right</label>
+                    </th>
+                    <td>
+                        <input type="text" id="right-<%= id %>" value="<%= model.getRealValue(model.getRight()) %>"> px
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="bottom-<%= id %>">bottom</label>
+                    </th>
+                    <td>
+                        <input type="text" id="bottom-<%= id %>" value="<%= model.getRealValue(model.getBottom()) %>"> px
+                    </td>
+                </tr>
+            </table>
 
-                </fieldset>
+            </fieldset>
 
-                <fieldset>
-                <legend>Effects</legend>
+            <fieldset>
+            <legend>Effects</legend>
 
-                <table>
+            <table>
 
-                    <tr>
-                        <th>
-                            <label for="effect-<%= id %>">effect</label>
-                        </th>
-                        <td>
-                            <select id="effect-<%= id %>" style="width:90px">
-                                <% _.each(effects, function(effect) { %>
-                                    <option><%= effect %></option>
-                                <% }); %>
-                            <select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            <label for="duration-<%= id %>">duration</label>
-                        </th>
-                        <td>
-                            <input type="text" id="duration-<%= id %>">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            <label for="iterations-<%= id %>">iterations</label>
-                        </th>
-                        <td>
-                            <input type="text" id="iterations-<%= id %>">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            <label for="delay-<%= id %>">delay</label>
-                        </th>
-                        <td>
-                            <input type="text" id="delay-<%= id %>">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="button">
-                            <button id="add-effect-<%= id %>">add</button>
-                        </td>
-                    </tr>
+                <tr>
+                    <th>
+                        <label for="effect-<%= id %>">effect</label>
+                    </th>
+                    <td>
+                        <select id="effect-<%= id %>" style="width:90px">
+                            <% _.each(effects, function(effect) { %>
+                                <option><%= effect %></option>
+                            <% }); %>
+                        <select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="duration-<%= id %>">duration</label>
+                    </th>
+                    <td>
+                        <input type="text" id="duration-<%= id %>">
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="iterations-<%= id %>">iterations</label>
+                    </th>
+                    <td>
+                        <input type="text" id="iterations-<%= id %>">
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="delay-<%= id %>">delay</label>
+                    </th>
+                    <td>
+                        <input type="text" id="delay-<%= id %>">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="button">
+                        <button id="add-effect-<%= id %>">add</button>
+                    </td>
+                </tr>
 
-                </table>
+            </table>
 
-                </fieldset>
+            </fieldset>
 
-                <fieldset>
-                <legend>Move</legend>
+            <fieldset>
+            <legend>Move</legend>
 
-                <table>
+            <table>
 
-                    <tr>
-                        <th>
-                            <label for="x-<%= id %>">x </label>
-                        </th>
-                        <td>
-                            <input type="text" id="x-<%= id %>"> px
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            <label for="y-<%= id %>">y </label>
-                        </th>
-                        <td>
-                            <input type="text" id="y-<%= id %>"> px
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
-                            <label for="move-duration-<%= id %>">duration</label>
-                        </th>
-                        <td>
-                            <input type="text" id="move-duration-<%= id %>">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="button">
-                            <button id="move-<%= id %>">move</button>
-                        </td>
-                    </tr>
+                <tr>
+                    <th>
+                        <label for="x-<%= id %>">x </label>
+                    </th>
+                    <td>
+                        <input type="text" id="x-<%= id %>"> px
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="y-<%= id %>">y </label>
+                    </th>
+                    <td>
+                        <input type="text" id="y-<%= id %>"> px
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="move-duration-<%= id %>">duration</label>
+                    </th>
+                    <td>
+                        <input type="text" id="move-duration-<%= id %>">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="button">
+                        <button id="move-<%= id %>">move</button>
+                    </td>
+                </tr>
 
-                </table>
+            </table>
 
-                </fieldset>
+            </fieldset>
 
-                <fieldset>
-                <legend>Remove</legend>
+            <fieldset>
+            <legend>Remove</legend>
 
-                <table>
+            <table>
 
-                    <tr>
-                        <td colspan="2" class="button">
-                            <button id="remove-<%= id %>">remove</button>
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="2" class="button">
+                        <button id="remove-<%= id %>">remove</button>
+                    </td>
+                </tr>
 
-                </fieldset>
-            </div>
+            </fieldset>
+        </div>
     </script>
     <script src="js/lib/jquery-v1.7.2.min.js"></script>
     <script src="js/lib/jquery-ui-v1.10.2.min.js"></script>
     <script src="js/lib/kinetic-v4.5.2.min.js"></script>
     <script src="js/lib/underscore-v1.5.1.min.js"></script>
     <script src="js/lib/backbone-v1.0.0.min.js"></script>
-    <script src="js/models.js"></script>
-    <script src="js/editor.js"></script>
+    <script src="js/editor/tools.js"></script>
+    <script src="js/editor/models.js"></script>
+    <script src="js/editor/views.js"></script>
+    <script src="js/editor/main.js"></script>
   </body>
 </html>
