@@ -98,6 +98,11 @@ input, select, button {
     padding: 3px;
 }
 
+input[type="checkbox"] {
+    position: relative;
+    top: 3px;
+}
+
 td {
     vertical-align: top;
 }
