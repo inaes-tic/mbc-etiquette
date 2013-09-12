@@ -69,9 +69,24 @@ $(document).ready(function() {
     });
 
     window.realTimeEdition = false;
-    $('#real-time').on('change', function() {
-        window.realTimeEdition = $(this).val() == 'yes' ? true : false;
+    $('#real-time-edition').on('click', function() {
+        window.realTimeEdition = $(this).is(':checked') ? true : false;
         console.log('real time edition ' + (window.realTimeEdition ? 'on' : 'off'));
+    });
+
+    $('#safe-area').on('click', function() {
+        if (window.safeArea === undefined) {
+            console.log('creating safe area');
+            window.createSafeArea();
+        }
+        if ($(this).is(':checked')) {
+            console.log('showing safe area');
+            window.safeArea.show();
+            window.safeArea.draw();
+        } else {
+            console.log('hiding safe area');
+            window.safeArea.hide();
+        };
     });
 
     $('#update').click(function() {

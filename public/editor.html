@@ -17,6 +17,15 @@
     window.stageScale = getParameterByName('scale', 1);
     window.stageWidth = Math.round(width * stageScale);
     window.stageHeight = Math.round(height * stageScale);
+
+    window.actionSafe = {
+        'width': Math.round(648 * stageScale),
+        'height': Math.round(518 * stageScale)
+    };
+    window.titleSafe = {
+        'width': Math.round(576 * stageScale),
+        'height': Math.round(460 * stageScale)
+    };
     </script>
   </head>
   <body>
@@ -31,20 +40,27 @@
             <legend>Add images</legend>
                 <input type="file" id="files" value="files" multiple>
             </fieldset>
+
             <fieldset>
             <legend>Add text</legend>
                 <input type="text" id="text" style="width:200px">
             </fieldset>
             </td>
+
             <td>
             <fieldset>
             <legend>Sync</legend>
-                <label for="real-time">real time</label>
-                <select id="real-time">
-                    <option>no</option>
-                    <option>yes</option>
-                </select>
-                <button id="update">update video</button>
+                <button id="update" style="width:100%">update video</button>
+
+            </fieldset>
+
+            <fieldset>
+            <legend>Options</legend>
+                <input type="checkbox" id="real-time-edition">
+                <label for="real-time-edition">real time edition</label>
+                <br>
+                <input type="checkbox" id="safe-area">
+                <label for="safe-area">show safe area</label>
             </fieldset>
             </td>
         </tr>

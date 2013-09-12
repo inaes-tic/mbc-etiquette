@@ -47,6 +47,83 @@ window.webvfxClient = {
 
 };
 
+window.createSafeArea = function() {
+
+    window.safeArea = new Kinetic.Layer();
+
+    var invisibleWidth = Math.round(1920 * stageScale);
+    var invisibleHeight = Math.round(1080 * stageScale);
+
+    var invisibleArea = getArea(
+        invisibleWidth,
+        invisibleHeight,
+        actionSafe.width,
+        actionSafe.height,
+        '#333'
+    );
+
+    var actionSafeArea = getArea(
+        actionSafe.width,
+        actionSafe.height,
+        titleSafe.width,
+        titleSafe.height,
+        '#888'
+    );
+
+    invisibleArea.setX((stageWidth - invisibleWidth) / 2);
+    invisibleArea.setY((stageHeight - invisibleHeight) / 2);
+
+    actionSafeArea.setX((stageWidth - actionSafe.width) / 2);
+    actionSafeArea.setY((stageHeight - actionSafe.height) / 2);
+
+    safeArea.add(actionSafeArea);
+    safeArea.add(invisibleArea);
+    safeArea.hide();
+    safeArea.setListening(false);
+    stage.add(safeArea);
+
+};
+
+var getArea = function(outWidth, outHeight, inWidth, inHeight, color) {
+
+    var base = new Kinetic.Rect({
+        fill: color,
+    });
+
+    var top = base.clone({
+        width: outWidth,
+        height: (outHeight - inHeight) / 2,
+        x: 0,
+        y: 0
+    });
+
+    var bottom = top.clone({
+        y: inHeight + ((outHeight - inHeight) / 2)
+    });
+
+    var left = base.clone({
+        width: (outWidth - inWidth) / 2,
+        height: inHeight,
+        x: 0,
+        y: (outHeight - inHeight) / 2
+    });
+
+    var right = left.clone({
+        x: inWidth + ((outWidth - inWidth) / 2)
+    });
+
+    var area = new Kinetic.Group({
+        'opacity': .4
+    });
+    area.add(top);
+    area.add(bottom);
+    area.add(left);
+    area.add(right);
+
+    return area;
+
+};
+
 
 // vim: set foldmethod=indent foldlevel=0 foldnestmax=1 :
 
