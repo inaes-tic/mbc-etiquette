@@ -47,6 +47,59 @@ window.webvfxClient = {
 
 };
 
+
+window.storage = {
+
+    getAllKeys: function() {
+        var keys = [];
+        for (key in localStorage) {
+            keys.push(key);
+        }
+        return keys;
+    },
+
+    get: function(key) {
+        return JSON.parse(localStorage.getItem(key));
+    },
+
+    save: function(key, obj) {
+        localStorage.setItem(key, JSON.stringify(obj));
+    },
+
+    del: function(key) {
+        localStorage.removeItem(key);
+    },
+
+};
+
+window.sketch = {
+
+    load: function(key) {
+        window.webvfxCollection.destroyAll();
+
+        storage.get(key).forEach(function(e) {
+            console.log('add');
+            if (e.type == 'Image') {
+                e.image = new Image();
+                e.image.src = e.src;
+                window.webvfxCollection.add(new WebvfxImage(e));
+            }
+            if (e.type == 'Text') {
+                window.webvfxCollection.add(new WebvfxText(e));
+            }
+        });
+    },
+
+    save: function(key) {
+        objects = [];
+        window.webvfxCollection.each(function(e) {
+            objects.push(e.getDataToStore());
+        });
+        storage.save(key, objects);
+    },
+
+};
+
 window.createSafeArea = function() {
 
     window.safeArea = new Kinetic.Layer();
