@@ -94,6 +94,51 @@ $(document).ready(function() {
         webvfxCollection.sendAll();
     });
 
+    // Storage
+    storage.getAllKeys().forEach(function(k) {
+        $('#sketchs').append($('<option>').html(k));
+    })
+
+    $('#load-sketch').on('click', function() {
+        var key = $('#sketchs').val();
+        if (key == '[select]') {
+            alert('select an sketch to load');
+            return;
+        }
+        sketch.load(key);
+        console.log('sketch "' + key + '" loaded');
+    });
+
+    $('#save-sketch').on('click', function() {
+        var key = $('#sketchs').val();
+        if (key == '[select]') {
+            var key = prompt('name');
+        }
+        if (storage.getAllKeys().indexOf(key) >= 0 && !confirm('overwrite sketch "' + key + '" ?')) {
+            return;
+        }
+        sketch.save(key);
+        console.log('sketch "' + key + '" saved');
+    });
+
+    $('#del-sketch').on('click', function() {
+        var key = $('#sketchs').val();
+        if (key == '[select]') {
+            alert('select an sketch to del');
+            return;
+        }
+        if (confirm('the sketch "' + key + '" will be deleted')) {
+            storage.del(key);
+            $('#sketchs option').filter(
+                function() {
+                    return $(this).html() == key;
+                }
+            ).remove();
+            console.log('sketch "' + key + '" deleted');
+        }
+    });
+
+    // Dropzone
     var dropzone = $('#container');
 
     dropzone.on('dragover', function() {

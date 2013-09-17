@@ -1,6 +1,7 @@
 window.WebvfxBase = Backbone.Model.extend({
 
     initialize: function() {
+        this.collection = window.webvfxCollection;
         this.layer = stage.children[0];
         this.id = this.cid;
         self = this;
@@ -27,7 +28,7 @@ window.WebvfxBase = Backbone.Model.extend({
                 window.webvfxCollection.sendAll();
             }
             var aPos = kObj.getAbsolutePosition();
-            console.log('dragend to ' + aPos.x + ',' + aPos.y);
+            console.log('dragend ' + kObj.webvfxObj.id + ' to ' + aPos.x + ',' + aPos.y);
         });
 
         kObj.on('mouseout', function() {
@@ -73,8 +74,14 @@ window.WebvfxBase = Backbone.Model.extend({
             var size = this.kObj.getSize();
             var x = Math.round((stage.getWidth() / 2) - (size.width / 2));
             var y = Math.round((stage.getHeight() / 2) - (size.height / 2));
-            this.kObj.setPosition(x, y);
+        } else {
+            var x = args.x;
+            var y = args.y;
         }
+        if (this.getType() == 'Image') {
+            this.kObj.children[0].setPosition(0, 0);
+        }
+        this.kObj.setPosition(x, y);
     },
 
     addEffect: function(id, effect, duration, iterations, delay) {
@@ -101,10 +108,11 @@ window.WebvfxBase = Backbone.Model.extend({
     },
 
     destroy: function() {
+        console.log('destroy ' + this.id + ' called');
         this.remove();
         this.kObj.destroy();
+        this.collection.remove(this.id);
         this.layer.draw();
-        webvfxCollection.remove(this);
     },
 
 });
@@ -328,6 +336,18 @@ window.WebvfxImage = WebvfxBase.extend({
         return new WebvfxImageView({model: this});
     },
 
+    getDataToStore: function() {
+        return {
+            type: this.getType(),
+            name: this.kObj.children[0].attrs.name,
+            x: this.getLeft(),
+            y: this.getTop(),
+            src: this.kObj.children[0].attrs.image.src,
+            width: this.getWidth(),
+            height: this.getHeight(),
+        }
+    },
+
     setWidth: function(width) {
         var realWidth = width * window.stageScale;
         this.kObj.children[0].setWidth(realWidth);
@@ -456,6 +476,20 @@ window.WebvfxText = WebvfxBase.extend({
         return window.stageHeight - this.getTop() - this.getHeight();
     },
 
+    getDataToStore: function() {
+        return {
+            type: this.getType(),
+            x: this.getLeft(),
+            y: this.getTop(),
+            text: this.kObj.getText(),
+            width: this.getWidth(),
+            height: this.getHeight(),
+            fontSize: this.kObj.getFontSize(),
+            fontFamily: this.kObj.getFontFamily(),
+            fill: this.kObj.getFill(),
+        }
+    },
+
     setWidth: function(width) {
     },
 
@@ -517,8 +551,18 @@ window.WebvfxText = WebvfxBase.extend({
 window.WebvfxCollection = Backbone.Collection.extend({
 
     sendAll: function() {
-        this.each(function(e) {
-            e.send();
+        this.each(function(model) {
+            model.send();
+        });
+    },
+
+    destroyAll: function() {
+        var models = [];
+        this.each(function(model) {
+            models.push(model);
+        });
+        models.forEach(function(model) {
+            model.destroy();
         });
     },
 
