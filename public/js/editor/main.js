@@ -94,6 +94,13 @@ $(document).ready(function() {
         webvfxCollection.sendAll();
     });
 
+    $('#delete-all').click(function() {
+        if (webvfxCollection.models.length && confirm('delete all objects?')) {
+            webvfxCollection.destroyAll();
+            console.log('delete all');
+        }
+    });
+
     // Storage
     storage.getAllKeys().forEach(function(k) {
         $('#sketchs').append($('<option>').html(k));
@@ -102,7 +109,7 @@ $(document).ready(function() {
     $('#load-sketch').on('click', function() {
         var key = $('#sketchs').val();
         if (key == '[select]') {
-            alert('select an sketch to load');
+            alert('select a sketch to load');
             return;
         }
         sketch.load(key);
@@ -113,18 +120,23 @@ $(document).ready(function() {
         var key = $('#sketchs').val();
         if (key == '[select]') {
             var key = prompt('name');
+            if (!key) return;
         }
-        if (storage.getAllKeys().indexOf(key) >= 0 && !confirm('overwrite sketch "' + key + '" ?')) {
+        var keyExists = (storage.getAllKeys().indexOf(key) >= 0);
+        if (keyExists && !confirm('overwrite sketch "' + key + '" ?')) {
             return;
         }
         sketch.save(key);
+        if (!keyExists) {
+            $('#sketchs').append($('<option>').html(key).prop('selected', true));
+        }
         console.log('sketch "' + key + '" saved');
     });
 
     $('#del-sketch').on('click', function() {
         var key = $('#sketchs').val();
         if (key == '[select]') {
-            alert('select an sketch to del');
+            alert('select a sketch to del');
             return;
         }
         if (confirm('the sketch "' + key + '" will be deleted')) {
@@ -163,12 +175,27 @@ $(document).ready(function() {
         return false;
     });
 
-    //* Mouse position
-    $(stage.getContent()).on('mousemove', function(event) {
+    //* Status bar
+    var getStatusBarInfo = function() {
         var pos = stage.getMousePosition();
-        var mouseX = parseInt(pos.x / stageScale);
-        var mouseY = parseInt(pos.y / stageScale);
-        $('#mouse-position').html('(' + mouseX + 'px,' + mouseY + 'px)');
+        if (pos === undefined) {
+            var mouseX = 0;
+            var mouseY = 0;
+        } else {
+            var mouseX = parseInt(pos.x / stageScale);
+            var mouseY = parseInt(pos.y / stageScale);
+        }
+        return [
+            'size: ' + stageWidth + 'x' + stageHeight + 'px',
+            'scale: ' + stageScale,
+            'pointer at (' + mouseX + 'px,' + mouseY + 'px)'
+        ].join(', ');
+    }
+
+    $('#status-bar').html(getStatusBarInfo());
+
+    $(stage.getContent()).on('mousemove', function(event) {
+        $('#status-bar').html(getStatusBarInfo());
     });
     //*/
 
