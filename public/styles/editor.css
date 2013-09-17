@@ -18,7 +18,7 @@ a, a :visited, a :hover, a :focus {
 
 #webvfx-collection {
     position: absolute;
-    background: #3d3c38;
+    background: #353430;
     border: solid 2px #222;
     border-radius: 5px;
     min-width: 120px;
@@ -32,13 +32,11 @@ a, a :visited, a :hover, a :focus {
     border-radius: 0 0 5px 5px;
 }
 
-#mouse-position {
-    margin-top: 2px;
-    text-align: right;
-}
-
-.webvfx-obj {
-    font-size: .9em;
+#status-bar {
+    padding: 3px;
+    background: #302f29;
+    text-align: center;
+    border-bottom: solid 1px #222;
 }
 
 h3 {
@@ -47,19 +45,41 @@ h3 {
     color: #222;
 }
 
-.webvfx-obj h3 {
-    color: #aaa;
-    background: #444;
-    border-top: solid 2px #555;
-    border-bottom: solid 2px #333;
-}
-
 fieldset {
     border-radius: 4px;
     font-weight: bold;
     color: #999;
     margin: 10px;
     border: dashed 1px #555;
+}
+
+input, select, button {
+    border-radius: 4px;
+    color: #fff;
+    border: solid 1px #333;
+    background: #555;
+    font-size: 10px;
+    padding: 3px;
+}
+
+input[type="checkbox"] {
+    position: relative;
+    top: 3px;
+}
+
+td {
+    vertical-align: top;
+}
+
+.webvfx-obj {
+    font-size: .9em;
+}
+
+.webvfx-obj h3 {
+    color: #aaa;
+    background: #444;
+    border-top: solid 2px #555;
+    border-bottom: solid 2px #333;
 }
 
 .webvfx-obj label {
@@ -87,24 +107,6 @@ fieldset {
 
 .webvfx-obj .button {
     text-align: right;
-}
-
-input, select, button {
-    border-radius: 4px;
-    color: #fff;
-    border: solid 1px #333;
-    background: #555;
-    font-size: 10px;
-    padding: 3px;
-}
-
-input[type="checkbox"] {
-    position: relative;
-    top: 3px;
-}
-
-td {
-    vertical-align: top;
 }
 
 .disabled {

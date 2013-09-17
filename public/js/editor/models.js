@@ -550,6 +550,14 @@ window.WebvfxText = WebvfxBase.extend({
 
 window.WebvfxCollection = Backbone.Collection.extend({
 
+    initialize: function() {
+        this.bind('add', this.onModelAdded, this);
+    },
+
+    onModelAdded: function() {
+        console.log('model added');
+    },
+
     sendAll: function() {
         this.each(function(model) {
             model.send();
