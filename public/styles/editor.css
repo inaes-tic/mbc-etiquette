@@ -21,7 +21,7 @@ a, a :visited, a :hover, a :focus {
     position: absolute;
     border-radius: 5px 5px 0 0;
     border: solid 2px #222;
-    background-image: url('../bg.png');
+    /*background-image: url('../bg.png');*/
 }
 
 #webvfx-collection {
