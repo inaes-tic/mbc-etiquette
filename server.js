@@ -1,7 +1,8 @@
 var express = require("express"),
     _       = require("underscore"),
     fs      = require('fs'),
-    watchr  = require('watchr');
+    watchr  = require('watchr'), 
+    net     = require('net');
 
 var server = express();
 var events = [];
