@@ -19,6 +19,8 @@ var server = express();
 var events = [];
 var elements = [];
 var imageFiles = [];
+var videoSocket = undefined;
+
 var effects = ["flash", "bounce", "shake", "tada", "swing", "wobble", "wiggle", "pulse", "flip", "flipInX",
     "flipOutX", "flipInY", "flipOutY", "fadeIn", "fadeInUp", "fadeInDown", "fadeInLeft", "fadeInRight",
     "fadeInUpBig", "fadeInDownBig", "fadeInLeftBig", "fadeInRightBig", "fadeOut", "fadeOutUp", "fadeOutDown",
@@ -27,6 +29,23 @@ var effects = ["flash", "bounce", "shake", "tada", "swing", "wobble", "wiggle", 
     "bounceOutUp", "bounceOutLeft", "bounceOutRight", "rotateIn", "rotateInDownLeft", "rotateInDownRight",
     "rotateInUpLeft", "rotateInUpRight", "rotateOut", "rotateOutDownLeft", "rotateOutDownRight",
     "rotateOutUpLeft", "rotateOutUpRight", "lightSpeedIn", "lightSpeedOut", "hinge", "rollIn", "rollOut"];
+
+var tcpServer = net.createServer(function (socket) {
+//    socket.on('data', function (data) {
+//      res.write(data);
+//    });
+//    socket.on('close', function(had_error) {
+//        res.end();
+//    });
+    videoSocket = socket;
+});
+tcpServer.on('error', function(error) {
+    console.error(error);
+});
+tcpServer.maxConnections = 1;
+tcpServer.listen(1111, function() {
+    console.log("Server started");
+});
 
 server.configure(function(){
     server.set('port', process.env.PORT || 3100);
