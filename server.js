@@ -189,6 +189,14 @@ server.get("/editor", function(req, res) {
     res.redirect('/editor.html');
 });
 
+server.get('/live.webm',function(req,res){
+    console.log("Entro a pedir el video tcp!");
+    res.writeHead(200, {
+        'Content-Type':'video/mp4',
+    });
+    videoSocket.pipe(res);
+});
+
 server.post('/addImage', function(req, res){
     var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'images/' + req.body.images });
     var element = {};
