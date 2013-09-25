@@ -9,6 +9,14 @@ a, a :visited, a :hover, a :focus {
     color: #aaa;
 }
 
+#playerContainer {
+    width: 720px;
+    height: 570px;
+    position: fixed;
+    left: 20px;
+    top: 20px;
+}
+
 #container {
     position: absolute;
     border-radius: 5px 5px 0 0;
