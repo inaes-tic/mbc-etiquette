@@ -5,7 +5,8 @@ var express = require("express"),
     maxage = 365 * 24 * 60 * 60 * 1000,
     mbc = require('mbc-common'),
     logger = mbc.logger().addLogger('webvfx_server'),
-    url = require('url')
+    url = require('url'),
+    net = require('net')
     ;
 
 var loggerStream = {
