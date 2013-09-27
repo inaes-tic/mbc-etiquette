@@ -23,6 +23,17 @@ $(document).ready(function() {
         height: window.stageHeight + 'px'
     });
 
+    $('#player-container').css({
+        top: top + 'px',
+        left: left + 'px',
+        width: window.stageWidth + 'px',
+        height: window.stageHeight + 'px'
+    });
+
+    window.video = $('#player').get(0);
+    video.width = window.stageWidth;
+    video.height = window.stageHeight;
+
     $('#main-controls').css({
         top: (window.stageHeight + top) + 'px',
         left: left + 'px',
@@ -86,6 +97,18 @@ $(document).ready(function() {
         } else {
             console.log('hiding safe area');
             window.safeArea.hide();
+        };
+    });
+
+    $('#video-preview').on('click', function() {
+        if ($(this).is(':checked')) {
+            console.log('showing video preview');
+            $('#container').removeClass('container-background');
+            $(video).show();
+        } else {
+            console.log('hiding video preview');
+            $(video).hide();
+            $('#container').addClass('container-background');
         };
     });
 
