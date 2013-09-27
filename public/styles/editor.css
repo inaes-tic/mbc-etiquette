@@ -9,19 +9,17 @@ a, a :visited, a :hover, a :focus {
     color: #aaa;
 }
 
-#playerContainer {
-    width: 720px;
-    height: 570px;
-    position: fixed;
-    left: 20px;
-    top: 20px;
+#player-container {
+    position: absolute;
 }
 
 #container {
     position: absolute;
-    border-radius: 5px 5px 0 0;
     border: solid 2px #222;
-    /*background-image: url('../bg.png');*/
+}
+
+.container-background {
+    background-image: url('../bg.png');
 }
 
 #webvfx-collection {

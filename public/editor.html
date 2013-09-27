@@ -30,8 +30,8 @@
   </head>
   <body>
     <div id="webvfx-collection"></div>
-    <div id="playerContainer"><video id="player" src="live.webm" autoplay loop></video></div>
-    <div id="container"></div>
+    <div id="player-container"><video id="player" src="live.webm" autoplay loop style="display:none"></video></div>
+    <div id="container" class="container-background"></div>
     <div id="main-controls">
         <div id="status-bar"></div>
         <table>
@@ -76,6 +76,9 @@
                 <br>
                 <input type="checkbox" id="safe-area">
                 <label for="safe-area">show safe area</label>
+                <br>
+                <input type="checkbox" id="video-preview">
+                <label for="video-preview">video preview</label>
             </fieldset>
             </td>
         </tr>
