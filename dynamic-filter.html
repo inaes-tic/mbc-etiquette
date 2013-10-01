@@ -70,7 +70,7 @@ body, html {
 }
 
 @-webkit-keyframes tada {
-    0% {-webkit-transform: scale(1);}	
+    0% {-webkit-transform: scale(1);}
     10%, 20% {-webkit-transform: scale(0.9) rotate(-3deg);}
     30%, 50%, 70%, 90% {-webkit-transform: scale(1.1) rotate(3deg);}
     40%, 60%, 80% {-webkit-transform: scale(1.1) rotate(-3deg);}
@@ -83,10 +83,10 @@ body, html {
 
 @-webkit-keyframes swing {
     20%, 40%, 60%, 80%, 100% { -webkit-transform-origin: top center; }
-    20% { -webkit-transform: rotate(15deg); }	
+    20% { -webkit-transform: rotate(15deg); }
     40% { -webkit-transform: rotate(-10deg); }
-    60% { -webkit-transform: rotate(5deg); }	
-    80% { -webkit-transform: rotate(-5deg); }	
+    60% { -webkit-transform: rotate(5deg); }
+    80% { -webkit-transform: rotate(-5deg); }
     100% { -webkit-transform: rotate(0deg); }
 }
 
@@ -112,7 +112,7 @@ body, html {
 
 /* originally authored by Nick Pettit - https://github.com/nickpettit/glide */
 @-webkit-keyframes pulse {
-    0% { -webkit-transform: scale(1); }	
+    0% { -webkit-transform: scale(1); }
     50% { -webkit-transform: scale(1.1); }
     100% { -webkit-transform: scale(1); }
 }
@@ -154,15 +154,15 @@ body, html {
         -webkit-transform: perspective(400px) rotateX(90deg);
         opacity: 0;
     }
-    
+
     40% {
         -webkit-transform: perspective(400px) rotateX(-10deg);
     }
-    
+
     70% {
         -webkit-transform: perspective(400px) rotateX(10deg);
     }
-    
+
     100% {
         -webkit-transform: perspective(400px) rotateX(0deg);
         opacity: 1;
@@ -195,15 +195,15 @@ body, html {
         -webkit-transform: perspective(400px) rotateY(90deg);
         opacity: 0;
     }
-    
+
     40% {
         -webkit-transform: perspective(400px) rotateY(-10deg);
     }
-    
+
     70% {
         -webkit-transform: perspective(400px) rotateY(10deg);
     }
-    
+
     100% {
         -webkit-transform: perspective(400px) rotateY(0deg);
         opacity: 1;
@@ -232,7 +232,7 @@ body, html {
 }
 
 @-webkit-keyframes fadeIn {
-    0% {opacity: 0;}	
+    0% {opacity: 0;}
     100% {opacity: 1;}
 }
 
@@ -642,7 +642,7 @@ body, html {
     100% {
         opacity: 0;
         -webkit-transform: scale(.3);
-    }	
+    }
 }
 
 .bounceOut {
@@ -910,10 +910,10 @@ body, html {
 }
 
 @-webkit-keyframes hinge {
-    0% { -webkit-transform: rotate(0); -webkit-transform-origin: top left; -webkit-animation-timing-function: ease-in-out; }	
-    20%, 60% { -webkit-transform: rotate(80deg); -webkit-transform-origin: top left; -webkit-animation-timing-function: ease-in-out; }	
-    40% { -webkit-transform: rotate(60deg); -webkit-transform-origin: top left; -webkit-animation-timing-function: ease-in-out; }	
-    80% { -webkit-transform: rotate(60deg) translateY(0); opacity: 1; -webkit-transform-origin: top left; -webkit-animation-timing-function: ease-in-out; }	
+    0% { -webkit-transform: rotate(0); -webkit-transform-origin: top left; -webkit-animation-timing-function: ease-in-out; }
+    20%, 60% { -webkit-transform: rotate(80deg); -webkit-transform-origin: top left; -webkit-animation-timing-function: ease-in-out; }
+    40% { -webkit-transform: rotate(60deg); -webkit-transform-origin: top left; -webkit-animation-timing-function: ease-in-out; }
+    80% { -webkit-transform: rotate(60deg) translateY(0); opacity: 1; -webkit-transform-origin: top left; -webkit-animation-timing-function: ease-in-out; }
     100% { -webkit-transform: translateY(700px); opacity: 0; }
 }
 
@@ -1029,7 +1029,7 @@ function Banner() {
 Banner.prototype.addElement = function(elem) {
     document.getElementById("title").innerText = "addElement (" + elem.type + ") - " + new Date();
     resize();
-    
+
     var element;
     if (elem.type === 'image') {
         document.getElementById("title").innerText = "Adding image - " + new Date();
@@ -1061,17 +1061,17 @@ Banner.prototype.addElement = function(elem) {
             container.style.position = "absolute";
             var offset;
             var width = elem.width.replace(/[^\d.]/g, "");
-            if (elem.width.indexOf("%") !== -1) 
+            if (elem.width.indexOf("%") !== -1)
                 width = (document.width / 100) * width;
             var left = 0;
             if (elem.left !== "") {
                 left = elem.left.replace(/[^\d.]/g, "");
-                if (elem.left.indexOf("%") !== -1) 
+                if (elem.left.indexOf("%") !== -1)
                     left = (document.width / 100) * left;
             } else {
                 if (elem.right !== "") {
                     var right = elem.right.replace(/[^\d.]/g, "");
-                    if (elem.right.indexOf("%") !== -1) 
+                    if (elem.right.indexOf("%") !== -1)
                         right = (document.width / 100) * right;
                     left = document.width - right - width;
                 }
@@ -1170,7 +1170,7 @@ Banner.prototype.removeScrollElement = function(id) {
                 index = idx;
         }
     });
-    if (index) 
+    if (index)
         this.scrolls.splice(index, 1);
 };
 
@@ -1179,9 +1179,9 @@ Banner.prototype.read = function() {
     //resize();
 
     var self = this;
-    
+
     var xhr = new XMLHttpRequest();
-    xhr.overrideMimeType("application/json"); 
+    xhr.overrideMimeType("application/json");
     xhr.open("GET","http://localhost:3100/events",true);
     xhr.onload = function (e) {
         if (xhr.readyState === 4) {
@@ -1236,7 +1236,7 @@ Banner.prototype.loadElements = function() {
     resize();
     var self = this;
     var xhr = new XMLHttpRequest();
-    xhr.overrideMimeType("application/json"); 
+    xhr.overrideMimeType("application/json");
     xhr.open("GET","http://localhost:3100/init",true);
     xhr.onload = function (e) {
         if (xhr.readyState === 4) {
@@ -1298,8 +1298,8 @@ function resize(element) {
 }
 
 function scroll(offset, container, text) {
-    //var mq = container; 
-    //var aw = text.offsetWidth; 
+    //var mq = container;
+    //var aw = text.offsetWidth;
     //mq.style.left = (parseInt(mq.style.left)>(-10 - aw)) ? parseInt(mq.style.left)-3+"px" : parseInt(width)+10+"px";
     if ((parseInt(container.style.left) + parseInt(text.offsetWidth)) > 0)
         container.style.left = (parseInt(container.style.left) - 3) + "px";

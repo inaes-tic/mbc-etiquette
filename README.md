@@ -18,12 +18,12 @@ Dynamic image filters and effects for melt or melted using webvfx and node expre
 
 Check it on [joyent wiki](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
 
-### melt 
+### melt
 ```shell
    apt-get install melt libmlt-dev libmlt++-dev pkg-config
 ```
 
-### webvfx 
+### webvfx
 See [webvfx](https://github.com/rectalogic/webvfx) for howto install it
 
 ## Install
