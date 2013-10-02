@@ -39,7 +39,7 @@ See [webvfx](https://github.com/rectalogic/webvfx) for howto install it
 
 ### Running the server
 ```shell
-   node server.js
+   make serve
 ```
 
 You should be able to access it from a browser at port [3100](http://localhost:3100)

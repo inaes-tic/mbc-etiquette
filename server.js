@@ -1,7 +1,18 @@
 var express = require("express"),
     _       = require("underscore"),
     fs      = require('fs'),
-    watchr  = require('watchr');
+    watchr  = require('watchr'),
+    maxage = 365 * 24 * 60 * 60 * 1000,
+    mbc = require('mbc-common'),
+    logger = mbc.logger().addLogger('webvfx_server'),
+    url = require('url')
+    ;
+
+var loggerStream = {
+    write: function(message, encoding) {
+        logger.info(message);
+    }
+};
 
 var server = express();
 var events = [];
@@ -17,8 +28,21 @@ var effects = ["flash", "bounce", "shake", "tada", "swing", "wobble", "wiggle", 
     "rotateOutUpLeft", "rotateOutUpRight", "lightSpeedIn", "lightSpeedOut", "hinge", "rollIn", "rollOut"];
 
 server.configure(function(){
-    server.use(express.static(__dirname + '/public'));
+    server.set('port', process.env.PORT || 3100);
+    server.use(express.logger({ stream: loggerStream, format: 'dev' }));
+    server.use(express.compress());
+    server.use(express.static(__dirname + '/public', {maxAge: maxage}));
     server.use(express.bodyParser());
+});
+
+server.configure('development', function(){
+  server.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  server.set('minify', false);
+});
+
+server.configure('production', function(){
+  server.use(express.errorHandler());
+  server.set('minify', true);
 });
 
 server.all('/events', function(req, res, next) {
@@ -38,10 +62,10 @@ server.get("/events", function(req, res) {
     if (event) {
         event.consumed = true;
         res.json(event);
-        console.log(new Date(), event);
+        logger.debug(event);
     } else {
         res.json({"type": "none"});
-        console.log(new Date(), 'NONE');
+        logger.debug('NONE');
     }
 });
 
@@ -142,10 +166,11 @@ server.get("/", function(req, res) {
 });
 
 server.post('/addImage', function(req, res){
+    var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'images/' + req.body.images });
     var element = {};
     element.id = req.body.id;
     element.type = 'image';
-    element.src = 'http://localhost:3100/images/' + req.body.images;
+    element.src = full_url;
     element.top = req.body.top;
     element.left = req.body.left;
     element.bottom = req.body.bottom;
@@ -244,25 +269,25 @@ watchr.watch({
     paths: ["./public/images"],
     listeners: {
         error: function(err){
-            console.error("Error while watching images dir", err);
+            logger.error("Error while watching images dir", err);
         },
         watching: function(err, watcherInstance, isWatching){
             if (err) {
-                console.error("Error while watching images dir", err);
+                logger.error("Error while watching images dir", err);
             } else {
-                console.log("Watching playlists dir");
+                logger.info("Watching playlists dir");
             }
         },
         change: function(changeType, filePath, fileCurrentStat, filePreviousStat){
             var name = filePath.substring(filePath.lastIndexOf("/") + 1);
 
             if (changeType === "create") {
-                console.log("Image added: " + name);
+                logger.debug("Image added: " + name);
                 imageFiles.push(name);
             } else if (changeType === "update") {
-                console.log("Image updated: " + name);
+                logger.debug("Image updated: " + name);
             } else if (changeType === "delete") {
-                console.log("Image deleted: " + name);
+                logger.debug("Image deleted: " + name);
                 imageFiles = _.reject(imageFiles, function(item) {
                     return item === name;
                 });
@@ -275,4 +300,6 @@ files.forEach(function(element){
     imageFiles.push(element);
 });
 
-server.listen(3100);
+server.listen(server.get('port'), function() {
+    logger.info("Express server listening on port " + server.get('port') + " in mode " + server.settings.env);
+});
