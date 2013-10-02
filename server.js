@@ -1,7 +1,16 @@
 var express = require("express"),
     _       = require("underscore"),
     fs      = require('fs'),
-    watchr  = require('watchr');
+    watchr  = require('watchr'),
+    mbc = require('mbc-common'),
+    logger = mbc.logger().addLogger('webvfx_server')
+    ;
+
+var loggerStream = {
+    write: function(message, encoding) {
+        logger.info(message);
+    }
+};
 
 var server = express();
 var events = [];
@@ -38,10 +47,10 @@ server.get("/events", function(req, res) {
     if (event) {
         event.consumed = true;
         res.json(event);
-        console.log(new Date(), event);
+        logger.debug(event);
     } else {
         res.json({"type": "none"});
-        console.log(new Date(), 'NONE');
+        logger.debug('NONE');
     }
 });
 
@@ -244,25 +253,25 @@ watchr.watch({
     paths: ["./public/images"],
     listeners: {
         error: function(err){
-            console.error("Error while watching images dir", err);
+            logger.error("Error while watching images dir", err);
         },
         watching: function(err, watcherInstance, isWatching){
             if (err) {
-                console.error("Error while watching images dir", err);
+                logger.error("Error while watching images dir", err);
             } else {
-                console.log("Watching playlists dir");
+                logger.info("Watching playlists dir");
             }
         },
         change: function(changeType, filePath, fileCurrentStat, filePreviousStat){
             var name = filePath.substring(filePath.lastIndexOf("/") + 1);
 
             if (changeType === "create") {
-                console.log("Image added: " + name);
+                logger.debug("Image added: " + name);
                 imageFiles.push(name);
             } else if (changeType === "update") {
-                console.log("Image updated: " + name);
+                logger.debug("Image updated: " + name);
             } else if (changeType === "delete") {
-                console.log("Image deleted: " + name);
+                logger.debug("Image deleted: " + name);
                 imageFiles = _.reject(imageFiles, function(item) {
                     return item === name;
                 });

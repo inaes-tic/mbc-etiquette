@@ -1,2 +1,4 @@
 .nbrun
 node_modules
+*.log
+/logs

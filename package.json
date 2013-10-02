@@ -11,7 +11,8 @@
   "dependencies" : {
       "express"    : "3.x",
       "underscore" : "1.4.x",
-      "watchr"     : "2.4.x"
+      "watchr"     : "2.4.x",
+      "mbc-common"    : "git://github.com/inaes-tic/mbc-common.git"
   },
   "license" : "agplv3",
   "engines" : {
