@@ -2,8 +2,10 @@ var express = require("express"),
     _       = require("underscore"),
     fs      = require('fs'),
     watchr  = require('watchr'),
+    maxage = 365 * 24 * 60 * 60 * 1000,
     mbc = require('mbc-common'),
-    logger = mbc.logger().addLogger('webvfx_server')
+    logger = mbc.logger().addLogger('webvfx_server'),
+    url = require('url')
     ;
 
 var loggerStream = {
@@ -26,8 +28,21 @@ var effects = ["flash", "bounce", "shake", "tada", "swing", "wobble", "wiggle", 
     "rotateOutUpLeft", "rotateOutUpRight", "lightSpeedIn", "lightSpeedOut", "hinge", "rollIn", "rollOut"];
 
 server.configure(function(){
-    server.use(express.static(__dirname + '/public'));
+    server.set('port', process.env.PORT || 3100);
+    server.use(express.logger({ stream: loggerStream, format: 'dev' }));
+    server.use(express.compress());
+    server.use(express.static(__dirname + '/public', {maxAge: maxage}));
     server.use(express.bodyParser());
+});
+
+server.configure('development', function(){
+  server.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  server.set('minify', false);
+});
+
+server.configure('production', function(){
+  server.use(express.errorHandler());
+  server.set('minify', true);
 });
 
 server.all('/events', function(req, res, next) {
@@ -151,10 +166,11 @@ server.get("/", function(req, res) {
 });
 
 server.post('/addImage', function(req, res){
+    var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'images/' + req.body.images });
     var element = {};
     element.id = req.body.id;
     element.type = 'image';
-    element.src = 'http://localhost:3100/images/' + req.body.images;
+    element.src = full_url;
     element.top = req.body.top;
     element.left = req.body.left;
     element.bottom = req.body.bottom;
@@ -284,4 +300,6 @@ files.forEach(function(element){
     imageFiles.push(element);
 });
 
-server.listen(3100);
+server.listen(server.get('port'), function() {
+    logger.info("Express server listening on port " + server.get('port') + " in mode " + server.settings.env);
+});
