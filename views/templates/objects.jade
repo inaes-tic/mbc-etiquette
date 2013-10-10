@@ -1,0 +1,152 @@
+- var width = model.getRealValue(model.getWidth())
+- var height = model.getRealValue(model.getHeight())
+- var top = model.getRealValue(model.getTop())
+- var left = model.getRealValue(model.getLeft())
+- var right = model.getRealValue(model.getRight())
+- var bottom = model.getRealValue(model.getBottom())
+- var type = model.getType()
+
+mixin positions
+    tr
+        th
+            label(for="width-$#{id}")= i18n.gettext("width")
+        td
+            if type == "Text"
+                input(type="text", id="width-#{id}", value="#{width}" , disabled=true, class="disabled")
+            else
+                input(type="text", id="width-#{id}", value="#{width}")
+            | px
+    tr
+        th
+            label(for="height-#{id}")= i18n.gettext("height")
+        td
+            if type == "Text"
+                input(type="text", id="height-#{id}", value="#{height}" , disabled=true, class="disabled")
+            else
+                input(type="text", id="height-#{id}", value="#{height}")
+            | px
+    tr
+        th
+            label(for="top-#{id}")= i18n.gettext("top")
+        td
+            input(type="text", id="top-#{id}", value="#{top}")
+            | px
+    tr
+        th
+            label(for="left-#{id}")= i18n.gettext("left")
+        td
+            input(type="text", id="left-#{id}", value="#{left}")
+            | px
+    tr
+        th
+            label(for="right-#{id}")= i18n.gettext("right")
+        td
+            input(type="text", id="right-#{id}", value="#{right}")
+            | px
+    tr
+        th
+            label(for="bottom-#{id}")= i18n.gettext("bottom")
+        td
+            input(type="text", id="bottom-#{id}", value="#{bottom}")
+            | px
+
+
+h3(id="title-#{id}")= type + '  ' + id
+div(id="webvfx-data-#{id}", style="display:none")
+    if type == "Text"
+        fieldset
+            legend.editor= i18n.gettext("Text")
+            table
+                tr
+                    th
+                        label(for="text-#{id}")= i18n.gettext("text")
+                    td
+                        input(type="text", id="text#{id}>", value="#{model.kObj.getText()}", style="width:80px")
+                tr
+                    th
+                        label(for="fill-#{id}")= i18n.gettext("color")
+                    td
+                        select(id="fill-#{id}")
+                            for color in colors
+                                option(selected=model.kObj.getFill() == color) #{color}
+                tr
+                    th
+                        label(for="background-#{id}")= i18n.gettext("background")
+                    td
+                        select.disabled(id="background-#{id}", disabled=true)
+                            for color in colors
+                                option= color
+                tr
+                    th
+                        label(for="scroll-#{id}")= i18n.gettext("scroll")
+                    td
+                        select.disabled(id="scroll-#{id}", disabled=true)
+                            option= i18n.gettext("no")
+                            option= i18n.gettext("yes")
+                mixin positions
+    else
+        fieldset
+            legend.editor= i18n.gettext("Image")
+            table
+                tr
+                    td(colspan="2", style="text-align:center;padding:5px;")
+                        img(src="#{model.kObj.children[0].attrs.image.src}", id="image-#{id}", width="100")
+                mixin positions
+
+    fieldset
+        legend.editor= i18n.gettext("Effects")
+        table
+            tr
+                th
+                    label(for="effect-#{id}")= i18n.gettext("effect")
+                td
+                    select(id="effect-#{id}", style="width:90px")
+                        for effect in effects
+                            option= effect
+            tr
+                th
+                    label(for="duration-#{id}")= i18n.gettext("duration")
+                td
+                        input(type="text", id="duration-#{id}")
+            tr
+                th
+                    label(for="iterations-#{id}")= i18n.gettext("iterations")
+                td
+                    input(type="text", id="iterations-#{id}")
+            tr
+                th
+                    label(for="delay-#{id}")= i18n.gettext("delay")
+                td
+                    input(type="text", id="delay-#{id}")
+            tr
+                td.button(colspan="2")
+                    button(id="add-effect-#{id}")= i18n.gettext("add")
+    fieldset
+        legend.editor= i18n.gettext("Move")
+        table
+            tr
+                th
+                    label(for="x-#{id}>")= i18n.gettext("x")
+                td
+                    input(type="text", id="x-#{id}")
+                    | px
+            tr
+                th
+                    label(for="y-#{id}>")= i18n.gettext("y")
+                td
+                    input(type="text", id="y-#{id}")
+                    | px
+            tr
+                th
+                    label(for="move-duration-#{id}")= i18n.gettext("duration")
+                td
+                    input(type="text", id="move-duration-#{id}")
+            tr
+                td.button(colspan="2")
+                    button(id="move-#{id}")= i18n.gettext("move")
+    fieldset
+        legend.editor= i18n.gettext("Remove")
+        table
+            tr
+                td.button(colspan="2")
+                    button(id="remove-#{id}")= i18n.gettext("remove")

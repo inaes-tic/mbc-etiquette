@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  - var mbc_url= 'https://github.com/inaes-tic/webvfx-dynamic-filters/';
+
+  .home-hero
+    h1= gettext('Welcome to ') + name
+    br
+    div(style="opacity: .9;")
+      a.btn.btn-large(href="/editor")
+        img.pull-left(src="/images/media.png", style="margin-right:6px;").
+        p= gettext('Start Browsing\nWebvfx Editor')
+      a.btn.btn-large(href=mbc_url)
+        img.pull-left(src="/images/github.png", style="margin-right:6px").
+        p= gettext('View Project\non Github')

@@ -1,0 +1,44 @@
+block content
+    .listHeader
+        h1.list-name= i18n.gettext("Editor")
+
+    #webvfx-collection
+    #player-container
+        video#player(src="live.webm", autoplay=true, loop=true , style="display:none")
+    #container.container-background
+    #main-controls
+        #status-bar
+        table
+            tr
+                td
+                    fieldset
+                        legend.editor= i18n.gettext("Add images")
+                        input(type="file", id="files", value="files", multiple=true)
+                    fieldset
+                        legend.editor= i18n.gettext("Add text")
+                        input(type="text", id="text", style="width:200px")
+                    fieldset
+                        legend.editor= i18n.gettext("Delete")
+                        button#delete-all(style="width:100%")= i18n.gettext("delete all")
+                td
+                    fieldset
+                        legend.editor= i18n.gettext("Sync")
+                        button#update(style="width:100%")= i18n.gettext("update video")
+                    fieldset
+                        legend.editor= i18n.gettext("Storage")
+                        select#sketchs
+                            option [select]
+                        button#load-sketch= i18n.gettext("load")
+                        button#save-sketch= i18n.gettext("save")
+                        button#del-sketch= i18n.gettext("del")
+
+                    fieldset
+                        legend.editor= i18n.gettext("Options")
+                        input#real-time-edition(type="checkbox")
+                        label(for="real-time-edition")= i18n.gettext("real time edition")
+                        br
+                        input#safe-area(type="checkbox")
+                        label(for="safe-area")= i18n.gettext("show safe area")
+                        br
+                        input#video-preview(type="checkbox")
+                        label(for="video-preview")= i18n.gettext("video preview")
