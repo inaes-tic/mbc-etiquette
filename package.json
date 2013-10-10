@@ -9,10 +9,25 @@
       "url" : "https://github.com/inaes-tic/webvfx-dynamic-filters"
   },
   "dependencies" : {
-      "express"    : "3.x",
-      "underscore" : "1.4.x",
-      "watchr"     : "2.4.x",
-      "mbc-common"    : "git://github.com/inaes-tic/mbc-common.git"
+      "express"         : "3.x",
+      "underscore"      : "1.4.x",
+      "watchr"          : "2.4.x",
+      "mbc-common"      : "git://github.com/inaes-tic/mbc-common.git",
+      "mongoskin"       : "0.4.x",
+      "jade"            : "0.30.x",
+      "folio"           : "git://github.com/inaes-tic/folio.git#newer_uglify",
+      "less-middleware" : "0.1.12",
+      "jquery-browser"  : "1.8.x",
+      "jqueryui-browser": "1.9.x",
+      "po2json"         : "0.0.6",
+      "node-uuid"       : "1.3.x",
+      "i18n-abide"      : "0.0.8beta4",
+      "jed"             : "0.5.x",
+      "backbone"        : "1.0.0",
+      "backbone.io"     : "git://github.com/inaes-tic/backbone.io",
+      "socket.io"       : "0.9.x",
+      "knockback"       : "0.17.x",
+      "knockout-client" : "2.2.x"
   },
   "license" : "agplv3",
   "engines" : {
