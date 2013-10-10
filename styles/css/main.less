@@ -1,0 +1,348 @@
+//@import 'bootstrap.min.css';
+@import 'font-Andika.less';
+@import 'font-Arvo.less';
+//@import 'airtime/pro_dropdown_3.css';
+
+// Definitions
+
+
+/*
+@header_height: 139px;
+@panel-width: 251px;
+@height_listHeader:125px;
+@color:#632155;
+@color_light:#ECD1F0;
+@color_dark:#7A498D;
+@logo_dimensions:75px;
+
+body {
+    position: relative;
+    font-family: monospace;
+    font-size: 12px;
+    color: #aaa;
+    background: #2c2b29;
+}
+
+#Panel {
+    position: fixed;
+    width: 100%;
+    z-index: 999;
+
+    top: 0px;
+    -webkit-transition: top 400ms ease-in-out;
+    transition: top 400ms ease-in-out;
+}
+
+#nav {
+    li {
+        a.top_link {
+            padding: 2px 7px 3px 7px;
+        }
+        &:hover {
+            a.top_link{
+                background-color:#444;
+            }
+        }
+        .active {
+            a.top_link{
+                background-color:#222;
+            }
+        }
+    }
+}
+
+#content {
+    top: @header_height;
+    overflow: hidden;
+
+    &.trans {
+        -webkit-transition: top 400ms ease-in-out;
+        transition: top 400ms ease-in-out;
+    }
+}
+
+.home-hero {
+    font-family: "Andika";
+    font-size: 36;
+    color: white;
+    background-image: url('img/bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin-top: -19px;
+    padding: 180px;
+    text-align : center;
+    text-shadow: 1px 1px 1px #000;
+    .btn {
+        font-family: "arvo";
+        width: 160px;
+        margin: 10px 4px;
+    }
+}
+
+.panel-like (@rtl: 5px; @rtr: 5px; @rbr: 5px; @rbl: 5px) {
+    background-color: white;
+
+    border-radius: @rtl @rtr @rbr @rbl;
+    -webkit-border-radius: @rtl @rtr @rbr @rbl;
+
+    box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+    -webkit-box-shadow: 1px 1px 7px 0px rgba(0, 0, 0, .35);
+}
+
+h1, h2, h3, h4, h5 {
+    line-height: 1;
+}
+
+h5 {
+    width: 100%;
+    margin-bottom: 4px;
+    word-wrap: break-word;
+}
+
+a, a :visited, a :hover, a :focus {
+    color: #aaa;
+}
+
+#player-container {
+    position: absolute;
+}
+
+#container {
+    position: absolute;
+    border: solid 2px #222;
+}
+
+.container-background {
+    background-image: url('img/bg.png');
+}
+
+#webvfx-collection {
+    position: absolute;
+    background: #353430;
+    border: solid 2px #222;
+    border-radius: 5px;
+    min-width: 120px;
+    min-height: 120px;
+}
+
+#main-controls {
+    position: absolute;
+    border: solid 2px #222;
+    background: #353430;
+    border-radius: 0 0 5px 5px;
+}
+
+#status-bar {
+    padding: 3px;
+    background: #302f29;
+    text-align: center;
+    border-bottom: solid 1px #222;
+}
+
+h3 {
+    margin: 0;
+    padding: 3px;
+    color: #222;
+}
+
+td {
+    vertical-align: top;
+}
+
+fieldset {
+    border-radius: 4px;
+    font-weight: bold;
+    color: #999;
+    margin: 10px;
+    border: dashed 1px #555;
+}
+
+input, select, button {
+    border-radius: 4px;
+    color: #fff;
+    border: solid 1px #333;
+    background: #555;
+    font-size: 10px;
+    padding: 3px;
+}
+
+input[type="checkbox"] {
+    position: relative;
+    top: 3px;
+}
+
+
+.webvfx-obj {
+    font-size: .9em;
+}
+
+.webvfx-obj h3 {
+    color: #aaa;
+    background: #444;
+    border-top: solid 2px #555;
+    border-bottom: solid 2px #333;
+}
+
+.webvfx-obj label {
+}
+
+.webvfx-obj table {
+    width: 100%;
+    font-weight: normal;
+    color: #888;
+}
+
+.webvfx-obj input {
+    width: 60px;
+}
+
+.webvfx-obj select {
+    width: 70px;
+}
+
+.webvfx-obj th {
+    width: 80px;
+    font-weight: normal;
+    text-align: left;
+}
+
+.webvfx-obj .button {
+    text-align: right;
+}
+
+.disabled {
+    color: #333;
+}
+
+legend.editor {
+    width: 100%;
+    padding: 0 10px;
+    border-bottom:none;
+    margin: 0;
+    line-height: 15px;
+    font-size: 15px;
+    color: white;
+}
+
+*/
+
+body {
+    font-family: monospace;
+    font-size: 12px;
+    color: #aaa;
+    background: #2c2b29;
+}
+
+a, a :visited, a :hover, a :focus {
+    color: #aaa;
+}
+
+#player-container {
+    position: absolute;
+}
+
+#container {
+    position: absolute;
+    border: solid 2px #222;
+}
+
+.container-background {
+    background-image: url('img/bg.png');
+}
+
+#webvfx-collection {
+    position: absolute;
+    background: #353430;
+    border: solid 2px #222;
+    border-radius: 5px;
+    min-width: 120px;
+    min-height: 120px;
+}
+
+#main-controls {
+    position: absolute;
+    border: solid 2px #222;
+    background: #353430;
+    border-radius: 0 0 5px 5px;
+}
+
+#status-bar {
+    padding: 3px;
+    background: #302f29;
+    text-align: center;
+    border-bottom: solid 1px #222;
+}
+
+h3 {
+    margin: 0;
+    padding: 3px;
+    color: #222;
+}
+
+fieldset {
+    border-radius: 4px;
+    font-weight: bold;
+    color: #999;
+    margin: 10px;
+    border: dashed 1px #555;
+}
+
+input, select, button {
+    border-radius: 4px;
+    color: #fff;
+    border: solid 1px #333;
+    background: #555;
+    font-size: 10px;
+    padding: 3px;
+}
+
+input[type="checkbox"] {
+    position: relative;
+    top: 3px;
+}
+
+td {
+    vertical-align: top;
+}
+
+.webvfx-obj {
+    font-size: .9em;
+}
+
+.webvfx-obj h3 {
+    color: #aaa;
+    background: #444;
+    border-top: solid 2px #555;
+    border-bottom: solid 2px #333;
+}
+
+.webvfx-obj label {
+}
+
+.webvfx-obj table {
+    width: 100%;
+    font-weight: normal;
+    color: #888;
+}
+
+.webvfx-obj input {
+    width: 60px;
+}
+
+.webvfx-obj select {
+    width: 70px;
+}
+
+.webvfx-obj th {
+    width: 80px;
+    font-weight: normal;
+    text-align: left;
+}
+
+.webvfx-obj .button {
+    text-align: right;
+}
+
+.disabled {
+    color: #333;
+}
