@@ -1,0 +1,172 @@
+;var json_locale_data = {
+   "messages": {
+      "": {
+         "Project-Id-Version": " PACKAGE VERSION\nReport-Msgid-Bugs-To: \nPOT-Creation-Date: 2013-10-10 16:51-0300\nPO-Revision-Date: 2013-10-05 08:17-0300\nLast-Translator: Automatically generated\nLanguage-Team: none\nLanguage: db_LB\nMIME-Version: 1.0\nContent-Type: text/plain; charset=ASCII\nContent-Transfer-Encoding: 8bit\n"
+      },
+      "Welcome to ": [
+         null,
+         ""
+      ],
+      "Start Browsing\\\nWebvfx Dynamic Filters": [
+         null,
+         ""
+      ],
+      "View Project\\\non Github": [
+         null,
+         ""
+      ],
+      "Manual": [
+         null,
+         ""
+      ],
+      "Editor": [
+         null,
+         ""
+      ],
+      "Start Browsing\\\nWebvfx Editor": [
+         null,
+         ""
+      ],
+      "Add images": [
+         null,
+         ""
+      ],
+      "Add text": [
+         null,
+         ""
+      ],
+      "Delete": [
+         null,
+         ""
+      ],
+      "Sync": [
+         null,
+         ""
+      ],
+      "Storage": [
+         null,
+         ""
+      ],
+      "Options": [
+         null,
+         ""
+      ],
+      "real time edition": [
+         null,
+         ""
+      ],
+      "show safe area": [
+         null,
+         ""
+      ],
+      "video preview": [
+         null,
+         ""
+      ],
+      "width": [
+         null,
+         ""
+      ],
+      "height": [
+         null,
+         ""
+      ],
+      "top": [
+         null,
+         ""
+      ],
+      "left": [
+         null,
+         ""
+      ],
+      "right": [
+         null,
+         ""
+      ],
+      "bottom": [
+         null,
+         ""
+      ],
+      "Text": [
+         null,
+         ""
+      ],
+      "text": [
+         null,
+         ""
+      ],
+      "color": [
+         null,
+         ""
+      ],
+      "background": [
+         null,
+         ""
+      ],
+      "scroll": [
+         null,
+         ""
+      ],
+      "no": [
+         null,
+         ""
+      ],
+      "yes": [
+         null,
+         ""
+      ],
+      "Image": [
+         null,
+         ""
+      ],
+      "Effects": [
+         null,
+         ""
+      ],
+      "effect": [
+         null,
+         ""
+      ],
+      "duration": [
+         null,
+         ""
+      ],
+      "iterations": [
+         null,
+         ""
+      ],
+      "delay": [
+         null,
+         ""
+      ],
+      "add": [
+         null,
+         ""
+      ],
+      "Move": [
+         null,
+         ""
+      ],
+      "x": [
+         null,
+         ""
+      ],
+      "y": [
+         null,
+         ""
+      ],
+      "move": [
+         null,
+         ""
+      ],
+      "Remove": [
+         null,
+         ""
+      ],
+      "remove": [
+         null,
+         ""
+      ]
+   }
+}
+;
