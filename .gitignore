@@ -4,3 +4,4 @@ node_modules
 /logs
 *.swp
 *.mo
+public/images
