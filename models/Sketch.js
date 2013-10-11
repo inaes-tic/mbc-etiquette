@@ -25,7 +25,7 @@ var Sketch = {};
 
 Sketch.Model = Backbone.Model.extend({
     urlRoot: 'sketch',
-    idAttribute: 'id',
+    idAttribute: '_id',
     defaults: {
     }
 });
