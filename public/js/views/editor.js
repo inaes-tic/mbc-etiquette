@@ -305,7 +305,7 @@ window.EditorView = Backbone.View.extend({
         _.each(this.sketchs.findWhere({name: key}).get('data'), function(s) {
             if (s.type == 'Image') {
                 s.image = new Image();
-                s.image.src = s.src;
+                s.image.src = unescape(s.src);
                 self.webvfxCollection.add(new WebvfxImage(s));
             }
             if (s.type == 'Text') {
