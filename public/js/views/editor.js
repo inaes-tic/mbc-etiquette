@@ -320,6 +320,7 @@ window.EditorView = Backbone.View.extend({
             var model = this.sketchs.findWhere({ name: key });
             this.sketchs.remove(model);
 
+
             $('#sketchs option').filter(
                 function() {
                     return $(this).html() == key;
@@ -335,18 +336,89 @@ window.EditorView = Backbone.View.extend({
         });
     },
     safeArea: function() {
-        if (window.safeArea === undefined) {
+        if (this.safeAreaLayer === undefined) {
             console.log('creating safe area');
-            window.createSafeArea();
+            this.createSafeArea();
         }
         if ($("#safe-area").is(':checked')) {
             console.log('showing safe area');
-            window.safeArea.show();
-            window.safeArea.draw();
+            this.safeAreaLayer.show();
+            this.safeAreaLayer.draw();
         } else {
             console.log('hiding safe area');
-            window.safeArea.hide();
+            this.safeAreaLayer.hide();
         }
+    },
+    createSafeArea: function() {
+        this.safeAreaLayer = new Kinetic.Layer();
+
+        var invisibleWidth = Math.round(1920 * stageScale);
+        var invisibleHeight = Math.round(1080 * stageScale);
+
+        var invisibleArea = this.getArea(
+            invisibleWidth,
+            invisibleHeight,
+            actionSafe.width,
+            actionSafe.height,
+            '#333'
+        );
+
+        var actionSafeArea = this.getArea(
+            actionSafe.width,
+            actionSafe.height,
+            titleSafe.width,
+            titleSafe.height,
+            '#888'
+        );
+
+        invisibleArea.setX((stageWidth - invisibleWidth) / 2);
+        invisibleArea.setY((stageHeight - invisibleHeight) / 2);
+
+        actionSafeArea.setX((stageWidth - actionSafe.width) / 2);
+        actionSafeArea.setY((stageHeight - actionSafe.height) / 2);
+
+        this.safeAreaLayer.add(actionSafeArea);
+        this.safeAreaLayer.add(invisibleArea);
+        this.safeAreaLayer.hide();
+        this.safeAreaLayer.setListening(false);
+        stage.add(this.safeAreaLayer);
+    },
+    getArea : function(outWidth, outHeight, inWidth, inHeight, color) {
+        var base = new Kinetic.Rect({
+            fill: color,
+        });
+
+        var top = base.clone({
+            width: outWidth,
+            height: (outHeight - inHeight) / 2,
+            x: 0,
+            y: 0
+        });
+
+        var bottom = top.clone({
+            y: inHeight + ((outHeight - inHeight) / 2)
+        });
+
+        var left = base.clone({
+            width: (outWidth - inWidth) / 2,
+            height: inHeight,
+            x: 0,
+            y: (outHeight - inHeight) / 2
+        });
+
+        var right = left.clone({
+            x: inWidth + ((outWidth - inWidth) / 2)
+        });
+
+        var area = new Kinetic.Group({
+            'opacity': .4
+        });
+        area.add(top);
+        area.add(bottom);
+        area.add(left);
+        area.add(right);
+
+        return area;
     },
     videoPreview: function() {
         if ($("#video-preview").is(':checked')) {
