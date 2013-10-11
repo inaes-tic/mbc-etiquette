@@ -8,20 +8,12 @@ window.framestatus = new App.ProgressStatus();
 var AppRouter = Backbone.Router.extend({
 
     routes: {
-        "manual"             : "manual",
         "editor"             : "editor",
     },
 
     initialize: function () {
         window.socket = io.connect('http://' + window.location.hostname);
         this.headerView = new HeaderView({});
-    },
-
-    manual: function() {
-        var effects = new Effects();
-        var imageFiles = new ImageFiles();
-        var elements = new Elements();
-        return new ManualView({ imageFiles: imageFiles, effects: effects, elements: elements });
     },
 
     editor: function() {

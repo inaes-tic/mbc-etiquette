@@ -16,42 +16,6 @@ module.exports = function(server) {
     , events = []
     ;
 
-    var files = fs.readdirSync(conf.Dirs.uploads);
-    files.forEach(function(element){
-       imageFiles.push({ name: element });
-    });
-
-    watchr.watch({
-        paths: [conf.Dirs.uploads],
-        listeners: {
-            error: function(err){
-                logger.error("Error while watching images dir", err);
-            },
-            watching: function(err, watcherInstance, isWatching){
-                if (err) {
-                    logger.error("Error while watching images dir", err);
-                } else {
-                    logger.info("Watching playlists dir");
-                }
-            },
-            change: function(changeType, filePath, fileCurrentStat, filePreviousStat){
-                var name = filePath.substring(filePath.lastIndexOf("/") + 1);
-
-                if (changeType === "create") {
-                    logger.debug("Image added: " + name);
-                    imageFiles.push({ name: name });
-                } else if (changeType === "update") {
-                    logger.debug("Image updated: " + name);
-                } else if (changeType === "delete") {
-                    logger.debug("Image deleted: " + name);
-                    imageFiles = _.reject(imageFiles, function(item) {
-                        return item.name === name;
-                    });
-                }
-            }
-        }
-    });
-
     server.all('/events', function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -101,7 +65,7 @@ module.exports = function(server) {
         event.consumed = false;
         events.push(event);
         elements.push(element);
-        res.redirect('/manual');
+        return res.json({});
     });
 
     server.post('/addBanner', function(req, res){
@@ -124,7 +88,7 @@ module.exports = function(server) {
         event.consumed = false;
         events.push(event);
         elements.push(element);
-        res.redirect('/manual');
+        return res.json({});
     });
 
     server.post('/remove', function(req, res){
@@ -138,7 +102,7 @@ module.exports = function(server) {
         elements = _.reject(elements, function(item) {
             return item.id === element.id;
         });
-        res.redirect('/manual');
+        return res.json({});
     });
 
     server.post('/addEffect', function(req, res){
@@ -155,7 +119,7 @@ module.exports = function(server) {
         event.animation = animation;
         event.consumed = false;
         events.push(event);
-        res.redirect('/manual');
+        return res.json({});
     });
 
     server.post('/move', function(req, res){
@@ -171,7 +135,7 @@ module.exports = function(server) {
         event.move = move;
         event.consumed = false;
         events.push(event);
-        res.redirect('/manual');
+        return res.json({});
     });
 
     server.post('/uploadImage', function(req, res){
@@ -182,7 +146,7 @@ module.exports = function(server) {
             }
             var newPath = __dirname + "/../public/images/" + req.files.uploadedFile.name;
             fs.writeFile(newPath, data, function (err) {
-                res.redirect('/manual');
+                return res.json({});
             });
         });
     });
@@ -193,27 +157,6 @@ module.exports = function(server) {
             'Content-Type':'video/mp4',
         });
         videoSocket.pipe(res);
-    });
-
-    server.get('/Effects', function(req, res) {
-        var effects = ["flash", "bounce", "shake", "tada", "swing", "wobble", "wiggle", "pulse", "flip", "flipInX",
-            "flipOutX", "flipInY", "flipOutY", "fadeIn", "fadeInUp", "fadeInDown", "fadeInLeft", "fadeInRight",
-            "fadeInUpBig", "fadeInDownBig", "fadeInLeftBig", "fadeInRightBig", "fadeOut", "fadeOutUp", "fadeOutDown",
-            "fadeOutLeft", "fadeOutRight", "fadeOutUpBig", "fadeOutDownBig", "fadeOutLeftBig", "fadeOutRightBig",
-            "bounceIn", "bounceInDown", "bounceInUp", "bounceInLeft", "bounceInRight", "bounceOut", "bounceOutDown",
-            "bounceOutUp", "bounceOutLeft", "bounceOutRight", "rotateIn", "rotateInDownLeft", "rotateInDownRight",
-            "rotateInUpLeft", "rotateInUpRight", "rotateOut", "rotateOutDownLeft", "rotateOutDownRight",
-            "rotateOutUpLeft", "rotateOutUpRight", "lightSpeedIn", "lightSpeedOut", "hinge", "rollIn", "rollOut"];
-        effects = effects.map(function(item) { return { name: item }; } );
-        return res.json(effects);
-    });
-
-    server.get('/ImageFiles', function(req, res) {
-        return res.json(imageFiles);
-    });
-
-    server.get('/Elements', function(req, res) {
-        return res.json(elements);
     });
 
     server.get('/po/:id', function (req, res) {
@@ -253,8 +196,7 @@ module.exports = function(server) {
     /**
      * Views Javascript Package
      */
-    var views = ['manual',
-                 'editor',
+    var views = ['editor',
                  'header'
                 ];
 
@@ -271,7 +213,7 @@ module.exports = function(server) {
      * Models Javascript Package
      */
 
-    var models = ['Default', 'Editor', 'Manual', 'Sketch'];
+    var models = ['Default', 'Editor', 'Sketch'];
 
     var modelsJs = new folio.Glossary(
         models.map (function (e) {
@@ -291,7 +233,6 @@ module.exports = function(server) {
      */
 
     var templates = ['editor',
-                     'manual',
                      'header',
                      'objects',
                     ];
