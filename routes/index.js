@@ -48,7 +48,8 @@ module.exports = function(server) {
     });
 
     server.post('/addImage', function(req, res){
-        var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'images/' + req.body.images });
+        conf.Dirs.uploads
+        var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'uploads/' + req.body.images });
         var element = {};
         element.id = req.body.id;
         element.type = 'image';
@@ -144,7 +145,7 @@ module.exports = function(server) {
                 logger.error(err);
                 return;
             }
-            var newPath = __dirname + "/../public/images/" + req.files.uploadedFile.name;
+            var newPath = path.join(conf.Dirs.uploads, req.files.uploadedFile.name);
             fs.writeFile(newPath, data, function (err) {
                 return res.json({});
             });
