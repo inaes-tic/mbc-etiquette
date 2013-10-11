@@ -153,7 +153,7 @@ window.WebvfxTextView = WebvfxBaseView.extend({
             model.kObj.setText($(this).val());
             model.layer.draw();
             if (window.realTimeEdition) {
-                window.webvfxCollection.sendAll();
+                self.collection.sendAll();
             }
         });
 
@@ -161,7 +161,7 @@ window.WebvfxTextView = WebvfxBaseView.extend({
             model.kObj.setFill($(this).val());
             model.layer.draw();
             if (window.realTimeEdition) {
-                window.webvfxCollection.sendAll();
+                self.collection.sendAll();
             }
         });
     },

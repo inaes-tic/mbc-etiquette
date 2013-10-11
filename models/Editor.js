@@ -1,7 +1,6 @@
 window.WebvfxBase = Backbone.Model.extend({
 
     initialize: function() {
-        this.collection = window.webvfxCollection;
         this.layer = stage.children[0];
         this.id = this.cid;
         self = this;
@@ -25,7 +24,7 @@ window.WebvfxBase = Backbone.Model.extend({
 
         kObj.on('dragend', function() {
             if (window.realTimeEdition) {
-                window.webvfxCollection.sendAll();
+                self.collection.sendAll();
             }
             var aPos = kObj.getAbsolutePosition();
             console.log('dragend ' + kObj.webvfxObj.id + ' to ' + aPos.x + ',' + aPos.y);
@@ -391,7 +390,7 @@ window.WebvfxImage = WebvfxBase.extend({
     draw: function() {
         this.layer.draw();
         if (window.realTimeEdition) {
-            window.webvfxCollection.sendAll();
+            this.collection.sendAll();
         }
     },
 
@@ -521,7 +520,7 @@ window.WebvfxText = WebvfxBase.extend({
     draw: function() {
         this.layer.draw();
         if (window.realTimeEdition) {
-            window.webvfxCollection.sendAll();
+            this.collection.sendAll();
         }
     },
 
