@@ -283,7 +283,12 @@ window.EditorView = Backbone.View.extend({
             $('#sketchs').append($('<option>').html(key).prop('selected', true));
         } else {
             var model = this.sketchs.findWhere({name: key});
-            model.set({ name:key , data: objects });
+            if (model) {
+                model.set({ name:key , data: objects });
+                model.save();
+            } else {
+                console.log('tried to save: "' + key + '"but not found in sketchs');
+            }
         }
 
         console.log('sketch "' + key + '" saved');
@@ -318,15 +323,17 @@ window.EditorView = Backbone.View.extend({
         }
         if (confirm('the sketch "' + key + '" will be deleted')) {
             var model = this.sketchs.findWhere({ name: key });
-            this.sketchs.remove(model);
-
-
-            $('#sketchs option').filter(
-                function() {
-                    return $(this).html() == key;
-                }
-            ).remove();
-            console.log('sketch "' + key + '" deleted');
+            if (model) {
+                model.destroy();
+                $('#sketchs option').filter(
+                    function() {
+                        return $(this).html() == key;
+                    }
+                ).remove();
+                console.log('sketch "' + key + '" deleted');
+            } else {
+                console.log('tried to delete: "' + key + '" but not found in sketchs');
+            }
         }
     },
     getSketchs: function () {
