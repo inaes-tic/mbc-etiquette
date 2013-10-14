@@ -2,7 +2,7 @@
 @import 'font-Arvo.less';
 
 // Definitions
-@header_height: 139px;
+@header_height: 30px;
 @panel-width: 251px;
 @height_listHeader:125px;
 @color:#632155;
@@ -89,6 +89,11 @@
         -webkit-transition: top 400ms ease-in-out;
         transition: top 400ms ease-in-out;
     }
+}
+
+#editor {
+    position: absolute;
+    top: @header_height;
 }
 
 .home-hero {
