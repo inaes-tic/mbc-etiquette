@@ -222,7 +222,7 @@ window.EditorView = Backbone.View.extend({
         "click #addText"        : "addText",
         "keyup #text"           : "keyUp",
         "click #update"         : "updateVideo",
-        "click #delete-all"     : "deleteAll",
+        "click #clear-all"      : "clearAll",
         "dragover #container"   : "dragOver",
         "dragleave #container"  : "dragLeave",
         "drop #container"       : "drop",
@@ -461,10 +461,10 @@ window.EditorView = Backbone.View.extend({
         console.log('manual update');
         this.webvfxCollection.sendAll();
     },
-    deleteAll: function() {
-        if (this.webvfxCollection.models.length && confirm('delete all objects?')) {
+    clearAll: function() {
+        if (this.webvfxCollection.models.length && confirm('Clear all objects?')) {
             this.webvfxCollection.destroyAll();
-            console.log('delete all');
+            console.log('clear all');
         }
     },
     processFiles : function(files) {
