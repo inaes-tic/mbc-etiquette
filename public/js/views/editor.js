@@ -276,15 +276,16 @@ window.EditorView = Backbone.View.extend({
             return;
         }
 
+        var sketch = { name: key,  data: objects };
+
         if (!keyExists) {
-            var model = { name: key,  data: objects };
-            this.sketchs.create(model, {success: function() {
+            this.sketchs.create(sketch, {success: function() {
             }});
             $('#sketchs').append($('<option>').html(key).prop('selected', true));
         } else {
             var model = this.sketchs.findWhere({name: key});
             if (model) {
-                model.set({ name:key , data: objects });
+                model.set(sketch);
                 model.save();
             } else {
                 console.log('tried to save: "' + key + '"but not found in sketchs');
