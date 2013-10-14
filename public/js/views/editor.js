@@ -216,6 +216,7 @@ window.EditorView = Backbone.View.extend({
         "click #save-sketch"    : "saveSketch",
         "click #load-sketch"    : "loadSketch",
         "click #del-sketch"     : "delSketch",
+        "click #new-sketch"     : "newSketch",
         "click #safe-area"      : "safeArea",
         "click #video-preview"  : "videoPreview",
         "click #real-time-edition" : "realTimeEdition",
@@ -337,6 +338,10 @@ window.EditorView = Backbone.View.extend({
                 console.log('tried to delete: "' + key + '" but not found in sketchs');
             }
         }
+    },
+    newSketch: function() {
+        this.clearAll();
+        var key = $('#sketchs').val('[select]');
     },
     getSketchs: function () {
         var keys = this.sketchs.pluck('name');
