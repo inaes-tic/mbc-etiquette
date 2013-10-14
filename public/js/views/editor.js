@@ -152,7 +152,7 @@ window.WebvfxTextView = WebvfxBaseView.extend({
         this.$('text', id).live('keyup', function() {
             model.kObj.setText($(this).val());
             model.layer.draw();
-            if (window.realTimeEdition) {
+            if (webfvfxEditor.get('realTimeEdition')) {
                 self.collection.sendAll();
             }
         });
@@ -160,7 +160,7 @@ window.WebvfxTextView = WebvfxBaseView.extend({
         this.$('fill', id).live('change', function() {
             model.kObj.setFill($(this).val());
             model.layer.draw();
-            if (window.realTimeEdition) {
+            if (webfvfxEditor.get('realTimeEdition')) {
                 self.collection.sendAll();
             }
         });
@@ -184,7 +184,7 @@ window.WebvfxCollectionView = Backbone.View.extend({
     updateSort: function(event, model, index) {
         this.collection.remove(model);
         this.collection.add(model, {at: index});
-        if (window.realTimeEdition) {
+        if (webfvfxEditor.get('realTimeEdition')) {
             this.collection.sendAll();
         }
     },
@@ -366,36 +366,36 @@ window.EditorView = Backbone.View.extend({
     createSafeArea: function() {
         this.safeAreaLayer = new Kinetic.Layer();
 
-        var invisibleWidth = Math.round(1920 * stageScale);
-        var invisibleHeight = Math.round(1080 * stageScale);
+        var invisibleWidth = Math.round(1920 * webvfxEditor.get('scale'));
+        var invisibleHeight = Math.round(1080 * webvfxEditor.get('scale'));
 
         var invisibleArea = this.getArea(
             invisibleWidth,
             invisibleHeight,
-            actionSafe.width,
-            actionSafe.height,
+            webvfxEditor.get('actionSafe').width,
+            webvfxEditor.get('actionSafe').height,
             '#333'
         );
 
         var actionSafeArea = this.getArea(
-            actionSafe.width,
-            actionSafe.height,
-            titleSafe.width,
-            titleSafe.height,
+            webvfxEditor.get('actionSafe').width,
+            webvfxEditor.get('actionSafe').height,
+            webvfxEditor.get('titleSafe').width,
+            webvfxEditor.get('titleSafe').height,
             '#888'
         );
 
-        invisibleArea.setX((stageWidth - invisibleWidth) / 2);
-        invisibleArea.setY((stageHeight - invisibleHeight) / 2);
+        invisibleArea.setX((webvfxEditor.get('width') - invisibleWidth) / 2);
+        invisibleArea.setY((webvfxEditor.get('height') - invisibleHeight) / 2);
 
-        actionSafeArea.setX((stageWidth - actionSafe.width) / 2);
-        actionSafeArea.setY((stageHeight - actionSafe.height) / 2);
+        actionSafeArea.setX((webvfxEditor.get('width') - webvfxEditor.get('actionSafe').width) / 2);
+        actionSafeArea.setY((webvfxEditor.get('height') - webvfxEditor.get('actionSafe').height) / 2);
 
         this.safeAreaLayer.add(actionSafeArea);
         this.safeAreaLayer.add(invisibleArea);
         this.safeAreaLayer.hide();
         this.safeAreaLayer.setListening(false);
-        stage.add(this.safeAreaLayer);
+        webvfxEditor.get('stage').add(this.safeAreaLayer);
     },
     getArea : function(outWidth, outHeight, inWidth, inHeight, color) {
         var base = new Kinetic.Rect({
@@ -446,8 +446,8 @@ window.EditorView = Backbone.View.extend({
         }
     },
     realTimeEdition: function () {
-        window.realTimeEdition = $("#real-time-edition").is(':checked') ? true : false;
-        console.log('real time edition ' + (window.realTimeEdition ? 'on' : 'off'));
+        webvfxEditor.set('realTimeEdition', $("#real-time-edition").is(':checked'));
+        console.log('real time edition ' + (webvfxEditor.get('realTimeEdition') ? 'on' : 'off'));
     },
     addText: function () {
         var text = $('#text').val();
@@ -556,31 +556,11 @@ window.EditorView = Backbone.View.extend({
             return results == null ? defaultValue : decodeURIComponent(results[1].replace(/\+/g, " "));
         }
 
-        var width = getParameterByName('width', 720);
-        var height = getParameterByName('height', 570);
-
-        window.stageScale = getParameterByName('scale', 1);
-        window.stageWidth = Math.round(width * stageScale);
-        window.stageHeight = Math.round(height * stageScale);
-
-        window.actionSafe = {
-            'width': Math.round(648 * stageScale),
-            'height': Math.round(518 * stageScale)
-        };
-        window.titleSafe = {
-            'width': Math.round(576 * stageScale),
-            'height': Math.round(460 * stageScale)
-        };
-
-      /**
-        * Canvas
-        */
-        window.stage = new Kinetic.Stage({
-            container: 'container',
-            width: window.stageWidth,
-            height: window.stageHeight,
+        window.webvfxEditor = new WebvfxEditor({
+            width: getParameterByName('width', 720),
+            height: getParameterByName('height', 570),
+            scale: getParameterByName('scale', 1),
         });
-        stage.add(new Kinetic.Layer());
 
         /**
          * Setting css for ui elements according to scale
@@ -591,56 +571,53 @@ window.EditorView = Backbone.View.extend({
         $('#container').css({
             top: top + 'px',
             left: left + 'px',
-            width: window.stageWidth + 'px',
-            height: window.stageHeight + 'px'
+            width: webvfxEditor.get('width') + 'px',
+            height: webvfxEditor.get('height') + 'px'
         });
 
         $('#player-container').css({
             top: top + 'px',
             left: left + 'px',
-            width: window.stageWidth + 'px',
-            height: window.stageHeight + 'px'
+            width: webvfxEditor.get('width') + 'px',
+            height: webvfxEditor.get('height') + 'px'
         });
 
         window.video = $('#player').get(0);
-        video.width = window.stageWidth;
-        video.height = window.stageHeight;
+        video.width = webvfxEditor.get('width');
+        video.height = webvfxEditor.get('height');
 
         $('#main-controls').css({
-            top: (window.stageHeight + top) + 'px',
+            top: (webvfxEditor.get('height') + top) + 'px',
             left: left + 'px',
-            width: window.stageWidth + 'px'
+            width: webvfxEditor.get('width') + 'px'
         });
 
         $('#webvfx-collection').css({
             top: top + 'px',
-            left: (window.stageWidth + (left * 2)) + 'px'}
+            left: (webvfxEditor.get('width') + (left * 2)) + 'px'}
         );
-
-        window.realTimeEdition = false;
 
         //* Status bar
         var getStatusBarInfo = function() {
-            var pos = stage.getMousePosition();
+            var pos = webvfxEditor.get('stage').getMousePosition();
             if (pos === undefined) {
                 var mouseX = 0;
                 var mouseY = 0;
             } else {
-                var mouseX = parseInt(pos.x / stageScale);
-                var mouseY = parseInt(pos.y / stageScale);
+                var mouseX = parseInt(pos.x / webvfxEditor.get('scale'));
+                var mouseY = parseInt(pos.y / webvfxEditor.get('scale'));
             }
             return [
-                'size: ' + stageWidth + 'x' + stageHeight + 'px',
-                'scale: ' + stageScale,
+                'size: ' + webvfxEditor.get('width') + 'x' + webvfxEditor.get('height') + 'px',
+                'scale: ' + webvfxEditor.get('scale'),
                 'pointer at (' + mouseX + 'px,' + mouseY + 'px)'
             ].join(', ');
         }
 
         $('#status-bar').html(getStatusBarInfo());
 
-        $(stage.getContent()).on('mousemove', function(event) {
+        $(webvfxEditor.get('stage').getContent()).on('mousemove', function(event) {
             $('#status-bar').html(getStatusBarInfo());
         });
-
     }
 });

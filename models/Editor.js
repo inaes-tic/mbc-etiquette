@@ -1,12 +1,56 @@
+window.WebvfxEditor = Backbone.Model.extend({
+
+    defaults: {
+        width: 0,
+        height: 0,
+        scale: 1,
+        stage: null,
+        actionSafe: {
+            width: 0,
+            height: 0
+        },
+        titleSafe: {
+            width: 0,
+            height: 0
+        },
+        realTimeEdition: false,
+    },
+
+    initialize: function() {
+        args = arguments[0];
+
+        this.set('width', args.width * args.scale);
+        this.set('height', args.height * args.scale);
+        this.set('scale', args.scale);
+
+        this.set('stage', new Kinetic.Stage({
+            container: 'container',
+            width: this.get('width'),
+            height: this.get('height'),
+        }));
+        this.get('stage').add(new Kinetic.Layer());
+
+        this.set('actionSafe', {
+            width: Math.round(648 * args.scale),
+            height: Math.round(518 * args.scale),
+        });
+        this.set('titleSafe', {
+            width: Math.round(576 * args.scale),
+            height: Math.round(460 * args.scale)
+        });
+
+    }
+});
+
 window.WebvfxBase = Backbone.Model.extend({
 
     initialize: function() {
-        this.layer = stage.children[0];
+        this.layer = webvfxEditor.get('stage').children[0];
         this.id = this.cid;
         self = this;
         ['width', 'height', 'x', 'y', 'radius', 'strokeWidth', 'fontSize'].forEach(function(e) {
             if (self.attributes[e] !== undefined) {
-                self.attributes[e] *= window.stageScale;
+                self.attributes[e] *= webvfxEditor.get('scale');
             }
         });
     },
@@ -23,7 +67,7 @@ window.WebvfxBase = Backbone.Model.extend({
         });
 
         kObj.on('dragend', function() {
-            if (window.realTimeEdition) {
+            if (webvfxEditor.get('realTimeEdition')) {
                 self.collection.sendAll();
             }
             var aPos = kObj.getAbsolutePosition();
@@ -42,7 +86,7 @@ window.WebvfxBase = Backbone.Model.extend({
     },
 
     getRealValue: function(value) {
-        return Math.round(value / window.stageScale);
+        return Math.round(value / webvfxEditor.get('scale'));
     },
 
     showInfo: function(kObj) {
@@ -71,8 +115,8 @@ window.WebvfxBase = Backbone.Model.extend({
     setInitialPosition: function(args) {
         if ( !('x' in args || 'y' in args) ) {
             var size = this.kObj.getSize();
-            var x = Math.round((stage.getWidth() / 2) - (size.width / 2));
-            var y = Math.round((stage.getHeight() / 2) - (size.height / 2));
+            var x = Math.round((webvfxEditor.get('stage').getWidth() / 2) - (size.width / 2));
+            var y = Math.round((webvfxEditor.get('stage').getHeight() / 2) - (size.height / 2));
         } else {
             var x = args.x;
             var y = args.y;
@@ -108,7 +152,7 @@ window.WebvfxBase = Backbone.Model.extend({
 
     destroy: function() {
         console.log('destroy ' + this.id + ' called');
-        if (window.realTimeEdition) {
+        if (webvfxEditor.get('realTimeEdition')) {
             this.remove();
         }
         this.kObj.destroy();
@@ -137,7 +181,7 @@ window.WebvfxImage = WebvfxBase.extend({
         this.createEvents(this.kObj);
         this.layer.add(this.kObj);
         this.layer.draw();
-        if (window.realTimeEdition) {
+        if (webvfxEditor.get('realTimeEdition')) {
             this.send();
         }
     },
@@ -145,8 +189,8 @@ window.WebvfxImage = WebvfxBase.extend({
     createImage: function() {
         var kImage = new Kinetic.Image(this.toJSON());
         kImage.setSize(
-            kImage.getWidth() * window.stageScale,
-            kImage.getHeight() * window.stageScale
+            kImage.getWidth() * webvfxEditor.get('scale'),
+            kImage.getHeight() * webvfxEditor.get('scale')
         );
         var imageWidth = kImage.getWidth();
         var imageHeight = kImage.getHeight();
@@ -326,11 +370,11 @@ window.WebvfxImage = WebvfxBase.extend({
     },
 
     getRight: function() {
-        return window.stageWidth - this.getLeft() - this.getWidth();
+        return webvfxEditor.get('width') - this.getLeft() - this.getWidth();
     },
 
     getBottom: function() {
-        return window.stageHeight - this.getTop() - this.getHeight();
+        return webvfxEditor.get('height') - this.getTop() - this.getHeight();
     },
 
     getView: function() {
@@ -349,7 +393,7 @@ window.WebvfxImage = WebvfxBase.extend({
     },
 
     setWidth: function(width) {
-        var realWidth = width * window.stageScale;
+        var realWidth = width * webvfxEditor.get('scale');
         this.kObj.children[0].setWidth(realWidth);
         var leftX = this.kObj.get('.topLeft')[0].getX();
         this.kObj.get('.topRight')[0].setX(leftX + realWidth);
@@ -358,7 +402,7 @@ window.WebvfxImage = WebvfxBase.extend({
     },
 
     setHeight: function(height) {
-        var realHeight = height * window.stageScale;
+        var realHeight = height * webvfxEditor.get('scale');
         this.kObj.children[0].setHeight(realHeight);
         var topY = this.kObj.get('.topLeft')[0].getY();
         this.kObj.get('.bottomLeft')[0].setY(topY + realHeight);
@@ -367,30 +411,30 @@ window.WebvfxImage = WebvfxBase.extend({
     },
 
     setTop: function(top) {
-        this.kObj.setY(top * window.stageScale);
+        this.kObj.setY(top * webvfxEditor.get('scale'));
         this.draw();
     },
 
     setLeft: function(left) {
-        this.kObj.setX(left * window.stageScale);
+        this.kObj.setX(left * webvfxEditor.get('scale'));
         this.draw();
     },
 
     setRight: function(right) {
-        var realRight = right * window.stageScale;
-        this.kObj.setX(window.stageWidth - right - this.getWidth());
+        var realRight = right * webvfxEditor.get('scale');
+        this.kObj.setX(webvfxEditor.get('width') - right - this.getWidth());
         this.draw();
     },
 
     setBottom: function(bottom) {
-        var realBottom = bottom * window.stageScale;
-        this.kObj.setY(window.stageHeight - bottom - this.getHeight());
+        var realBottom = bottom * webvfxEditor.get('scale');
+        this.kObj.setY(webvfxEditor.get('height') - bottom - this.getHeight());
         this.draw();
     },
 
     draw: function() {
         this.layer.draw();
-        if (window.realTimeEdition) {
+        if (webvfxEditor.get('realTimeEdition')) {
             this.collection.sendAll();
         }
     },
@@ -435,7 +479,7 @@ window.WebvfxText = WebvfxBase.extend({
         this.createEvents(this.kObj);
         this.layer.add(this.kObj);
         this.layer.draw();
-        if (window.realTimeEdition) {
+        if (webvfxEditor.get('realTimeEdition')) {
             this.send();
         }
     },
@@ -469,11 +513,11 @@ window.WebvfxText = WebvfxBase.extend({
     },
 
     getRight: function() {
-        return window.stageWidth - this.getLeft() - this.getWidth();
+        return webvfxEditor.get('width') - this.getLeft() - this.getWidth();
     },
 
     getBottom: function() {
-        return window.stageHeight - this.getTop() - this.getHeight();
+        return webvfxEditor.get('height') - this.getTop() - this.getHeight();
     },
 
     getDataToStore: function() {
@@ -497,30 +541,30 @@ window.WebvfxText = WebvfxBase.extend({
     },
 
     setTop: function(top) {
-        this.kObj.setY(top * window.stageScale);
+        this.kObj.setY(top * webvfxEditor.get('scale'));
         this.draw();
     },
 
     setLeft: function(left) {
-        this.kObj.setX(left * window.stageScale);
+        this.kObj.setX(left * webvfxEditor.get('scale'));
         this.draw();
     },
 
     setRight: function(right) {
-        var realRight = right * window.stageScale;
-        this.kObj.setX(window.stageWidth - right - this.getWidth());
+        var realRight = right * webvfxEditor.get('scale');
+        this.kObj.setX(webvfxEditor.get('width') - right - this.getWidth());
         this.draw();
     },
 
     setBottom: function(bottom) {
-        var realBottom = bottom * window.stageScale;
-        this.kObj.setY(window.stageHeight - bottom - this.getHeight());
+        var realBottom = bottom * webvfxEditor.get('scale');
+        this.kObj.setY(webvfxEditor.get('height') - bottom - this.getHeight());
         this.draw();
     },
 
     draw: function() {
         this.layer.draw();
-        if (window.realTimeEdition) {
+        if (webvfxEditor.get('realTimeEdition')) {
             this.collection.sendAll();
         }
     },
