@@ -108,7 +108,9 @@ window.WebvfxBase = Backbone.Model.extend({
 
     destroy: function() {
         console.log('destroy ' + this.id + ' called');
-        this.remove();
+        if (window.realTimeEdition) {
+            this.remove();
+        }
         this.kObj.destroy();
         this.collection.remove(this.id);
         this.layer.draw();
