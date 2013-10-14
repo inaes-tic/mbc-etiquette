@@ -341,7 +341,6 @@ window.WebvfxImage = WebvfxBase.extend({
             name: this.kObj.children[0].attrs.name,
             x: this.getLeft(),
             y: this.getTop(),
-            src: '/uploads/' + this.kObj.children[0].attrs.image.name,
             width: this.getWidth(),
             height: this.getHeight(),
         }
