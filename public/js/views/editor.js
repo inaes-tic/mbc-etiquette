@@ -254,9 +254,17 @@ window.EditorView = Backbone.View.extend({
             el: $("#webvfx-collection", self.$el)
         });
 
+        window.webvfxEditor = new WebvfxEditor({
+            width: self.getParameterByName('width', 720),
+            height: self.getParameterByName('height', 570),
+            scale: self.getParameterByName('scale', 1),
+        });
+
         $(document).ready(function() {
             self.makeSortable();
-            self.ready();
+            self.updateCss();
+            self.updateVideoStream();
+            self.updateStatusBar();
         });
     },
 
@@ -547,24 +555,7 @@ window.EditorView = Backbone.View.extend({
         });
         //$("#webvfx-collection").disableSelection();
     },
-    ready: function() {
-        var self = this;
-        var getParameterByName = function(name, defaultValue) {
-            var name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-            var results = regex.exec(location.search);
-            return results == null ? defaultValue : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
-
-        window.webvfxEditor = new WebvfxEditor({
-            width: getParameterByName('width', 720),
-            height: getParameterByName('height', 570),
-            scale: getParameterByName('scale', 1),
-        });
-
-        /**
-         * Setting css for ui elements according to scale
-         */
+    updateCss: function () {
         var top = 20;
         var left = 20;
 
@@ -582,10 +573,6 @@ window.EditorView = Backbone.View.extend({
             height: webvfxEditor.get('height') + 'px'
         });
 
-        window.video = $('#player').get(0);
-        video.width = webvfxEditor.get('width');
-        video.height = webvfxEditor.get('height');
-
         $('#main-controls').css({
             top: (webvfxEditor.get('height') + top) + 'px',
             left: left + 'px',
@@ -596,8 +583,13 @@ window.EditorView = Backbone.View.extend({
             top: top + 'px',
             left: (webvfxEditor.get('width') + (left * 2)) + 'px'}
         );
-
-        //* Status bar
+    },
+    updateVideoStream: function() {
+        window.video = $('#player').get(0);
+        video.width = webvfxEditor.get('width');
+        video.height = webvfxEditor.get('height');
+    },
+    updateStatusBar: function() {
         var getStatusBarInfo = function() {
             var pos = webvfxEditor.get('stage').getMousePosition();
             if (pos === undefined) {
@@ -619,5 +611,11 @@ window.EditorView = Backbone.View.extend({
         $(webvfxEditor.get('stage').getContent()).on('mousemove', function(event) {
             $('#status-bar').html(getStatusBarInfo());
         });
+    },
+    getParameterByName : function(name, defaultValue) {
+        var name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        var results = regex.exec(location.search);
+        return results == null ? defaultValue : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
 });
