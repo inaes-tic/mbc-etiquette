@@ -197,7 +197,8 @@ window.WebvfxCollectionView = Backbone.View.extend({
                 this.$el.prepend(webvfxView.el);
             }, this);
         } else {
-            this.$el.prepend($('<h3/>').text('No objects'));
+            var empty = i18n.gettext('No objects');
+            this.$el.prepend($('<h3/>').text(empty));
         }
 
         // Show data for the last added object
@@ -269,45 +270,63 @@ window.EditorView = Backbone.View.extend({
     },
 
     saveSketch: function () {
-        var key = $('#sketchs').val();
-        if (key == '[select]') {
-            var key = prompt('name');
-            if (!key) return;
-        }
+        var self = this;
 
+        var key = $('#sketchs').val();
         var objects = [];
         this.webvfxCollection.each(function(e) {
             objects.push(e.getDataToStore());
         });
 
-        var keyExists = _.contains(this.sketchs.pluck('name'), key);
-        if (keyExists && !confirm('overwrite sketch "' + key + '" ?')) {
-            return;
-        }
+        if (key == '[select]') {
+            var description = i18n.gettext('New Sketch name:')
+            this.prompt(
+                description,
+                function (new_key) {
+                    if(new_key) {
+                        self.sketchs.create({ name: new_key, data: objects }, {success: function() {
+                            console.log('Success creating sketch: '+ new_key);
+                        }});
+                        $('#sketchs').append($('<option>').html(new_key).prop('selected', true));
+                    } else {
+                        var description = i18n.gettext('You must enter a new sketch name to save it');
+                        self.alert(description);
+                    }
+                },
+                function() {
+                    return;
+                }
+            );
 
-        var sketch = { name: key,  data: objects };
-
-        if (!keyExists) {
-            this.sketchs.create(sketch, {success: function() {
-            }});
-            $('#sketchs').append($('<option>').html(key).prop('selected', true));
         } else {
-            var model = this.sketchs.findWhere({name: key});
-            if (model) {
-                model.set(sketch);
-                model.save();
-            } else {
-                console.log('tried to save: "' + key + '"but not found in sketchs');
+            var keyExists = _.contains(this.sketchs.pluck('name'), key);
+            if(keyExists) {
+                var description = i18n.translate('Overwrite sketch %s').fetch(key);
+                this.confirm(description,
+                    function () {
+                        var model = self.sketchs.findWhere({name: key});
+                        if (model) {
+                            model.set({name: key, data: objects});
+                            model.save();
+                            console.log('sketch "' + key + '" saved');
+                        } else {
+                            console.log('tried to save: "' + key + '"but not found in sketchs');
+                        }
+                    },
+                    function() {
+                        var description = i18n.gettext('Must select a new name');
+                        self.alert(description);
+                    }
+                );
             }
         }
-
-        console.log('sketch "' + key + '" saved');
     },
     loadSketch: function() {
         var self = this;
         var key = $('#sketchs').val();
         if (key == '[select]') {
-            alert('select a sketch to load');
+            var description = i18n.gettext('You must select a sketch to load');
+            this.alert(description);
             return;
         }
         this.webvfxCollection.destroyAll();
@@ -329,23 +348,33 @@ window.EditorView = Backbone.View.extend({
     delSketch: function () {
         var key = $('#sketchs').val();
         if (key == '[select]') {
-            alert('select a sketch to del');
+            var description = i18n.gettext('You must select a sketch to delete');
+            this.alert(description);
             return;
         }
-        if (confirm('the sketch "' + key + '" will be deleted')) {
-            var model = this.sketchs.findWhere({ name: key });
-            if (model) {
-                model.destroy();
-                $('#sketchs option').filter(
-                    function() {
-                        return $(this).html() == key;
-                    }
-                ).remove();
-                console.log('sketch "' + key + '" deleted');
-            } else {
-                console.log('tried to delete: "' + key + '" but not found in sketchs');
+
+        var self = this;
+        var description = i18n.translate('Do you want to delete the sketch "%s" ?').fetch(key);
+        this.confirm(
+            description,
+            function () {
+                var model = self.sketchs.findWhere({ name: key });
+                if (model) {
+                    model.destroy();
+                    $('#sketchs option').filter(
+                        function() {
+                            return $(this).html() == key;
+                        }
+                    ).remove();
+                    console.log('sketch "' + key + '" deleted');
+                } else {
+                    console.log('tried to delete: "' + key + '" but not found in sketchs');
+                }
+            },
+            function () {
+                console.log('Not deleting sketch "' + key + '"');
             }
-        }
+        );
     },
     newSketch: function() {
         this.clearAll();
@@ -475,9 +504,15 @@ window.EditorView = Backbone.View.extend({
         this.webvfxCollection.sendAll();
     },
     clearAll: function() {
-        if (this.webvfxCollection.models.length && confirm('Clear all objects?')) {
-            this.webvfxCollection.destroyAll();
-            console.log('clear all');
+        if (this.webvfxCollection.models.length) {
+            var self = this;
+            var description = i18n.gettext('Clear all objects?');
+            this.confirm(description, function () {
+                self.webvfxCollection.destroyAll();
+                console.log('clear all');
+            });
+        } else {
+            this.alert("Nothing to clear");
         }
     },
     processFiles : function(files) {
@@ -505,7 +540,8 @@ window.EditorView = Backbone.View.extend({
             };
             reader.readAsDataURL(file);
         } else {
-            alert('File format not supported');
+            var description = i18n.gettext('File format not supported');
+            this.alert(description);
         }
     },
     uploadImage : function(file) {
@@ -617,5 +653,67 @@ window.EditorView = Backbone.View.extend({
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
         var results = regex.exec(location.search);
         return results == null ? defaultValue : decodeURIComponent(results[1].replace(/\+/g, " "));
+    },
+    alert: function(description) {
+        var title = i18n.gettext('Alert');
+        var description = description || i18n.gettext('Wait there was a problem');
+        $('#modal').html(new ModalAlert({ title: title, description: description }).render().el);
+    },
+    confirm: function(description, yesCallback, noCallback) {
+        var yesCallback = yesCallback || function() {return; };
+        var noCallback = noCallback || function() { return; };
+        var title = i18n.gettext('Confirm');
+        var description = description || i18n.gettext('Wait there was a problem');
+        $('#modal').html(new ModalConfirm({ title: title, description: description, yesCallback: yesCallback, noCallback: noCallback }).render().el);
+    },
+    prompt: function (description, submitCallback, cancelCallback) {
+        var submitCallback = submitCallback || function() {};
+        var cancelCallback = cancelCallback || function() {};
+        var title = i18n.gettext('Prompt');
+        var description = description || i18n.gettext('Wait there was a problem');
+        $('#modal').html(new ModalPrompt({ title: title, description: description, submitCallback: submitCallback, cancelCallback: cancelCallback }).render().el);
+    }
+});
+
+var ModalAlert = Backbone.Modal.extend({
+    initialize: function () {
+        this.options = this.options || {};
+    },
+    template: function() {
+        var parse_tpl = template.alert(this.options);
+        return _.template(parse_tpl);
+    },
+    cancelEl: '.bbm-button'
+});
+
+var ModalConfirm = Backbone.Modal.extend({
+     initialize: function () {
+        this.options = this.options || {};
+    },
+    template: function() {
+        var parse_tpl = template.confirm(this.options);
+        return _.template(parse_tpl);
+    },
+    cancelEl: '.no',
+    submitEl: '.yes',
+    events: {
+        "click .yes": function() { this.options.yesCallback(); },
+        "click .no" : function() { this.options.noCallback();  },
+    }
+});
+
+var ModalPrompt = Backbone.Modal.extend({
+     initialize: function () {
+        this.options = this.options || {};
+    },
+    template: function() {
+        var parse_tpl = template.prompt(this.options);
+        return _.template(parse_tpl);
+    },
+    submitEl: '.submit',
+    cancelEl: '.cancel',
+    events: {
+        "click .submit": function(e) { this.options.submitCallback($('#text').val()); },
+        "click .cancel": function() { this.options.cancelCallback(); },
     }
 });
