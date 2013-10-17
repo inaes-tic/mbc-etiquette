@@ -236,6 +236,9 @@ module.exports = function(server) {
     var templates = ['editor',
                      'header',
                      'objects',
+                     'alert',
+                     'confirm',
+                     'prompt',
                     ];
 
     var getFileName = function (e) {
