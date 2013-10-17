@@ -187,6 +187,7 @@ module.exports = function(server) {
         require.resolve('knockout-client/knockout.js'),
         require.resolve('knockback/knockback-core.js'),
         path.join(lib_dir, 'kinetic-v4.5.2.js'),
+        path.join(lib_dir, 'backbone.modal-min.js'),
     ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
