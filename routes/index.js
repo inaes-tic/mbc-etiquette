@@ -201,15 +201,19 @@ module.exports = function(server) {
     /**
      * Views Javascript Package
      */
-    var views = ['editor',
-                 'header'
-                ];
+    var localViews = [ 'header' ];
+    var commonViews = [ 'editor' ];
+
+    var localViewsFiles  = localViews.map( function(e) {
+        return path.join(__dirname, '..', 'public/js/views/', e + '.js');
+    });
+    var commonViewsFiles = commonViews.map( function(e) {
+        return require.resolve('mbc-common/views/js/' + e);
+    });
 
     var viewsJs = new folio.Glossary(
-        views.map (function (e) {
-            return path.join(__dirname, '..', 'public/js/views/', e + '.js');
-        })
-        ,{minify:server.get('minify')}
+        localViewsFiles.concat(commonViewsFiles),
+        { minify:server.get('minify') }
     );
 
     server.get('/js/views.js', folio.serve(viewsJs));
@@ -236,22 +240,27 @@ module.exports = function(server) {
      * jade on the client-side.
      */
 
-    var templates = ['editor',
-                     'header',
-                     'objects',
-                     'alert',
-                     'confirm',
-                     'prompt',
-                    ];
+    var localTemplates = ['header'];
+
+    var commonTemplates = ['editor',
+                           'objects',
+                           'alert',
+                           'confirm',
+                           'prompt',
+                          ];
 
     var getFileName = function (e) {
-                return path.join(__dirname, '..', 'views/templates/', e + '.jade');
-            };
+        return path.join(__dirname, '..', 'views/templates/', e + '.jade');
+    };
+
+    var getCommonFileName = function (e) {
+        return require.resolve('mbc-common/views/templates/' + e + '.jade');
+    };
 
     var templateJs = new folio.Glossary([
         require.resolve('jade/runtime.js'),
         path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
-            templates.map (getFileName)
+            localTemplates.map(getFileName), commonTemplates.map(getCommonFileName)
         ),
         {
         compilers: {
