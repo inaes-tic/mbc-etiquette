@@ -676,8 +676,8 @@ window.EditorView = Backbone.View.extend({
 });
 
 var ModalAlert = Backbone.Modal.extend({
-    initialize: function () {
-        this.options = this.options || {};
+    initialize: function (options) {
+        this.options = options || {};
     },
     template: function() {
         var parse_tpl = template.alert(this.options);
@@ -687,8 +687,8 @@ var ModalAlert = Backbone.Modal.extend({
 });
 
 var ModalConfirm = Backbone.Modal.extend({
-     initialize: function () {
-        this.options = this.options || {};
+     initialize: function (options) {
+        this.options = options || {};
     },
     template: function() {
         var parse_tpl = template.confirm(this.options);
@@ -703,8 +703,8 @@ var ModalConfirm = Backbone.Modal.extend({
 });
 
 var ModalPrompt = Backbone.Modal.extend({
-     initialize: function () {
-        this.options = this.options || {};
+     initialize: function (options) {
+        this.options = options || {};
     },
     template: function() {
         var parse_tpl = template.prompt(this.options);
