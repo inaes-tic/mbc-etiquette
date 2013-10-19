@@ -218,12 +218,11 @@ module.exports = function(server) {
      * Models Javascript Package
      */
 
-    var models = ['Default', 'Editor', 'Sketch'];
+    var models = ['Default', 'App', 'Editor', 'Sketch'];
 
     var modelsJs = new folio.Glossary(
         models.map (function (e) {
-            return require.resolve(path.join(__dirname, '../models', e));
-        //    return require.resolve('mbc-common/models/' + e);
+            return require.resolve('mbc-common/models/' + e);
         })
     );
 
