@@ -114,20 +114,20 @@ function id_middleware(req, res, next) {
 }
 
 var db = mbc.db();
-//var appbackend = backboneio.createBackend();
+var appbackend = backboneio.createBackend();
 var sketchbackend = backboneio.createBackend();
 
-var backends = [ sketchbackend ];
+var backends = [ appbackend, sketchbackend ];
 _(backends).each (debug_backend);
 
-//appbackend.use(backboneio.middleware.configStore());
+appbackend.use(backboneio.middleware.configStore());
 
 sketchbackend.use(id_middleware);
 sketchbackend.use(backboneio.middleware.mongoStore(db, collections.Sketchs, {}));
 
 var io = backboneio.listen(server.listen(server.get('port'), function(){
     logger.info("Express server listening on port " + server.get('port') + " in mode " + server.settings.env);
-}), { //appbackend: appbackend,
+}), { appbackend: appbackend,
       sketchbackend: sketchbackend,
     });
 

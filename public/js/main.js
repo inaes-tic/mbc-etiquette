@@ -1,10 +1,6 @@
-/*
 var appCollection = new App.Collection();
-
 window.appCollection = appCollection;
-window.appstatus = new App.Status();
-window.framestatus = new App.ProgressStatus();
-*/
+
 var AppRouter = Backbone.Router.extend({
 
     routes: {
@@ -38,8 +34,10 @@ $.ajax({
     async: false
 });
 
-app = new AppRouter();
-Backbone.history.start({pushState:true});
+appCollection.fetch({success: function() {
+    app = new AppRouter();
+    Backbone.history.start({pushState:true});
+}});
 
 $(document).on("click", "a[href^='/']", function(event) {
     var href, url;

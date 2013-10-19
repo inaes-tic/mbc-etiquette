@@ -16,6 +16,9 @@ module.exports = function(server) {
     , events = []
     ;
 
+    var self = require ('mbc-common/models/App.js')
+    , appCollection = new self.Collection();
+
     server.all('/events', function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -270,7 +273,7 @@ module.exports = function(server) {
     server.get('*',  function(req, res) {
         res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
     });
-/*
+
     return appCollection;
-*/
+
 }
