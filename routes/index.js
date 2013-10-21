@@ -19,16 +19,15 @@ module.exports = function(server) {
     var self = require ('mbc-common/models/App.js')
     , appCollection = new self.Collection();
 
-    server.all('/events', function(req, res, next) {
+    var accessControl = function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
         next();
-    });
+    };
 
-    server.all('/init', function(req, res, next) {
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "X-Requested-With");
-        next();
+    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/remove', '/addEffect', '/move', '/uploadImage' ];
+    _.each(accessRoutes, function(route) {
+        server.all(route, accessControl);
     });
 
     server.get("/events", function(req, res) {
