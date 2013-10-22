@@ -33,16 +33,17 @@ module.exports = function(server) {
     server.get("/events", function(req, res) {
         var event = _.findWhere(events, {consumed: false});
         if (event) {
+            logger.debug(event);
             event.consumed = true;
             res.json(event);
-            logger.debug(event);
         } else {
+            logger.debug('Event: NONE');
             res.json({"type": "none"});
-            logger.debug('NONE');
         }
     });
 
     server.get("/init", function(req, res) {
+        logger.debug(elements);
         res.json({elements: elements});
         events = _.reject(events, function(event) {
             return event.type === 'add' || event.type === 'remove';
@@ -144,7 +145,7 @@ module.exports = function(server) {
     server.post('/uploadImage', function(req, res){
         fs.readFile(req.files.uploadedFile.path, function (err, data) {
             if(err) {
-                logger.error(err);
+                logger.error('Uploading file: ' + err);
                 return;
             }
             var newPath = path.join(conf.Dirs.uploads, req.files.uploadedFile.name);
