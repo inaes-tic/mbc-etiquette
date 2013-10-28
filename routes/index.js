@@ -1,4 +1,4 @@
-module.exports = function(server) {
+module.exports = function(server, videoSocket) {
     var path = require('path')
     , folio = require('folio')
     , jade = require('jade')

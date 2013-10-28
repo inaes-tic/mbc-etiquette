@@ -93,7 +93,7 @@ server.configure('production', function(){
   server.set('minify', true);
 });
 
-require('./routes')(server);
+require('./routes')(server, videoSocket);
 
 function debug_backend (backend) {
     backend.use(function(req, res, next) {
