@@ -1,4 +1,4 @@
-module.exports = function(server, videoSocket) {
+module.exports = function(server) {
     var path = require('path')
     , folio = require('folio')
     , jade = require('jade')
@@ -155,12 +155,12 @@ module.exports = function(server, videoSocket) {
         });
     });
 
-    server.get('/live.webm',function(req,res){
-        logger.info("Enter to ask for video tcp!");
-        res.writeHead(200, {
-            'Content-Type':'video/mp4',
-        });
-        videoSocket.pipe(res);
+    server.get('/live.webm', function(req, res) {
+        if(conf.Editor.stream_url) {
+            res.redirect(conf.Editor.stream_url);
+        } else {
+            res.json({});
+        }
     });
 
     server.get('/po/:id', function (req, res) {

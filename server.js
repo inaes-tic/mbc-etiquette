@@ -9,7 +9,6 @@ var express = require("express"),
     logger = mbc.logger().addLogger('webvfx_server'),
     url = require('url'),
     collections = mbc.config.Common.Collections,
-    net = require('net'),
     uuid = require('node-uuid')
     ;
 
@@ -30,24 +29,6 @@ for (d in conf.Dirs) {
 }
 
 var server = express();
-
-var videoSocket = undefined;
-var tcpServer = net.createServer(function (socket) {
-//    socket.on('data', function (data) {
-//      res.write(data);
-//    });
-//    socket.on('close', function(had_error) {
-//       res.end();
-//    });
-    videoSocket = socket;
-});
-tcpServer.on('error', function(error) {
-    logger.error(error);
-});
-tcpServer.maxConnections = 1;
-tcpServer.listen(process.env.SERVER_PORT || 1111, function() {
-    logger.info("Server started");
-});
 
 server.configure(function(){
     server.use(i18n.abide({
@@ -93,7 +74,7 @@ server.configure('production', function(){
   server.set('minify', true);
 });
 
-require('./routes')(server, videoSocket);
+require('./routes')(server);
 
 function debug_backend (backend) {
     backend.use(function(req, res, next) {
