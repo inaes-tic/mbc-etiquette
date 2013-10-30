@@ -57,10 +57,13 @@ Video preview in Editor Canvas
 
 ### Running the stream sample
 
+From a terminal, keep this running
 ```shell
     cd stream-m
     make
 ```
+
+You can check if streaming is working at [8000](http://localhost:8000/consume/mbc?password=malbec)
 
 ## Install
 
@@ -83,6 +86,11 @@ You should be able to access it from a browser at port [3100](http://localhost:3
 From another terminal, enter webvfx-dynamic-filter directory and run
 ```shell
    ./mlt_dynamic_filter
+```
+
+With Optional
+```shell
+    ./mlt_dynamic_filter_stream
 ```
 
 ### PS
