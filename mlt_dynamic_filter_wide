@@ -1,5 +1,4 @@
 #!/bin/bash
 
 export DISPLAY=${DISPLAY:-:0}
-#melt -verbose green.mlt out=22299 -filter webvfx:dynamic-filter.html out=22299
-melt green.mlt -consumer sdl mlt_profile=dv_pal_wide -filter webvfx:dynamic-filter.html
+melt green.mlt -consumer sdl mlt_profile=square_pal -filter webvfx:dynamic-filter.html
