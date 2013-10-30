@@ -1,9 +1,9 @@
 {
   "name" : "webvfx-dynamic-filters",
-  "description" : "Dynamic filters for melt or melted using webvfx and node express server",
+  "description" : "Video effects editor and server for melt or melted, built with Backbone.js, KineticJS, Node.js, Express, Webvfx and MongoDB.",
   "version" : "0.0.1",
   "author" : "Juan Martin Runge <jmrunge@gmail.com>",
-  "contributors" : [ ],
+  "contributors" : [ "Jose Luis Di Biase <josx@interorganic.com.ar>", "Leonardo Vidarte <lvidarte@gmail.com>" ],
   "repository" : {
       "type" : "git",
       "url" : "https://github.com/inaes-tic/webvfx-dynamic-filters"
