@@ -1,4 +1,4 @@
 #!/bin/bash
 
 export DISPLAY=${DISPLAY:-:0}
-melt -verbose -profile square_pal green.mlt out=22299 -filter webvfx:dynamic-filter.html out=22299 -consumer sdl -consumer avformat:http://localhost:8000/publish/mbc?password=malbec real_time=1 terminate_on_pause=0 f=webm vcodec=libvpx b=1000k s=720x570 acodec=libvorbis ab=128k g=0 me_method=zero flags2=fast preset=ultrafast tune=zerolatency crf=40 qmin=5
+melt green.mlt -consumer sdl mlt_profile=square_pal -filter webvfx:dynamic-filter.html
