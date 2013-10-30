@@ -43,10 +43,6 @@ server.configure(function(){
     server.set('view engine', 'jade');
     server.use(express.logger({ stream: loggerStream, format: 'dev' }));
     server.use(express.compress());
-    server.use(express.bodyParser({
-//            uploadDir: conf.Dirs.uploads,
-//            maxFieldsSize: 10 * 1024 * 1024
-    }));
     server.use(express.bodyParser());
     server.use(express.methodOverride());
     server.use(express.cookieParser());
