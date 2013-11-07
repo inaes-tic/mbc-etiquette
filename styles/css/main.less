@@ -2,9 +2,10 @@
 @import 'font-Arvo.less';
 @import 'backbone.modal.css';
 @import 'backbone.modal.theme.css';
+@import 'bootstrap.min.css';
 
 // Definitions
-@header_height: 30px;
+@header_height: 37px;
 @panel-width: 251px;
 @height_listHeader:125px;
 @color:#632155;
@@ -12,11 +13,22 @@
 @color_dark:#7A498D;
 @logo_dimensions:75px;
 
+
+// Helpers
+
+.fully-expanded (@margin: 0px) {
+    position: absolute;
+    top: @margin;
+    right: @margin;
+    bottom: @margin;
+    left: @margin;
+}
+
+
 #Panel {
     position: fixed;
     width: 100%;
     z-index: 999;
-
     top: 0px;
     -webkit-transition: top 400ms ease-in-out;
     transition: top 400ms ease-in-out;
@@ -84,6 +96,17 @@
 }
 
 #content {
+    bottom: 0px;
+    color: rgb(51, 51, 51);
+    display: block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    left: 0px;
+    line-height: 20px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    position: absolute;
+    right: 0px;
     top: @header_height;
     overflow: hidden;
 
@@ -93,10 +116,108 @@
     }
 }
 
-#editor {
-    position: absolute;
-    top: @header_height;
+
+#webvfx-editor{
+    color: rgb(51, 51, 51);
+    display: block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    line-height: 20px;
 }
+
+#editor {
+
+    top: @header_height;
+    color: rgb(51, 51, 51);
+    display: block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    line-height: 20px;
+
+    #video-container{
+        position: absolute;
+        top: 10px;
+        bottom: 28px;
+        left: 10px;
+        right: 520px;
+        #player-container{
+            .fully-expanded
+        }
+        #container{
+            .fully-expanded
+        }
+    }
+
+    #right-panels{
+        width: 510px;
+        position: absolute;
+        top: 10px;
+        bottom: 28px;
+        right: 0px;
+    }
+
+    select {
+        width: 100%;
+    }
+
+    .v-container{
+        position: absolute;
+        bottom: 2px;
+        overflow-y: auto;
+
+        #update{
+            margin-bottom:10px;
+        }
+        .tab
+        {
+            h2{
+                margin: 0;
+                text-align:left;
+                padding: 3px 7px;
+                color: #fff;
+                background: #444;
+                border-top: solid 2px #555;
+                border-bottom: solid 2px #333;
+            }
+        }
+    }
+
+    #controls{
+        padding: 0 8px;
+        left: 4px;
+        top: 36px;
+        right: 4px;
+    }
+
+    .v-panel{
+        position:absolute;
+        top:0px;
+        bottom:0px;
+    }
+
+    h2{
+        text-align:center;
+        border-bottom: 1px solid #e3e3e3;
+        margin: 0 10px 5px 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 10px 0 5px 0;
+        font-family: arial;
+        color: #333;
+        font-size: 11px;
+    }
+
+}
+
+input[type="text"]{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    background-color: #dddddd;
+    border: 1px solid #5b5b5b;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2) inset;
+}
+
+
 
 .home-hero {
     font-family: "Andika";
@@ -196,46 +317,175 @@ a, a :visited, a :hover, a :focus {
     color: #aaa;
 }
 
+
+#nav-editor{
+    margin:5px 0 10px 25px;
+    li{
+        list-style:none;
+    }
+}
+
 #player-container {
     position: absolute;
 }
 
 #container {
     position: absolute;
-    border: solid 2px #222;
 }
 
 .container-background {
     background-image: url('img/bg.png');
 }
 
-#webvfx-collection {
+.bbm-modal{
+    fieldset{
+        margin:0;
+        border:none;
+    }
+
+    .bbm-modal__title {
+        padding: 14px 0 10px;
+    }
+}
+
+.round-panel{
+    background-color: white;
+    border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    box-shadow: rgba(0, 0, 0, 0.34902) 1px 1px 7px 0px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.34902) 1px 1px 7px 0px;
+    background-color: #fff;
+}
+
+#webvfx-collection-container {
+    color: rgb(51, 51, 51);
+    bottom: 30px;
+    display: block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    right: 284px;
+    left:0px;
+    line-height: 20px;
     position: absolute;
-    background: #353430;
-    border: solid 2px #222;
-    border-radius: 5px;
-    min-width: 120px;
-    min-height: 120px;
+    top: 20px;
+    width: 227px;
+
+    #webvfx-collection{
+        left: 4px;
+        top: 135px;
+        right: 4px;
+
+    }
+
+    fieldset {
+        margin:0;
+        border:none;
+    }
+
+    #clear-all{
+        padding:0;
+    }
+
+    input[type="text"]{
+        padding:0 3px;
+    }
+
+    input[type="file"] {
+        margin-bottom: 4px;
+        width: 126px;
+        float:left;
+        height: 20px;
+        line-height: 20px;
+    }
+
+    legend{
+        font-size: 1.2em;
+        margin-bottom: 12px;
+    }
+
+    tbody tr th {
+        background:none;
+        border:none;
+    }
+
+    h3{
+        &.editor{
+            float:left;
+        }
+        font-size:1.2em;
+        font-family: Arial, Helvetica, sans-serif;
+    }
 }
 
 #main-controls {
     position: absolute;
-    border: solid 2px #222;
-    background: #353430;
-    border-radius: 0 0 5px 5px;
+    top:20px;
+    right:0px;
+    width: 260px !important;
+    background: #fff;
+    margin: 0 10px;
+
+    td{
+        padding:0px;
+    }
+
+    fieldset{
+        margin: 0 0px 10px 0px;
+        input[type="checkbox"]{
+           float:left;
+           margin-right: 1px;
+        }
+
+        input[type="text"]{
+            padding:2px 3px;
+        }
+
+        &.storage button{
+           margin: 0 3px;
+           line-height: 17px;
+           height: auto;
+        }
+
+        &.options label{
+        }
+    }
+
+    input[type=file]{
+        line-height:20px;
+        height:auto;
+    }
+
+    h3{
+        font-size: 1em;
+    }
+}
+
+#main-controls.foldedcp {
+    bottom: 0px;
+    -webkit-transition: bottom 400ms ease-in-out;
+    transition: bottom 400ms ease-in-out;
 }
 
 #status-bar {
-    padding: 3px;
-    background: #302f29;
     text-align: center;
-    border-bottom: solid 1px #222;
+    background: white;
+    width: 100%;
+    position: absolute;
+    text-align: center;
+    bottom: 0px;
+    height:20px;
 }
 
 h3 {
     margin: 0;
     padding: 3px;
     color: #222;
+}
+
+label {
+    font-size: 13px;
+    color: #5b5b5b;
+    padding: 0 16px 0 0;
 }
 
 fieldset {
@@ -256,6 +506,7 @@ input, select, button {
 }
 
 input[type="checkbox"] {
+    margin:0;
     position: relative;
     top: 3px;
 }
@@ -265,6 +516,7 @@ td {
 }
 
 .webvfx-obj {
+    margin: 0 5px;
     font-size: .9em;
 }
 
