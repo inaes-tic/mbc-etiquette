@@ -1006,7 +1006,8 @@ body, html {
 
 </style>
 
-<script type="text/javascript" src="qrc:/webvfx/scripts/easing.js"></script>
+<script src="node_modules/jquery-browser/lib/jquery.js"></script>
+<script src="widgets.js"></script>
 
 <script type="text/javascript">
 function Banner() {
@@ -1095,6 +1096,24 @@ Banner.prototype.addElement = function(elem) {
             aux.offset = offset;
             this.scrolls.push(aux);
         }
+    } else if (elem.type === 'widget') {
+        document.getElementById("title").innerText = "Adding widget - " + new Date();
+        window[elem.widget](
+            $.extend(true, {
+                id: elem.id,
+                style: {
+                    position: 'absolute',
+                    font: '20px normal monospace',
+                    color: 'white',
+                    border: 'solid 2px #1e5799',
+                    background: 'blue',
+                    padding: '10px',
+                    opacity: .8,
+                    'text-align': 'center',
+                    'border-radius': '7px',
+                }
+            }, elem.options)
+        );
     }
 };
 
@@ -1195,6 +1214,10 @@ Banner.prototype.read = function() {
                     self.addElement(event.element);
                 } else if (event.type === 'addBanner') {
                     document.getElementById("title").innerText = "addBanner - " + new Date();
+                    resize();
+                    self.addElement(event.element);
+                } else if (event.type === 'addWidget') {
+                    document.getElementById("title").innerText = "addWidget - " + new Date();
                     resize();
                     self.addElement(event.element);
                 } else if (event.type === 'remove') {

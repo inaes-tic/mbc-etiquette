@@ -25,7 +25,7 @@ module.exports = function(server) {
         next();
     };
 
-    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/remove', '/addEffect', '/move', '/uploadImage' ];
+    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/remove', '/addEffect', '/move', '/uploadImage' ];
     _.each(accessRoutes, function(route) {
         server.all(route, accessControl);
     });
@@ -88,6 +88,22 @@ module.exports = function(server) {
         element.scroll = req.body.scroll;
         var event = {};
         event.type = 'addBanner';
+        event.element = element;
+        event.consumed = false;
+        events.push(event);
+        elements.push(element);
+        return res.json({});
+    });
+
+    server.post('/addWidget', function(req, res){
+        var element = {};
+        element.id = req.body.id;
+        element.type = 'widget';
+        element.widget = req.body.widget;
+        element.options = req.body.options;
+        console.log(element);
+        var event = {};
+        event.type = 'addWidget';
         event.element = element;
         event.consumed = false;
         events.push(event);
