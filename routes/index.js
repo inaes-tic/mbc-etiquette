@@ -187,7 +187,7 @@ module.exports = function(server) {
         require.resolve('underscore/underscore.js'),
         require.resolve('backbone/backbone.js'),
         require.resolve('jed'),
-        require.resolve('knockout-client/knockout.js'),
+        require.resolve('knockout/build/output/knockout-latest.js'),
         require.resolve('knockback/knockback-core.js'),
         path.join(lib_dir, 'kinetic-v4.5.2.min.js'),
         path.join(lib_dir, 'backbone.modal-min.js'),
