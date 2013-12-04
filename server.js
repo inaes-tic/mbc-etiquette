@@ -94,8 +94,9 @@ function id_middleware(req, res, next) {
 var db = mbc.db();
 var appbackend = backboneio.createBackend();
 var sketchbackend = backboneio.createBackend();
+var sketchschedulebackend = backboneio.createBackend();
 
-var backends = [ appbackend, sketchbackend ];
+var backends = [ appbackend, sketchbackend, sketchschedulebackend ];
 _(backends).each (debug_backend);
 
 appbackend.use(backboneio.middleware.configStore());
@@ -103,10 +104,14 @@ appbackend.use(backboneio.middleware.configStore());
 sketchbackend.use(id_middleware);
 sketchbackend.use(backboneio.middleware.mongoStore(db, collections.Sketchs, {}));
 
+sketchschedulebackend.use(id_middleware);
+sketchschedulebackend.use(backboneio.middleware.mongoStore(db, collections.SketchSchedules, {}));
+
 var io = backboneio.listen(server.listen(server.get('port'), function(){
     logger.info("Express server listening on port " + server.get('port') + " in mode " + server.settings.env);
 }), { appbackend: appbackend,
       sketchbackend: sketchbackend,
+      sketchschedulebackend: sketchschedulebackend,
     });
 
 io.configure('production', function(){
