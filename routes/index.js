@@ -337,6 +337,16 @@ module.exports = function(server) {
         elements.push(event.element);
     };
 
+    appCollection.addBanner = function(element) {
+        logger.info("Adding banner:", element);
+        var event = {};
+        event.type = 'addBanner';
+        event.element = element;
+        event.consumed = false;
+        events.push(event);
+        elements.push(event.element);
+    };
+
     return appCollection;
 
 }
