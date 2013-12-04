@@ -9,7 +9,7 @@ var express = require("express"),
     logger = mbc.logger().addLogger('webvfx_server'),
     url = require('url'),
     collections = mbc.config.Common.Collections,
-    uuid = require('node-uuid')
+    uuid = require('node-uuid'),
     ;
 
 var loggerStream = {
