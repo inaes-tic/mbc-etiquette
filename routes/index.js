@@ -16,6 +16,7 @@ module.exports = function(server) {
     , url = require('url')
     , elements = []
     , events = []
+    , moment = require('moment')
     ;
 
     var self = require ('mbc-common/models/App.js')
@@ -216,6 +217,7 @@ module.exports = function(server) {
         require.resolve('jquery-browser/lib/jquery.js'),
         require.resolve('jqueryui-browser/ui/jquery-ui.js'),
         require.resolve('underscore/underscore.js'),
+        require.resolve('moment/moment.js'),
         require.resolve('backbone/backbone.js'),
         require.resolve('jed'),
         require.resolve('knockout/build/output/knockout-latest.js'),
