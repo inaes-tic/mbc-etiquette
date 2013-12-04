@@ -291,6 +291,7 @@ module.exports = function(server) {
                            'alert',
                            'confirm',
                            'prompt',
+                           'schedulePrompt',
                           ];
 
     var getFileName = function (e) {
