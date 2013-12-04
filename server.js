@@ -10,6 +10,7 @@ var express = require("express"),
     url = require('url'),
     collections = mbc.config.Common.Collections,
     uuid = require('node-uuid'),
+    scheduler = require('./scheduler')()
     ;
 
 var loggerStream = {
@@ -70,7 +71,7 @@ server.configure('production', function(){
   server.set('minify', true);
 });
 
-require('./routes')(server);
+var routes = require('./routes')(server);
 
 function debug_backend (backend) {
     backend.use(function(req, res, next) {
@@ -122,3 +123,5 @@ if (process.env.HEROKU) {
 }
 
 io.set('logger', logger); // Log socket.io with custom logger
+
+scheduler.initScheduler(routes);
