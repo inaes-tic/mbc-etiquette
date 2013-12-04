@@ -1,6 +1,17 @@
 <html>
 <head>
+<meta charset="UTF-8">
 <style type="text/css">
+@font-face {
+    font-family: 'ShareRegular';
+    src: url('public/fonts/ShareRegular.ttf');
+}
+
+@font-face {
+    font-family: 'ShareBold';
+    src: url('public/fonts/ShareBold.ttf');
+}
+
 body, html {
     margin: 0;
     width: 100%;
@@ -1007,8 +1018,7 @@ body, html {
 </style>
 
 <script src="node_modules/jquery-browser/lib/jquery.js"></script>
-<script src="widgets.js"></script>
-
+<script src="node_modules/mbc-common/widgets/WebvfxSimpleWidget.js"></script>
 <script type="text/javascript">
 function Banner() {
     this.image = document.getElementById("image");
@@ -1030,6 +1040,8 @@ function Banner() {
 Banner.prototype.addElement = function(elem) {
     document.getElementById("title").innerText = "addElement (" + elem.type + ") - " + new Date();
     resize();
+
+    window.widgets = {};
 
     var element;
     if (elem.type === 'image') {
@@ -1098,22 +1110,7 @@ Banner.prototype.addElement = function(elem) {
         }
     } else if (elem.type === 'widget') {
         document.getElementById("title").innerText = "Adding widget - " + new Date();
-        window[elem.widget](
-            $.extend(true, {
-                id: elem.id,
-                style: {
-                    position: 'absolute',
-                    font: '20px normal monospace',
-                    color: 'white',
-                    border: 'solid 2px #1e5799',
-                    background: 'blue',
-                    padding: '10px',
-                    opacity: .8,
-                    'text-align': 'center',
-                    'border-radius': '7px',
-                }
-            }, elem.options)
-        );
+        window.widgets[elem.id] = new WebvfxSimpleWidget(elem.options);
     }
 };
 
@@ -1129,6 +1126,9 @@ Banner.prototype.setCommonProperties = function(target, source) {
 };
 
 Banner.prototype.removeElement = function(elem) {
+    if (elem.id in window.widgets) {
+        delete window.widgets[elem.id];
+    }
     var element = document.getElementById(elem.id);
     document.getElementById("body").removeChild(element);
     this.removeScrollElement(elem.id);

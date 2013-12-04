@@ -1,4 +1,5 @@
 module.exports = function(server) {
+
     var path = require('path')
     , folio = require('folio')
     , jade = require('jade')
@@ -8,6 +9,7 @@ module.exports = function(server) {
     , fs  = require('fs')
     , mbc = require('mbc-common')
     , conf = mbc.config.Webvfx
+    , commonConf = mbc.config.Common
     , logger  = mbc.logger().addLogger('webvfx_routes')
     , imageFiles = []
     , watchr  = require('watchr')
@@ -99,9 +101,7 @@ module.exports = function(server) {
         var element = {};
         element.id = req.body.id;
         element.type = 'widget';
-        element.widget = req.body.widget;
-        element.options = req.body.options;
-        console.log(element);
+        element.options = JSON.parse(req.body.options);
         var event = {};
         event.type = 'addWidget';
         event.element = element;
@@ -247,6 +247,17 @@ module.exports = function(server) {
     );
 
     server.get('/js/models.js', folio.serve(modelsJs));
+
+    commonConf.Widgets.Files.forEach(function(widget) {
+        server.get(
+            '/js/widgets/' + widget + '.js',
+            folio.serve(
+                new folio.Glossary([
+                    require.resolve('mbc-common/widgets/' + widget)
+                ])
+            )
+        );
+    });
 
 
     /**
