@@ -347,6 +347,18 @@ module.exports = function(server) {
         elements.push(event.element);
     };
 
+    appCollection.removeElement = function(element) {
+        logger.info("Removing element:", element);
+        var event = {};
+        event.type = 'remove';
+        event.element = element;
+        event.consumed = false;
+        events.push(event);
+        elements = _.reject(elements, function(item) {
+            return item.id === element.id;
+        });
+    };
+
     return appCollection;
 
 }
