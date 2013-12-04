@@ -326,6 +326,16 @@ module.exports = function(server) {
     server.get('*',  function(req, res) {
         res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
     });
+    
+    appCollection.addImage = function(element) {
+        logger.info("Adding image:", element);
+        var event = {};
+        event.type = 'addImage';
+        event.element = element;
+        event.consumed = false;
+        events.push(event);
+        elements.push(event.element);
+    };
 
     return appCollection;
 
