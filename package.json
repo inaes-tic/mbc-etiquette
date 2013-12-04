@@ -12,7 +12,7 @@
       "express"         : "3.x",
       "underscore"      : "1.4.x",
       "watchr"          : "2.4.x",
-      "mbc-common"      : "git://github.com/inaes-tic/mbc-common.git",
+      "mbc-common"      : "git://github.com/inaes-tic/mbc-common.git#jmrunge/schedule-hack",
       "mongoskin"       : "0.4.x",
       "jade"            : "0.30.x",
       "folio"           : "git://github.com/inaes-tic/folio.git#newer_uglify",
