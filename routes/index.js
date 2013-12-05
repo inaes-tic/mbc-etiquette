@@ -126,6 +126,7 @@ module.exports = function(server) {
     });
 
     server.post('/removeAll', function(req, res){
+        events = [];
         _.each(elements, function(e) {
             var event = {};
             event.type = 'remove';
