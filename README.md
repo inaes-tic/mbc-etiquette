@@ -1,15 +1,21 @@
 webvfx-dynamic-filters
 ======================
 
-Dynamic image filters and effects for melt or melted using webvfx and node express server
+Video effects editor and server for melt or melted, built with Backbone.js,
+KineticJS, Node.js, Express, Webvfx and MongoDB.
+
+The application allows you to:
+
+* Interactive/Live video effects
+* Add, update, and delete Sketchs (preload effects)
+* HTML5 Editor
+
+##License
+
+AGPL v3.
 
 ## Prerequisites
 
-### npm
-
-```shell
-   apt-get install npm
-```
 ### node > 0.8
 
 ```shell
@@ -18,21 +24,52 @@ Dynamic image filters and effects for melt or melted using webvfx and node expre
 
 Check it on [joyent wiki](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
 
+### npm
+
+```shell
+   apt-get install npm
+```
+
 ### melt
 ```shell
    apt-get install melt libmlt-dev libmlt++-dev pkg-config
 ```
 
+### mongodb
+
+```shell
+   apt-get install mongodb
+```
+
 ### webvfx
 See [webvfx](https://github.com/rectalogic/webvfx) for howto install it
 
+
+## Optional
+
+### stream-m
+
+Video preview in Editor Canvas
+
+```shell
+    git clone https://github.com/inaes-tic/stream-m
+```
+
+### Running the stream sample
+
+From a terminal, keep this running
+```shell
+    cd stream-m
+    make
+```
+
+You can check if streaming is working at [8000](http://localhost:8000/consume/mbc?password=malbec)
+
 ## Install
 
-### Clone the project and install node dependencies
+### Clone the project
 ```shell
    git clone https://github.com/inaes-tic/webvfx-dynamic-filters.git
-   cd webvfx-dynamic-filters
-   npm install
 ```
 
 ## Run
@@ -49,6 +86,11 @@ You should be able to access it from a browser at port [3100](http://localhost:3
 From another terminal, enter webvfx-dynamic-filter directory and run
 ```shell
    ./mlt_dynamic_filter
+```
+
+With Optional
+```shell
+    ./mlt_dynamic_filter_stream
 ```
 
 ### PS

@@ -1,0 +1,182 @@
+# Language arq translations for PACKAGE package.
+# Copyright (C) 2013 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-10-10 16:51-0300\n"
+"PO-Revision-Date: 2013-10-05 08:17-0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: arq\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: views/index.jade:7
+msgid "Welcome to "
+msgstr ""
+
+#: views/index.jade:12
+msgid "Start Browsing\\nWebvfx Dynamic Filters"
+msgstr ""
+
+#: views/index.jade:15
+msgid "View Project\\non Github"
+msgstr ""
+
+#: views/templates/header.jade:14 views/templates/header.jade:6
+msgid "Manual"
+msgstr ""
+
+#: views/templates/header.jade:18 views/templates/editor.jade:3
+#: views/templates/header.jade:10
+msgid "Editor"
+msgstr ""
+
+#: views/index.jade:12
+msgid "Start Browsing\\nWebvfx Editor"
+msgstr ""
+
+#: views/templates/editor.jade:15
+msgid "Add images"
+msgstr ""
+
+#: views/templates/editor.jade:18
+msgid "Add text"
+msgstr ""
+
+#: views/templates/editor.jade:21
+msgid "Delete"
+msgstr ""
+
+#: views/templates/editor.jade:25
+msgid "Sync"
+msgstr ""
+
+#: views/templates/editor.jade:28
+msgid "Storage"
+msgstr ""
+
+#: views/templates/editor.jade:36
+msgid "Options"
+msgstr ""
+
+#: views/templates/editor.jade:38
+msgid "real time edition"
+msgstr ""
+
+#: views/templates/editor.jade:41
+msgid "show safe area"
+msgstr ""
+
+#: views/templates/editor.jade:44
+msgid "video preview"
+msgstr ""
+
+#: views/templates/objects.jade:12
+msgid "width"
+msgstr ""
+
+#: views/templates/objects.jade:21
+msgid "height"
+msgstr ""
+
+#: views/templates/objects.jade:30
+msgid "top"
+msgstr ""
+
+#: views/templates/objects.jade:36
+msgid "left"
+msgstr ""
+
+#: views/templates/objects.jade:42
+msgid "right"
+msgstr ""
+
+#: views/templates/objects.jade:48
+msgid "bottom"
+msgstr ""
+
+#: views/templates/objects.jade:58
+msgid "Text"
+msgstr ""
+
+#: views/templates/objects.jade:62
+msgid "text"
+msgstr ""
+
+#: views/templates/objects.jade:67
+msgid "color"
+msgstr ""
+
+#: views/templates/objects.jade:74
+msgid "background"
+msgstr ""
+
+#: views/templates/objects.jade:81
+msgid "scroll"
+msgstr ""
+
+#: views/templates/objects.jade:84
+msgid "no"
+msgstr ""
+
+#: views/templates/objects.jade:85
+msgid "yes"
+msgstr ""
+
+#: views/templates/objects.jade:89
+msgid "Image"
+msgstr ""
+
+#: views/templates/objects.jade:97
+msgid "Effects"
+msgstr ""
+
+#: views/templates/objects.jade:101
+msgid "effect"
+msgstr ""
+
+#: views/templates/objects.jade:108 views/templates/objects.jade:141
+msgid "duration"
+msgstr ""
+
+#: views/templates/objects.jade:113
+msgid "iterations"
+msgstr ""
+
+#: views/templates/objects.jade:118
+msgid "delay"
+msgstr ""
+
+#: views/templates/objects.jade:123
+msgid "add"
+msgstr ""
+
+#: views/templates/objects.jade:125
+msgid "Move"
+msgstr ""
+
+#: views/templates/objects.jade:129
+msgid "x"
+msgstr ""
+
+#: views/templates/objects.jade:135
+msgid "y"
+msgstr ""
+
+#: views/templates/objects.jade:146
+msgid "move"
+msgstr ""
+
+#: views/templates/objects.jade:148
+msgid "Remove"
+msgstr ""
+
+#: views/templates/objects.jade:152
+msgid "remove"
+msgstr ""

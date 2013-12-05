@@ -1043,7 +1043,7 @@ Banner.prototype.addElement = function(elem) {
         resize();
         element = document.createElement("div");
         element.style.backgroundColor = elem.background_color;
-        element.color = elem.color;
+        element.style.color = elem.color;
         element.fontSmooth = "always";
         if (!elem.scroll) {
             var bannerText = document.createElement("div");

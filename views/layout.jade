@@ -1,0 +1,25 @@
+!!!
+//html(lang='#{lang}', dir='#{lang_dir}')
+html(lang='#{lang}')
+  head
+    title= name
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(charset="utf-8")
+    link(rel='stylesheet', href='/css/main.css')
+    script(src='/lib/head.min.js')
+  body
+    script(type='text/javascript')
+      head.js(
+        "/js/vendor.js",
+        "/js/utils.js",
+        "/socket.io/socket.io.js",
+        "/socket.io/backbone.io.js",
+        "/js/templates.js",
+        "/js/models.js",
+        "/js/views.js",
+        "/js/main.js"
+      );
+    #Panel
+
+    #content
+        block content
