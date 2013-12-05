@@ -27,7 +27,7 @@ module.exports = function(server) {
         next();
     };
 
-    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/remove', '/addEffect', '/move', '/uploadImage' ];
+    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/remove', '/removeAll', '/addEffect', '/move', '/uploadImage' ];
     _.each(accessRoutes, function(route) {
         server.all(route, accessControl);
     });
@@ -122,6 +122,18 @@ module.exports = function(server) {
         elements = _.reject(elements, function(item) {
             return item.id === element.id;
         });
+        return res.json({});
+    });
+
+    server.post('/removeAll', function(req, res){
+        _.each(elements, function(e) {
+            var event = {};
+            event.type = 'remove';
+            event.element = {id: e.id};
+            event.consumed = false;
+            events.push(event);
+        })
+        elements = [];
         return res.json({});
     });
 
