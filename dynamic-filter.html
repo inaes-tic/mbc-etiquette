@@ -1110,19 +1110,21 @@ Banner.prototype.addElement = function(elem) {
         }
     } else if (elem.type === 'widget') {
         document.getElementById("title").innerText = "Adding widget - " + new Date();
+        elem.options.style['z-index'] = elem.zindex;
         window.widgets[elem.id] = new WebvfxSimpleWidget(elem.options);
     }
 };
 
 Banner.prototype.setCommonProperties = function(target, source) {
     target.id = source.id;
-    target.style.position = "fixed";
+    target.style.position = "absolute";
     target.style.top = source.top;
     target.style.width = source.width;
     target.style.height = source.height;
     target.style.left = source.left;
     target.style.right = source.right;
     target.style.bottom = source.bottom;
+    target.style.zIndex = source.zindex;
 };
 
 Banner.prototype.removeElement = function(elem) {
