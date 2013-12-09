@@ -17,6 +17,7 @@ module.exports = function(server) {
     , elements = []
     , events = []
     , moment = require('moment')
+    , uuid = require('node-uuid')
     ;
 
     var self = require ('mbc-common/models/App.js')
@@ -218,6 +219,7 @@ module.exports = function(server) {
         require.resolve('jqueryui-browser/ui/jquery-ui.js'),
         require.resolve('underscore/underscore.js'),
         require.resolve('moment/moment.js'),
+        require.resolve('node-uuid/uuid.js'),
         require.resolve('backbone/backbone.js'),
         require.resolve('jed'),
         require.resolve('knockout/build/output/knockout-latest.js'),
