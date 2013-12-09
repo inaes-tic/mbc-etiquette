@@ -8,7 +8,7 @@ var express = require("express"),
     conf = mbc.config.Webvfx,
     logger = mbc.logger().addLogger('webvfx_server'),
     url = require('url'),
-    collections = mbc.config.Common.Collections,
+    data = mbc.config.Data,
     uuid = require('node-uuid')
     ;
 
@@ -100,7 +100,7 @@ _(backends).each (debug_backend);
 appbackend.use(backboneio.middleware.configStore());
 
 sketchbackend.use(id_middleware);
-sketchbackend.use(backboneio.middleware.mongoStore(db, collections.Sketchs, {}));
+sketchbackend.use(backboneio.middleware.mongoStore(db, data.Sketchs.collection_db, {}));
 
 var io = backboneio.listen(server.listen(server.get('port'), function(){
     logger.info("Express server listening on port " + server.get('port') + " in mode " + server.settings.env);
