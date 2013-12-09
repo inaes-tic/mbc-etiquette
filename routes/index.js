@@ -60,7 +60,10 @@ module.exports = function(server) {
         var element = {};
         element.id = req.body.id;
         element.type = 'image';
-        element.src = full_url;
+        if (req.body.images.indexOf("http") >= 0)
+            element.src = req.body.images;
+        else
+            element.src = full_url;
         element.top = req.body.top;
         element.left = req.body.left;
         element.bottom = req.body.bottom;
