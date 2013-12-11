@@ -1,6 +1,17 @@
 <html>
 <head>
+<meta charset="UTF-8">
 <style type="text/css">
+@font-face {
+    font-family: 'ShareRegular';
+    src: url('public/fonts/ShareRegular.ttf');
+}
+
+@font-face {
+    font-family: 'ShareBold';
+    src: url('public/fonts/ShareBold.ttf');
+}
+
 body, html {
     margin: 0;
     width: 100%;
@@ -1006,8 +1017,8 @@ body, html {
 
 </style>
 
-<script type="text/javascript" src="qrc:/webvfx/scripts/easing.js"></script>
-
+<script src="node_modules/jquery-browser/lib/jquery.js"></script>
+<script src="node_modules/mbc-common/widgets/WebvfxSimpleWidget.js"></script>
 <script type="text/javascript">
 function Banner() {
     this.image = document.getElementById("image");
@@ -1029,6 +1040,8 @@ function Banner() {
 Banner.prototype.addElement = function(elem) {
     document.getElementById("title").innerText = "addElement (" + elem.type + ") - " + new Date();
     resize();
+
+    window.widgets = {};
 
     var element;
     if (elem.type === 'image') {
@@ -1095,21 +1108,29 @@ Banner.prototype.addElement = function(elem) {
             aux.offset = offset;
             this.scrolls.push(aux);
         }
+    } else if (elem.type === 'widget') {
+        document.getElementById("title").innerText = "Adding widget - " + new Date();
+        elem.options.style['z-index'] = elem.zindex;
+        window.widgets[elem.id] = new WebvfxSimpleWidget(elem.options);
     }
 };
 
 Banner.prototype.setCommonProperties = function(target, source) {
     target.id = source.id;
-    target.style.position = "fixed";
+    target.style.position = "absolute";
     target.style.top = source.top;
     target.style.width = source.width;
     target.style.height = source.height;
     target.style.left = source.left;
     target.style.right = source.right;
     target.style.bottom = source.bottom;
+    target.style.zIndex = source.zindex;
 };
 
 Banner.prototype.removeElement = function(elem) {
+    if (elem.id in window.widgets) {
+        delete window.widgets[elem.id];
+    }
     var element = document.getElementById(elem.id);
     document.getElementById("body").removeChild(element);
     this.removeScrollElement(elem.id);
@@ -1195,6 +1216,10 @@ Banner.prototype.read = function() {
                     self.addElement(event.element);
                 } else if (event.type === 'addBanner') {
                     document.getElementById("title").innerText = "addBanner - " + new Date();
+                    resize();
+                    self.addElement(event.element);
+                } else if (event.type === 'addWidget') {
+                    document.getElementById("title").innerText = "addWidget - " + new Date();
                     resize();
                     self.addElement(event.element);
                 } else if (event.type === 'remove') {

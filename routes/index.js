@@ -1,4 +1,5 @@
 module.exports = function(server) {
+
     var path = require('path')
     , folio = require('folio')
     , jade = require('jade')
@@ -8,6 +9,7 @@ module.exports = function(server) {
     , fs  = require('fs')
     , mbc = require('mbc-common')
     , conf = mbc.config.Webvfx
+    , commonConf = mbc.config.Common
     , logger  = mbc.logger().addLogger('webvfx_routes')
     , imageFiles = []
     , watchr  = require('watchr')
@@ -25,7 +27,7 @@ module.exports = function(server) {
         next();
     };
 
-    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/remove', '/addEffect', '/move', '/uploadImage' ];
+    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/remove', '/removeAll', '/addEffect', '/move', '/uploadImage' ];
     _.each(accessRoutes, function(route) {
         server.all(route, accessControl);
     });
@@ -63,6 +65,7 @@ module.exports = function(server) {
         element.right = req.body.right;
         element.height = req.body.height;
         element.width = req.body.width;
+        element.zindex = req.body.zindex;
         var event = {};
         event.type = 'addImage';
         event.element = element;
@@ -95,6 +98,21 @@ module.exports = function(server) {
         return res.json({});
     });
 
+    server.post('/addWidget', function(req, res){
+        var element = {};
+        element.id = req.body.id;
+        element.type = 'widget';
+        element.options = JSON.parse(req.body.options);
+        element.zindex = req.body.zindex;
+        var event = {};
+        event.type = 'addWidget';
+        event.element = element;
+        event.consumed = false;
+        events.push(event);
+        elements.push(element);
+        return res.json({});
+    });
+
     server.post('/remove', function(req, res){
         var element = {};
         element.id = req.body.elements;
@@ -106,6 +124,19 @@ module.exports = function(server) {
         elements = _.reject(elements, function(item) {
             return item.id === element.id;
         });
+        return res.json({});
+    });
+
+    server.post('/removeAll', function(req, res){
+        events = [];
+        _.each(elements, function(e) {
+            var event = {};
+            event.type = 'remove';
+            event.element = {id: e.id};
+            event.consumed = false;
+            events.push(event);
+        })
+        elements = [];
         return res.json({});
     });
 
@@ -231,6 +262,17 @@ module.exports = function(server) {
     );
 
     server.get('/js/models.js', folio.serve(modelsJs));
+
+    commonConf.Widgets.Files.forEach(function(widget) {
+        server.get(
+            '/js/widgets/' + widget + '.js',
+            folio.serve(
+                new folio.Glossary([
+                    require.resolve('mbc-common/widgets/' + widget)
+                ])
+            )
+        );
+    });
 
 
     /**
