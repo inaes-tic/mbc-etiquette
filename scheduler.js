@@ -1,26 +1,26 @@
-var moment      = require('moment')
-,   _           = require('underscore')
-,   uuid        = require('node-uuid')
-,   http        = require('http')
-,   querystring = require('querystring')
-,   mbc         = require('mbc-common')
-,   Sketch      = require('mbc-common/models/Sketch')
-,   collections = mbc.config.Common.Collections
-,   logger      = mbc.logger().addLogger('webvfx_scheduler')
-,   conf        = mbc.config.Webvfx
+var moment       = require('moment')
+,   _            = require('underscore')
+,   uuid         = require('node-uuid')
+,   http         = require('http')
+,   querystring  = require('querystring')
+,   mbc          = require('mbc-common')
+,   Sketch       = require('mbc-common/models/Sketch')
+,   collections  = mbc.config.Common.Collections
+,   logger       = mbc.logger().addLogger('webvfx_scheduler')
+,   conf         = mbc.config.Webvfx
+,   eventManager = require('./EventManager')
 ;
 
 function scheduler() {
 }
 
-scheduler.prototype.initScheduler = function(routes) {
+scheduler.prototype.initScheduler = function() {
     logger.info("Starting Scheduler");
     var self = this;
     var db = mbc.db();
     self.schedules = db.collection(collections.SketchSchedules);
     self.sketchs = db.collection(collections.Sketchs);
     self.loadedSchedules = [];
-    self.routes = routes;
     self.checkSchedules();
 };
 
@@ -77,37 +77,28 @@ scheduler.prototype.addSched = function(sched) {
     self.sketchs.findById(sched.sketch_id, function(err, sketch) {
         _.each(sketch.data, function(s) {
             logger.debug("Adding object:", s);
+            var element = {};
+            //TODO: UGLY HACK FOR NOT REPEATING IDS
+            element.id = sched._id + "---" + s.id;
+            if (s.y)
+                element.top = s.y + 'px';
+            if (s.x)
+                element.left = s.x + 'px';
+            if (s.height)
+                element.height = s.height + 'px';
+            if (s.width)
+                element.width = s.width + 'px';
             if (s.type === 'Image') {
-                var element = {};
-                element.id = sched._id + "$" + s.id;
                 element.type = 'image';
                 element.src = (conf.server || 'http://localhost:3100') + '/uploads/' + s.name;
-                if (s.y)
-                    element.top = s.y + 'px';
-                if (s.x)
-                    element.left = s.x + 'px';
-                if (s.height)
-                    element.height = s.height + 'px';
-                if (s.width)
-                    element.width = s.width + 'px';
-                self.routes.addImage(element);
+                eventManager.addImage(element);
             } else if (s.type === 'Text') {
-                var element = {};
-                element.id = sched._id + "$" + s.id;
                 element.type = 'banner';
-                if (s.y)
-                    element.top = s.y + 'px';
-                if (s.x)
-                    element.left = s.x + 'px';
-                if (s.height)
-                    element.height = s.height + 'px';
-                if (s.width)
-                    element.width = s.width + 'px';
 //                element.background_color = req.body.background_color;
                 element.color = s.fill;
                 element.text = s.text;
 //                element.scroll = req.body.scroll;
-                self.routes.addBanner(element);
+                eventManager.addBanner(element);
             }
         });
         self.loadedSchedules.push(sched);
@@ -120,9 +111,9 @@ scheduler.prototype.removeSched = function(sched) {
     self.sketchs.findById(sched.sketch_id, function(err, sketch) {
         _.each(sketch.data, function(s) {
             logger.debug("Removing object", s);
-            var element = {};
-            element.id = sched._id + "$" + s.id;
-            self.routes.removeElement(element);
+            //TODO: UGLY HACK FOR NOT REPEATING IDS
+            var id = sched._id + "---" + s.id;
+            eventManager.removeElement(id);
         });
         self.loadedSchedules = _.reject(self.loadedSchedules, function(s) {
             return s._id === sched._id;
