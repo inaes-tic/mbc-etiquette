@@ -71,7 +71,8 @@ server.configure('production', function(){
   server.set('minify', true);
 });
 
-var routes = require('./routes')(server);
+//var routes = require('./routes')(server);
+require('./routes')(server);
 
 function debug_backend (backend) {
     backend.use(function(req, res, next) {
@@ -129,4 +130,4 @@ if (process.env.HEROKU) {
 
 io.set('logger', logger); // Log socket.io with custom logger
 
-scheduler.initScheduler(routes);
+scheduler.initScheduler();
