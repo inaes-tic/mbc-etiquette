@@ -14,10 +14,9 @@ module.exports = function(server) {
     , imageFiles = []
     , watchr  = require('watchr')
     , url = require('url')
-    , elements = []
-    , events = []
     , moment = require('moment')
     , uuid = require('node-uuid')
+    , eventManager = require('../EventManager')
     ;
 
     var self = require ('mbc-common/models/App.js')
@@ -35,71 +34,33 @@ module.exports = function(server) {
     });
 
     server.get("/events", function(req, res) {
-        var event = _.findWhere(events, {consumed: false});
+        var event = eventManager.getNextEvent();
         if (event) {
-            logger.debug(event);
-            event.consumed = true;
             res.json(event);
         } else {
-            logger.debug('Event: NONE');
             res.json({"type": "none"});
         }
     });
 
     server.get("/init", function(req, res) {
-        logger.debug(elements);
+        var elements = eventManager.getAllElements();
+        logger.debug("Serving elements:", elements);
         res.json({elements: elements});
-        events = _.reject(events, function(event) {
-            return event.type === 'add' || event.type === 'remove';
-        });
     });
 
     server.post('/addImage', function(req, res){
         conf.Dirs.uploads
         var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'uploads/' + req.body.images });
-        var element = {};
-        element.id = req.body.id;
-        element.type = 'image';
         if (req.body.images.indexOf("http") >= 0)
-            element.src = req.body.images;
+            req.body.src = req.body.images;
         else
-            element.src = full_url;
-        element.top = req.body.top;
-        element.left = req.body.left;
-        element.bottom = req.body.bottom;
-        element.right = req.body.right;
-        element.height = req.body.height;
-        element.width = req.body.width;
-        element.zindex = req.body.zindex;
-        var event = {};
-        event.type = 'addImage';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements.push(element);
+            req.body.src = full_url;
+        eventManager.addImage(req.body);
         return res.json({});
     });
 
     server.post('/addBanner', function(req, res){
-        var element = {};
-        element.id = req.body.id;
-        element.type = 'banner';
-        element.top = req.body.top;
-        element.left = req.body.left;
-        element.bottom = req.body.bottom;
-        element.right = req.body.right;
-        element.height = req.body.height;
-        element.width = req.body.width;
-        element.background_color = req.body.background_color;
-        element.color = req.body.color;
-        element.text = req.body.text;
-        element.scroll = req.body.scroll;
-        var event = {};
-        event.type = 'addBanner';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements.push(element);
+        eventManager.addBanner(req.body);
         return res.json({});
     });
 
@@ -119,16 +80,7 @@ module.exports = function(server) {
     });
 
     server.post('/remove', function(req, res){
-        var element = {};
-        element.id = req.body.elements;
-        var event = {};
-        event.type = 'remove';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements = _.reject(elements, function(item) {
-            return item.id === element.id;
-        });
+        eventManager.removeElement(req.body.elements);
         return res.json({});
     });
 
@@ -146,35 +98,13 @@ module.exports = function(server) {
     });
 
     server.post('/addEffect', function(req, res){
-        var element = {};
-        element.id = req.body.elements;
-        var animation = {};
-        animation.name = req.body.effects;
-        animation.duration = req.body.duration;
-        animation.iterations = req.body.iterations;
-        animation.delay = req.body.delay;
-        var event = {};
-        event.type = 'animation';
-        event.element = element;
-        event.animation = animation;
-        event.consumed = false;
-        events.push(event);
+        req.body.name = req.body.effects;
+        eventManager.addEffect(req.body.elements, req.body);
         return res.json({});
     });
 
     server.post('/move', function(req, res){
-        var element = {};
-        element.id = req.body.elements;
-        var move = {};
-        move.x = req.body.x;
-        move.y = req.body.y;
-        move.duration = req.body.duration;
-        var event = {};
-        event.type = 'move';
-        event.element = element;
-        event.move = move;
-        event.consumed = false;
-        events.push(event);
+        eventManager.moveElement(req.body.elements, req.body);
         return res.json({});
     });
 
@@ -332,38 +262,6 @@ module.exports = function(server) {
         res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
     });
     
-    appCollection.addImage = function(element) {
-        logger.info("Adding image:", element);
-        var event = {};
-        event.type = 'addImage';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements.push(event.element);
-    };
-
-    appCollection.addBanner = function(element) {
-        logger.info("Adding banner:", element);
-        var event = {};
-        event.type = 'addBanner';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements.push(event.element);
-    };
-
-    appCollection.removeElement = function(element) {
-        logger.info("Removing element:", element);
-        var event = {};
-        event.type = 'remove';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements = _.reject(elements, function(item) {
-            return item.id === element.id;
-        });
-    };
-
     return appCollection;
 
 }
