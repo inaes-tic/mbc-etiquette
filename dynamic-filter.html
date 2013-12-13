@@ -1043,6 +1043,8 @@ Banner.prototype.addElement = function(elem) {
 
     window.widgets = {};
 
+    this.removeElement(elem);
+
     var element;
     if (elem.type === 'image') {
         document.getElementById("title").innerText += "\nAdding image - " + new Date();
@@ -1130,10 +1132,13 @@ Banner.prototype.setCommonProperties = function(target, source) {
 Banner.prototype.removeElement = function(elem) {
     document.getElementById("title").innerText += "\nremoveElement (" + elem.type + ", " + elem.id + ") - " + new Date();
     resize();
+
     if (elem.id in window.widgets) {
         delete window.widgets[elem.id];
     }
     var element = document.getElementById(elem.id);
+    if (!element)
+        return;
     document.getElementById("body").removeChild(element);
     this.removeScrollElement(elem.id);
 };
