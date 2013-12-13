@@ -118,6 +118,14 @@ EventManager.removeElement = function(id, skipEvent) {
     });
 };
 
+EventManager.removeAll = function() {
+    EventManager.events = [];
+    _.each(EventManager.elements, function(e) {
+        EventManager.removeElement(e.id);
+    });
+    EventManager.elements = [];
+};
+
 EventManager.addEffect = function(elementId, effect) {
     logger.debug("addEffect invoked for element:", elementId);
     logger.debug("Effect to add:", effect);

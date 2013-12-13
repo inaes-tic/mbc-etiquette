@@ -75,15 +75,7 @@ module.exports = function(server) {
     });
 
     server.post('/removeAll', function(req, res){
-        events = [];
-        _.each(elements, function(e) {
-            var event = {};
-            event.type = 'remove';
-            event.element = {id: e.id};
-            event.consumed = false;
-            events.push(event);
-        })
-        elements = [];
+        eventManager.removeAll();
         return res.json({});
     });
 
@@ -254,4 +246,4 @@ module.exports = function(server) {
     
     return appCollection;
 
-}
+};
