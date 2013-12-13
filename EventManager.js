@@ -67,7 +67,7 @@ EventManager.getBaseElement = function(object) {
 EventManager.addElement = function(element) {
     logger.debug("addElement invoked");
     logger.debug("Element to add:", element);
-    EventManager.removeElement(element.id);
+    EventManager.removeElement(element.id, true);
     var type = undefined;
     if (element.type === 'image') 
         type = 'addImage';
@@ -93,12 +93,13 @@ EventManager.addEvent = function(type, element, extra) {
     EventManager.events.push(event);
 };
 
-EventManager.removeElement = function(id) {
+EventManager.removeElement = function(id, skipEvent) {
     logger.debug("removeElement invoked");
     logger.debug("Element to remove", id);
     var element = {};
     element.id = id;
-    EventManager.addEvent('remove', element);
+    if (!skipEvent)
+        EventManager.addEvent('remove', element);
     EventManager.elements = _.reject(EventManager.elements, function(item) {
         return item.id === element.id;
     });
