@@ -65,17 +65,7 @@ module.exports = function(server) {
     });
 
     server.post('/addWidget', function(req, res){
-        var element = {};
-        element.id = req.body.id;
-        element.type = 'widget';
-        element.options = JSON.parse(req.body.options);
-        element.zindex = req.body.zindex;
-        var event = {};
-        event.type = 'addWidget';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements.push(element);
+        eventManager.addWidget(req.body);
         return res.json({});
     });
 

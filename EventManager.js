@@ -52,6 +52,17 @@ EventManager.addBanner = function(banner) {
     EventManager.addElement(element);
 };
 
+EventManager.addWidget = function(widget) {
+    logger.debug("addWidget invoked");
+    logger.debug("Widget to add:", widget);
+    var element = {};
+    element.id = widget.id;
+    element.type = 'widget';
+    element.options = JSON.parse(widget.options);
+    element.zindex = widget.zindex;
+    EventManager.addElement(element);
+};
+
 EventManager.getBaseElement = function(object) {
     var element = {};
     element.id = object.id;
@@ -73,6 +84,8 @@ EventManager.addElement = function(element) {
         type = 'addImage';
     else if (element.type === 'banner')
         type = 'addBanner';
+    else if (element.type === 'widget')
+        type = 'addWidget';
     EventManager.addEvent(type, element);
     EventManager.elements.push(element);
 };
