@@ -27,7 +27,7 @@ body, html {
     color: #000;
     text-align: left;
     font-smooth: always;
-    height: 1.5em;
+    height: 50%;
     width: 100%;
     visibility: hidden;
     display: none;
@@ -1038,21 +1038,21 @@ function Banner() {
 }
 
 Banner.prototype.addElement = function(elem) {
-    document.getElementById("title").innerText = "addElement (" + elem.type + ") - " + new Date();
+    document.getElementById("title").innerText += "\naddElement (" + elem.type + ", " + elem.id + ") - " + new Date();
     resize();
 
     window.widgets = {};
 
     var element;
     if (elem.type === 'image') {
-        document.getElementById("title").innerText = "Adding image - " + new Date();
+        document.getElementById("title").innerText += "\nAdding image - " + new Date();
         resize();
         element = document.createElement("img");
         element.src = elem.src;
         this.setCommonProperties(element, elem);
         document.getElementById("body").appendChild(element);
     } else if (elem.type === 'banner') {
-        document.getElementById("title").innerText = "Adding banner - " + new Date();
+        document.getElementById("title").innerText += "\nAdding banner - " + new Date();
         resize();
         element = document.createElement("div");
         element.style.backgroundColor = elem.background_color;
@@ -1109,7 +1109,7 @@ Banner.prototype.addElement = function(elem) {
             this.scrolls.push(aux);
         }
     } else if (elem.type === 'widget') {
-        document.getElementById("title").innerText = "Adding widget - " + new Date();
+        document.getElementById("title").innerText += "\nAdding widget - " + new Date();
         elem.options.style['z-index'] = elem.zindex;
         window.widgets[elem.id] = new WebvfxSimpleWidget(elem.options);
     }
@@ -1128,6 +1128,8 @@ Banner.prototype.setCommonProperties = function(target, source) {
 };
 
 Banner.prototype.removeElement = function(elem) {
+    document.getElementById("title").innerText += "\nremoveElement (" + elem.type + ", " + elem.id + ") - " + new Date();
+    resize();
     if (elem.id in window.widgets) {
         delete window.widgets[elem.id];
     }
@@ -1211,27 +1213,27 @@ Banner.prototype.read = function() {
                 //document.getElementById("title").innerText = event.type + " - " + new Date();
                 //resize();
                 if (event.type === 'addImage') {
-                    document.getElementById("title").innerText = "addImage - " + new Date();
+                    document.getElementById("title").innerText += "\nRead addImage - " + new Date();
                     resize();
                     self.addElement(event.element);
                 } else if (event.type === 'addBanner') {
-                    document.getElementById("title").innerText = "addBanner - " + new Date();
+                    document.getElementById("title").innerText += "\nRead addBanner - " + new Date();
                     resize();
                     self.addElement(event.element);
                 } else if (event.type === 'addWidget') {
-                    document.getElementById("title").innerText = "addWidget - " + new Date();
+                    document.getElementById("title").innerText += "\nRead addWidget - " + new Date();
                     resize();
                     self.addElement(event.element);
                 } else if (event.type === 'remove') {
-                    document.getElementById("title").innerText = "remove - " + new Date();
+                    document.getElementById("title").innerText += "\nRead remove - " + new Date();
                     resize();
                     self.removeElement(event.element);
                 } else if (event.type === 'animation') {
-                    document.getElementById("title").innerText = "animation - " + new Date();
+                    document.getElementById("title").innerText += "\nRead animation - " + new Date();
                     resize();
                     self.animateElement(event);
                 } else if (event.type === 'move') {
-                    document.getElementById("title").innerText = "move - " + new Date();
+                    document.getElementById("title").innerText += "\nRead move - " + new Date();
                     resize();
                     self.moveElement(event);
                 } else {
@@ -1240,24 +1242,24 @@ Banner.prototype.read = function() {
                 }
             } else {
                 var status = xhr.statusText;
-                document.getElementById("title").innerText = "Error - Status: " + status;
+                document.getElementById("title").innerText += "\nError - Status: " + status;
                 resize();
             }
         } else {
             var state = xhr.readyState;
-            document.getElementById("title").innerText = "Error - State " + state;
+            document.getElementById("title").innerText += "\nError - State " + state;
             resize();
         }
     };
     xhr.onerror = function (e) {
-        document.getElementById("title").innerText = "Error: " + e;
+        document.getElementById("title").innerText += "\nError: " + e;
         resize();
     };
     xhr.send(null);
 };
 
 Banner.prototype.loadElements = function() {
-    document.getElementById("title").innerText = "Load";
+    document.getElementById("title").innerText += "\nLoad";
     resize();
     var self = this;
     var xhr = new XMLHttpRequest();
@@ -1266,27 +1268,27 @@ Banner.prototype.loadElements = function() {
     xhr.onload = function (e) {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                document.getElementById("title").innerText = "Adding elements";
+                document.getElementById("title").innerText += "\nAdding elements";
                 resize();
                 var elements = JSON.parse(xhr.responseText);
                 elements.elements.forEach(function(element) {
-                    document.getElementById("title").innerText = "Adding " + element.id;
+                    document.getElementById("title").innerText += "\nAdding " + element.id;
                     resize();
                     self.addElement(element);
                 });
             } else {
                 var status = xhr.statusText;
-                document.getElementById("title").innerText = "Error - Status: " + status;
+                document.getElementById("title").innerText += "\nError - Status: " + status;
                 resize();
             }
         } else {
             var state = xhr.readyState;
-            document.getElementById("title").innerText = "Error - State " + state;
+            document.getElementById("title").innerText += "\nError - State " + state;
             resize();
         }
     };
     xhr.onerror = function (e) {
-        document.getElementById("title").innerText = "Error: " + e;
+        document.getElementById("title").innerText += "\nError: " + e;
         resize();
     };
     xhr.send(null);
@@ -1313,8 +1315,19 @@ function shrinkToFit(element) {
 }
 
 function resize(element) {
-    if (!element)
+    if (!element) {
         element = document.getElementById("title");
+        var content = element.innerText.replace(/  |^\s+|\s+$/g,"");
+        var lines = content.split("\n");
+        if (lines.length > 20) {
+            var x = lines.length - 20;
+            lines.splice(0, x);
+            element.innerText = "";
+            lines.forEach(function(line) {
+                element.innerText += "\n" + line;
+            });
+        }
+    }
     // Set base font-size to 10% of window height
     document.body.style.fontSize = (window.innerHeight * 0.1) + "px";
 
