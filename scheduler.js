@@ -80,25 +80,23 @@ scheduler.prototype.addSched = function(sched) {
             var element = {};
             //TODO: UGLY HACK FOR NOT REPEATING IDS
             element.id = sched._id + "---" + s.id;
-            if (s.y)
-                element.top = s.y + 'px';
-            if (s.x)
-                element.left = s.x + 'px';
-            if (s.height)
-                element.height = s.height + 'px';
-            if (s.width)
-                element.width = s.width + 'px';
-            if (s.type === 'Image') {
+            if (s.type === 'image') {
+                if (s.top)
+                    element.top = s.top + 'px';
+                if (s.left)
+                    element.left = s.left + 'px';
+                if (s.height)
+                    element.height = s.height + 'px';
+                if (s.width)
+                    element.width = s.width + 'px';
                 element.type = 'image';
                 element.src = (conf.server || 'http://localhost:3100') + '/uploads/' + s.name;
                 eventManager.addImage(element);
-            } else if (s.type === 'Text') {
-                element.type = 'banner';
-//                element.background_color = req.body.background_color;
-                element.color = s.fill;
-                element.text = s.text;
-//                element.scroll = req.body.scroll;
-                eventManager.addBanner(element);
+            } else {
+                element.type = 'widget';
+                s.id = element.id;
+                element.options = JSON.stringify(s);
+                eventManager.addWidget(element);
             }
         });
         self.loadedSchedules.push(sched);
