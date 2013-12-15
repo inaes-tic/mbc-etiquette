@@ -1019,6 +1019,7 @@ body, html {
 
 <script src="node_modules/jquery-browser/lib/jquery.js"></script>
 <script src="node_modules/mbc-common/widgets/WebvfxSimpleWidget.js"></script>
+<script src="node_modules/mbc-common/widgets/WebvfxAnimationWidget.js"></script>
 <script type="text/javascript">
 function Banner() {
     this.image = document.getElementById("image");
@@ -1109,9 +1110,10 @@ Banner.prototype.addElement = function(elem) {
             this.scrolls.push(aux);
         }
     } else if (elem.type === 'widget') {
-        document.getElementById("title").innerText = "Adding widget - " + new Date();
         elem.options.style['z-index'] = elem.zindex;
         window.widgets[elem.id] = new WebvfxSimpleWidget(elem.options);
+    } else if (elem.type === 'animation') {
+        window.widgets[elem.id] = new WebvfxAnimationWidget(elem.options);
     }
 };
 
@@ -1129,6 +1131,7 @@ Banner.prototype.setCommonProperties = function(target, source) {
 
 Banner.prototype.removeElement = function(elem) {
     if (elem.id in window.widgets) {
+        window.widgets[elem.id].remove();
         delete window.widgets[elem.id];
     }
     var element = document.getElementById(elem.id);
@@ -1220,6 +1223,10 @@ Banner.prototype.read = function() {
                     self.addElement(event.element);
                 } else if (event.type === 'addWidget') {
                     document.getElementById("title").innerText = "addWidget - " + new Date();
+                    resize();
+                    self.addElement(event.element);
+                } else if (event.type === 'addAnimation') {
+                    document.getElementById("title").innerText = "addAnimation - " + new Date();
                     resize();
                     self.addElement(event.element);
                 } else if (event.type === 'remove') {

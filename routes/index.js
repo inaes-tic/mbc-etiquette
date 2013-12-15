@@ -27,7 +27,7 @@ module.exports = function(server) {
         next();
     };
 
-    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/remove', '/removeAll', '/addEffect', '/move', '/uploadImage' ];
+    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/addAnimation', '/remove', '/removeAll', '/addEffect', '/move', '/uploadImage' ];
     _.each(accessRoutes, function(route) {
         server.all(route, accessControl);
     });
@@ -106,6 +106,22 @@ module.exports = function(server) {
         element.zindex = req.body.zindex;
         var event = {};
         event.type = 'addWidget';
+        event.element = element;
+        event.consumed = false;
+        events.push(event);
+        elements.push(element);
+        return res.json({});
+    });
+
+    server.post('/addAnimation', function(req, res){
+        var element = {};
+        element.id = req.body.id;
+        element.type = 'animation';
+        element.options = JSON.parse(req.body.options);
+        element.options.image = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'uploads/' + element.options.image });
+        element.zindex = req.body.zindex;
+        var event = {};
+        event.type = 'addAnimation';
         event.element = element;
         event.consumed = false;
         events.push(event);
