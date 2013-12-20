@@ -57,6 +57,7 @@ module.exports = function(server) {
         var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'uploads/' + req.body.images });
         var element = {};
         element.id = req.body.id;
+        remove(element.id);
         element.type = 'image';
         element.src = full_url;
         element.top = req.body.top;
@@ -78,6 +79,7 @@ module.exports = function(server) {
     server.post('/addBanner', function(req, res){
         var element = {};
         element.id = req.body.id;
+        remove(element.id);
         element.type = 'banner';
         element.top = req.body.top;
         element.left = req.body.left;
@@ -101,6 +103,7 @@ module.exports = function(server) {
     server.post('/addWidget', function(req, res){
         var element = {};
         element.id = req.body.id;
+        remove(element.id);
         element.type = 'widget';
         element.options = JSON.parse(req.body.options);
         element.zindex = req.body.zindex;
@@ -116,6 +119,7 @@ module.exports = function(server) {
     server.post('/addAnimation', function(req, res){
         var element = {};
         element.id = req.body.id;
+        remove(element.id);
         element.type = 'animation';
         element.options = req.body;
         element.options.image = url.format({
@@ -132,17 +136,23 @@ module.exports = function(server) {
         return res.json({});
     });
 
-    server.post('/remove', function(req, res){
-        var element = {};
-        element.id = req.body.elements;
-        var event = {};
-        event.type = 'remove';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
+    var remove = function(id) {
         elements = _.reject(elements, function(item) {
-            return item.id === element.id;
+            if (item.id === id) {
+                events.push({
+                    type: 'remove',
+                    element: {id: id},
+                    consumed: false
+                });
+                return true;
+            } else {
+                return false;
+            }
         });
+    };
+
+    server.post('/remove', function(req, res){
+        remove(req.body.elements);
         return res.json({});
     });
 
