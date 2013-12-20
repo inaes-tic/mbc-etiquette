@@ -117,9 +117,12 @@ module.exports = function(server) {
         var element = {};
         element.id = req.body.id;
         element.type = 'animation';
-        element.options = JSON.parse(req.body.options);
-        element.options.image = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'uploads/' + element.options.image });
-        element.zindex = req.body.zindex;
+        element.options = req.body;
+        element.options.image = url.format({
+            protocol: req.protocol,
+            host: req.get('host'),
+            pathname: 'uploads/' + req.body.name
+        });
         var event = {};
         event.type = 'addAnimation';
         event.element = element;
