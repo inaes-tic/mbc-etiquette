@@ -1,4 +1,4 @@
-webvfx-dynamic-filters
+mbc-etiquette
 ======================
 
 Video effects editor and server for melt or melted, built with Backbone.js,
