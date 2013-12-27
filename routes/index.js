@@ -1,4 +1,4 @@
-module.exports = function(server) {
+module.exports = function(server, drivers) {
 
     var path = require('path')
     , folio = require('folio')
@@ -6,17 +6,12 @@ module.exports = function(server) {
     , po2json = require('po2json')
     , i18n = require('i18n-abide')
     , _ = require('underscore')
-    , fs  = require('fs')
     , mbc = require('mbc-common')
     , conf = mbc.config.Webvfx
     , commonConf = mbc.config.Common
     , logger  = mbc.logger().addLogger('webvfx_routes')
-    , imageFiles = []
-    , watchr  = require('watchr')
-    , url = require('url')
     , moment = require('moment')
     , uuid = require('node-uuid')
-    , eventManager = require('../EventManager')
     ;
 
     var self = require ('mbc-common/models/App.js')
@@ -27,79 +22,24 @@ module.exports = function(server) {
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
         next();
     };
-
-    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/remove', '/removeAll', '/addEffect', '/move', '/uploadImage' ];
+    
+    var accessRoutes = [];
     _.each(accessRoutes, function(route) {
         server.all(route, accessControl);
     });
 
-    server.get("/events", function(req, res) {
-        var event = eventManager.getNextEvent();
-        if (event) {
-            res.json(event);
-        } else {
-            res.json({"type": "none"});
-        }
-    });
-
-    server.get("/init", function(req, res) {
-        var elements = eventManager.getAllElements();
-        logger.debug("Serving elements:", elements);
-        res.json({elements: elements});
-    });
-
-    server.post('/addImage', function(req, res){
-        conf.Dirs.uploads
-        var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'uploads/' + req.body.images });
-        if (req.body.images.indexOf("http") >= 0)
-            req.body.src = req.body.images;
-        else
-            req.body.src = full_url;
-        eventManager.addImage(req.body);
-        return res.json({});
-    });
-
-    server.post('/addBanner', function(req, res){
-        eventManager.addBanner(req.body);
-        return res.json({});
-    });
-
-    server.post('/addWidget', function(req, res){
-        eventManager.addWidget(req.body);
-        return res.json({});
-    });
-
-    server.post('/remove', function(req, res){
-        eventManager.removeElement(req.body.elements);
-        return res.json({});
-    });
-
-    server.post('/removeAll', function(req, res){
-        eventManager.removeAll();
-        return res.json({});
-    });
-
-    server.post('/addEffect', function(req, res){
-        req.body.name = req.body.effects;
-        eventManager.addEffect(req.body.elements, req.body);
-        return res.json({});
-    });
-
-    server.post('/move', function(req, res){
-        eventManager.moveElement(req.body.elements, req.body);
-        return res.json({});
-    });
-
-    server.post('/uploadImage', function(req, res){
-        fs.readFile(req.files.uploadedFile.path, function (err, data) {
-            if(err) {
-                logger.error('Uploading file: ' + err);
-                return;
-            }
-            var newPath = path.join(conf.Dirs.uploads, req.files.uploadedFile.name);
-            fs.writeFile(newPath, data, function (err) {
-                return res.json({});
-            });
+    /* PROCESSING DRIVERS*/
+    _.each(drivers, function(driver) {
+        logger.debug("Processing driver: ", driver.getName());
+        _.each(driver.getGetRoutes(), function(route) {
+            logger.debug('Adding get route:', route);
+            server.all(route, accessControl);
+            server.get(route, driver.getGetCallback(route));
+        });
+        _.each(driver.getPostRoutes(), function(route) {
+            logger.debug('Adding post route:', route);
+            server.all(route, accessControl);
+            server.post(route, driver.getPostCallback(route));
         });
     });
 
