@@ -8,6 +8,7 @@ function webvfx_driver() {
     logger.info("Creating new instance");
     this.events = Etiquette.Events();
     this.objects = Etiquette.Objects();
+    this.init();
 }
 
 webvfx_driver.prototype = new http_driver('webvfx_driver');

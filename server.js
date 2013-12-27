@@ -75,9 +75,7 @@ server.configure('production', function(){
 
 /* DRIVERS INITIALIZATION */
 var wdriver = new webvfx_driver();
-wdriver.init();
 var edriver = new editor_driver(server);
-edriver.init();
 var drivers = [wdriver, edriver];
 
 require('./routes')(server, drivers);

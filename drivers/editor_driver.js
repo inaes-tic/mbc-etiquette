@@ -13,6 +13,7 @@ function editor_driver() {
     logger.info("Creating new instance");
     this.events = Etiquette.Events();
     this.objects = Etiquette.Objects();
+    this.init();
 }
 
 editor_driver.prototype = new http_driver('editor_driver');
