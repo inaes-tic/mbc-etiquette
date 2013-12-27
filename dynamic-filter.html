@@ -1144,13 +1144,13 @@ Banner.prototype.removeElement = function(elem) {
 };
 
 Banner.prototype.moveElement = function(event) {
-    var element = document.getElementById(event.element.id);
+    var element = document.getElementById(event.object.id);
     element.style.setProperty('-webkit-transform', 'translate(' + event.move.x + ',' + event.move.y + ')');
     element.style.setProperty('-webkit-transition', event.move.duration);
 };
 
 Banner.prototype.animateElement = function(event) {
-    var element = document.getElementById(event.element.id);
+    var element = document.getElementById(event.object.id);
     var clazz = element.getAttribute('class');
     element.setAttribute('class', clazz + ' animated ' + event.animation.name);
     element.style.setProperty('-webkit-animation-duration', event.animation.duration);
@@ -1220,19 +1220,19 @@ Banner.prototype.read = function() {
                 if (event.type === 'addImage') {
                     document.getElementById("title").innerText += "\nRead addImage - " + new Date();
                     resize();
-                    self.addElement(event.element);
+                    self.addElement(event.object);
                 } else if (event.type === 'addBanner') {
                     document.getElementById("title").innerText += "\nRead addBanner - " + new Date();
                     resize();
-                    self.addElement(event.element);
+                    self.addElement(event.object);
                 } else if (event.type === 'addWidget') {
                     document.getElementById("title").innerText += "\nRead addWidget - " + new Date();
                     resize();
-                    self.addElement(event.element);
+                    self.addElement(event.object);
                 } else if (event.type === 'remove') {
                     document.getElementById("title").innerText += "\nRead remove - " + new Date();
                     resize();
-                    self.removeElement(event.element);
+                    self.removeElement(event.object);
                 } else if (event.type === 'animation') {
                     document.getElementById("title").innerText += "\nRead animation - " + new Date();
                     resize();
@@ -1276,10 +1276,10 @@ Banner.prototype.loadElements = function() {
                 document.getElementById("title").innerText += "\nAdding elements";
                 resize();
                 var elements = JSON.parse(xhr.responseText);
-                elements.elements.forEach(function(element) {
-                    document.getElementById("title").innerText += "\nAdding " + element.id;
+                elements.elements.forEach(function(object) {
+                    document.getElementById("title").innerText += "\nAdding " + object.id;
                     resize();
-                    self.addElement(element);
+                    self.addElement(object);
                 });
             } else {
                 var status = xhr.statusText;
