@@ -1,17 +1,16 @@
 var moment       = require('moment')
 ,   _            = require('underscore')
-,   uuid         = require('node-uuid')
-,   http         = require('http')
-,   querystring  = require('querystring')
 ,   mbc          = require('mbc-common')
-,   Sketch       = require('mbc-common/models/Sketch')
 ,   collections  = mbc.config.Common.Collections
 ,   logger       = mbc.logger().addLogger('webvfx_scheduler')
 ,   conf         = mbc.config.Webvfx
-,   eventManager = require('./EventManager')
+,   Etiquette    = require('./models/Etiquette')
 ;
 
 function scheduler() {
+    logger.debug("New instance created");
+    this.loadedSchedules = Etiquette.Schedules();
+    this.currentScheds = new Etiquette.SchedulesCollection();
 }
 
 scheduler.prototype.initScheduler = function() {
@@ -20,18 +19,18 @@ scheduler.prototype.initScheduler = function() {
     var db = mbc.db();
     self.schedules = db.collection(collections.SketchSchedules);
     self.sketchs = db.collection(collections.Sketchs);
-    self.loadedSchedules = [];
     self.checkSchedules();
 };
 
 scheduler.prototype.checkSchedules = function() {
     var self = this;
     logger.debug("Checking schedules...");
-    logger.debug("Loaded schedules:", self.loadedSchedules);
-    var now = moment().valueOf();
-    var currentScheds = [];
+//    logger.debug("Loaded schedules:", self.loadedSchedules);
+//    var now = moment().valueOf();
+    //TODO: load only x hours of schedules???
     var query = {};
-    query.date = { $lte: now };
+//    query.date = { $lte: now };
+    this.currentScheds.reset();
     self.schedules.findItems(query, function(err, scheds) {
         if (err) {
             logger.error("Error obtaining schedules: ", err);
@@ -41,40 +40,24 @@ scheduler.prototype.checkSchedules = function() {
             logger.debug("Processing sched list:", scheds);
             scheds.forEach(function(sched) {
                 logger.debug("Processing sched:", sched);
-                if (sched.length) {
-                    logger.debug("Checking sched length:", sched.length);
-                    var end = sched.date + sched.length;
-                    if (end > now) {
-                        if (_.findWhere(self.loadedSchedules, {_id: sched._id}) === undefined)
-                            self.addSched(sched);
-                        currentScheds.push(sched);
-                    } else {
-                        //TODO: Delete schedule from db...
-                        self.removeSched(sched);
-                    }
-                } else {
-                    logger.debug('Infinite sched');
-                    if (_.findWhere(self.loadedSchedules, {_id: sched._id}) === undefined)
-                        self.addSched(sched);
-                    currentScheds.push(sched);
-                }
+                self.addSched(sched);
             });
         }
-        _.each(self.loadedSchedules, function(sched) {
-            logger.debug('Checking current scheds');
-            if (_.findWhere(currentScheds, {_id: sched._id}) === undefined) {
-                logger.debug('Found sched to remove:', sched);
-                self.removeSched(sched);
-            }
-        });
-        setTimeout(self.checkSchedules.bind(self), 1000);
     });
+    var toRemove = [];
+    this.loadedSchedules.forEach(function(sched) {
+        if (!self.currentScheds.contains(sched))
+            toRemove.push(sched.id);
+    });
+    if (toRemove.length > 0)
+        this.loadedSchedules.unloadSchedules(toRemove);
 };
 
 scheduler.prototype.addSched = function(sched) {
     logger.info("Adding sched:", sched);
     var self = this;
     self.sketchs.findById(sched.sketch_id, function(err, sketch) {
+        var objects = new Etiquette.WebVfxObjectCollection();
         _.each(sketch.data, function(s) {
             logger.debug("Adding object:", s);
             var element = {};
@@ -91,35 +74,21 @@ scheduler.prototype.addSched = function(sched) {
                     element.width = s.width + 'px';
                 element.type = 'image';
                 element.src = (conf.server || 'http://localhost:3100') + '/uploads/' + s.name;
-                eventManager.addImage(element);
+                objects.add(new Etiquette.WebVfxImage(element));
             } else {
                 element.type = 'widget';
                 s.id = element.id;
-                element.options = JSON.stringify(s);
-                eventManager.addWidget(element);
+                element.options = s;
+                objects.add(new Etiquette.WebVfxWidget(element));
             }
         });
-        self.loadedSchedules.push(sched);
+        sched.objects = objects;
+        var schedule = new Etiquette.Schedule(sched);
+        self.loadedSchedules.addSchedule(schedule);
+        self.currentScheds.add(schedule);
     });
 };
 
-scheduler.prototype.removeSched = function(sched) {
-    logger.info("Removing sched:", sched);
-    var self = this;
-    self.sketchs.findById(sched.sketch_id, function(err, sketch) {
-        _.each(sketch.data, function(s) {
-            logger.debug("Removing object", s);
-            //TODO: UGLY HACK FOR NOT REPEATING IDS
-            var id = sched._id + "---" + s.id;
-            eventManager.removeElement(id);
-        });
-        self.loadedSchedules = _.reject(self.loadedSchedules, function(s) {
-            return s._id === sched._id;
-        });
-    });
-};
+exports = module.exports = scheduler;
 
-exports = module.exports = function(conf) {
-    var sched = new scheduler();
-    return sched;
-};
+scheduler.__proto__ = new scheduler;
