@@ -6,7 +6,9 @@ module.exports = function(server) {
     , po2json = require('po2json')
     , i18n = require('i18n-abide')
     , _ = require('underscore')
-    , fs  = require('fs')
+    , os = require('os')
+    , fs = require('fs')
+    , exec = require('child_process').exec
     , mbc = require('mbc-common')
     , conf = mbc.config.Webvfx
     , commonConf = mbc.config.Common
@@ -27,7 +29,7 @@ module.exports = function(server) {
         next();
     };
 
-    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/addAnimation', '/remove', '/removeAll', '/addEffect', '/move', '/uploadImage' ];
+    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/addAnimation', '/remove', '/removeAll', '/addEffect', '/move', '/uploadFile' ];
     _.each(accessRoutes, function(route) {
         server.all(route, accessControl);
     });
@@ -202,17 +204,57 @@ module.exports = function(server) {
         return res.json({});
     });
 
-    server.post('/uploadImage', function(req, res){
-        fs.readFile(req.files.uploadedFile.path, function (err, data) {
-            if(err) {
-                logger.error('Uploading file: ' + err);
-                return;
+    server.post('/uploadFile', function(req, res) {
+        var regex = /\.(zip|tar.gz|tgz)$/;
+        if ( regex.test(req.files.uploadedFile.name) ) {
+            var compressFilePath = req.files.uploadedFile.path;
+            var tmpDir = path.join(os.tmpdir(), 'ettiquete-' + Math.random().toString(36).substring(7));
+            fs.mkdirSync(tmpDir);
+            if ( /\.zip$/.test(req.files.uploadedFile.name) ) {
+                var cmd = "unzip -x " + compressFilePath + " -d " + tmpDir;
+            } else {
+                var cmd = "tar xzf " + compressFilePath + " -C " + tmpDir;
             }
-            var newPath = path.join(conf.Dirs.uploads, req.files.uploadedFile.name);
-            fs.writeFile(newPath, data, function (err) {
-                return res.json({});
+            exec(cmd, function(error, stdout, stderr) {
+                if (error != null) {
+                    logger.error('decompress');
+                    return res.json({error: 'decompressing file'});
+                }
+                var cmd = "ls -1 " + tmpDir + " | wc -l";
+                exec(cmd, function(error, stdout, stderr) {
+                    var frames = parseInt(stdout);
+                    var pngs = path.join(tmpDir, "*");
+                    var filename = req.files.uploadedFile.name.replace(regex, '.png');
+                    var filepath = path.join(conf.Dirs.uploads, filename);
+                    var cmd = "convert " + pngs + " +append " + filepath;
+                    exec(cmd, function(error, stdout, stderr) {
+                        if (error != null) {
+                            logger.error(error);
+                            return res.json({error: 'creating single png'});
+                        }
+                        return res.json({
+                            type: 'animation',
+                            filename: filename,
+                            frames: frames
+                        });
+                    });
+                })
             });
-        });
+        } else {
+            fs.readFile(req.files.uploadedFile.path, function (err, data) {
+                if (err) {
+                    logger.error('Uploading file: ' + err);
+                    return;
+                }
+                var newPath = path.join(conf.Dirs.uploads, req.files.uploadedFile.name);
+                fs.writeFile(newPath, data, function (err) {
+                    return res.json({
+                        type: 'image',
+                        filename: req.files.uploadedFile.name
+                    });
+                });
+            });
+        }
     });
 
     server.get('/live.webm', function(req, res) {
