@@ -29,7 +29,8 @@
       "socket.io"       : "0.9.x",
       "knockback"       : "0.17.x",
       "knockout"        : "2.2.x",
-      "moment"          : "1.7.x"
+      "moment"          : "1.7.x", 
+      "semaphore"       : "1.0.x"
   },
   "license" : "agplv3",
   "engines" : {
