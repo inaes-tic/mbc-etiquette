@@ -1274,6 +1274,7 @@ Banner.prototype.loadElements = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 document.getElementById("title").innerText += "\nAdding elements";
+                console.log(xhr.responseText);
                 resize();
                 var elements = JSON.parse(xhr.responseText);
                 elements.elements.forEach(function(object) {
@@ -1324,8 +1325,8 @@ function resize(element) {
         element = document.getElementById("title");
         var content = element.innerText.replace(/  |^\s+|\s+$/g,"");
         var lines = content.split("\n");
-        if (lines.length > 20) {
-            var x = lines.length - 20;
+        if (lines.length > 14) {
+            var x = lines.length - 14;
             lines.splice(0, x);
             element.innerText = "";
             lines.forEach(function(line) {
