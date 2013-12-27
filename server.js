@@ -10,7 +10,9 @@ var express = require("express"),
     url = require('url'),
     collections = mbc.config.Common.Collections,
     uuid = require('node-uuid'),
-    scheduler = require('./scheduler')()
+    scheduler = require('./scheduler'),
+    webvfx_driver = require('./drivers/webvfx_driver'),
+    editor_driver = require('./drivers/editor_driver')
     ;
 
 var loggerStream = {
@@ -71,8 +73,14 @@ server.configure('production', function(){
   server.set('minify', true);
 });
 
-//var routes = require('./routes')(server);
-require('./routes')(server);
+/* DRIVERS INITIALIZATION */
+var wdriver = new webvfx_driver();
+wdriver.init();
+var edriver = new editor_driver(server);
+edriver.init();
+var drivers = [wdriver, edriver];
+
+require('./routes')(server, drivers);
 
 function debug_backend (backend) {
     backend.use(function(req, res, next) {
