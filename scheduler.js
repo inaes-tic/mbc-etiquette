@@ -28,6 +28,7 @@ scheduler.prototype.checkSchedules = function() {
 //    logger.debug("Loaded schedules:", self.loadedSchedules);
 //    var now = moment().valueOf();
     //TODO: load only x hours of schedules???
+    //TODO: make driver receive adds and removes instead reload??
     var query = {};
 //    query.date = { $lte: now };
     this.currentScheds.reset();
@@ -37,13 +38,20 @@ scheduler.prototype.checkSchedules = function() {
             return;
         }
         if (scheds) {
+            var sync = _.after(scheds.length, self.syncScheds.bind(self));
             logger.debug("Processing sched list:", scheds);
             scheds.forEach(function(sched) {
                 logger.debug("Processing sched:", sched);
-                self.addSched(sched);
+                self.addSched(sched, sync);
             });
         }
     });
+};
+
+scheduler.prototype.syncScheds = function() {
+    var self = this;
+    logger.debug('Sync schedules');
+    /* REMOVING SCHEDULES THAT NO LONGER EXIST*/
     var toRemove = [];
     this.loadedSchedules.forEach(function(sched) {
         if (!self.currentScheds.contains(sched))
@@ -51,9 +59,13 @@ scheduler.prototype.checkSchedules = function() {
     });
     if (toRemove.length > 0)
         this.loadedSchedules.unloadSchedules(toRemove);
-};
+    /* ADDING CURRENT SCHEDULES */
+    this.currentScheds.forEach(function(sched) {
+        self.loadedSchedules.addSchedule(sched);
+    });
+}
 
-scheduler.prototype.addSched = function(sched) {
+scheduler.prototype.addSched = function(sched, callback) {
     logger.info("Adding sched:", sched);
     var self = this;
     self.sketchs.findById(sched.sketch_id, function(err, sketch) {
@@ -84,8 +96,9 @@ scheduler.prototype.addSched = function(sched) {
         });
         sched.objects = objects;
         var schedule = new Etiquette.Schedule(sched);
-        self.loadedSchedules.addSchedule(schedule);
         self.currentScheds.add(schedule);
+        if (callback)
+            callback();
     });
 };
 
