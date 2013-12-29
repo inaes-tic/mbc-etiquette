@@ -323,7 +323,10 @@ Etiquette.LoadedSchedulesCollection = Etiquette.SchedulesCollection.extend({
         this.unloadSchedule(schedule.id);
         var now = moment().valueOf();
         logger.debug('Schedule start:', moment(schedule.get('start')).format('HH:mm:ss'), schedule.get('start'));
-        logger.debug('Schedule end:', moment(schedule.get('end')).format('HH:mm:ss'), schedule.get('start'));
+        if (schedule.get('end'))
+            logger.debug('Schedule end:', moment(schedule.get('end')).format('HH:mm:ss'), schedule.get('end'));
+        else
+            logger.debug('Schedule end:', 'infinite');
         logger.debug('Now:', moment(now).format('HH:mm:ss'), now);
         var start = -1;
         var end = -1;
