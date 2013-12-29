@@ -75,10 +75,11 @@ server.configure('production', function(){
 
 /* DRIVERS INITIALIZATION */
 var wdriver = new webvfx_driver();
-var edriver = new editor_driver(server);
-var drivers = [wdriver, edriver];
+wdriver.processRoutes(server);
+var edriver = new editor_driver();
+edriver.processRoutes(server);
 
-require('./routes')(server, drivers);
+require('./routes')(server);
 
 function debug_backend (backend) {
     backend.use(function(req, res, next) {

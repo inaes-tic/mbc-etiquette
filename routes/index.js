@@ -1,4 +1,4 @@
-module.exports = function(server, drivers) {
+module.exports = function(server) {
 
     var path = require('path')
     , folio = require('folio')
@@ -26,21 +26,6 @@ module.exports = function(server, drivers) {
     var accessRoutes = [];
     _.each(accessRoutes, function(route) {
         server.all(route, accessControl);
-    });
-
-    /* PROCESSING DRIVERS*/
-    _.each(drivers, function(driver) {
-        logger.debug("Processing driver: ", driver.getName());
-        _.each(driver.getGetRoutes(), function(route) {
-            logger.debug('Adding get route:', route);
-            server.all(route, accessControl);
-            server.get(route, driver.getGetCallback(route));
-        });
-        _.each(driver.getPostRoutes(), function(route) {
-            logger.debug('Adding post route:', route);
-            server.all(route, accessControl);
-            server.post(route, driver.getPostCallback(route));
-        });
     });
 
     server.get('/live.webm', function(req, res) {

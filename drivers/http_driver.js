@@ -8,6 +8,25 @@ function http_driver(name) {
     this.get = [];
     this.post = [];
     this.name = name;
+    this.accessControl = function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
+        next();
+    };    
+}
+
+http_driver.prototype.processRoutes = function(server) {
+    var self = this;
+    _.each(this.getGetRoutes(), function(route) {
+        logger.debug('Adding get route:', route);
+        server.all(route, self.accessControl);
+        server.get(route, self.getGetCallback(route));
+    });
+    _.each(this.getPostRoutes(), function(route) {
+        logger.debug('Adding post route:', route);
+        server.all(route, self.accessControl);
+        server.post(route, self.getPostCallback(route));
+    });
 }
 
 http_driver.prototype.getName = function() {
