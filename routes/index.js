@@ -133,7 +133,7 @@ module.exports = function(server) {
                            'alert',
                            'confirm',
                            'prompt',
-                           'schedulePrompt',
+                           'schedule_prompt',
                           ];
 
     var getFileName = function (e) {
