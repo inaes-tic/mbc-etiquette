@@ -1,16 +1,23 @@
-var express = require("express"),
-    _       = require("underscore"),
-    exec    = require('child_process').exec,
-    i18n    = require('i18n-abide'),
-    maxage = 365 * 24 * 60 * 60 * 1000,
-    backboneio = require('backbone.io'),
-    mbc = require('mbc-common'),
-    conf = mbc.config.Webvfx,
-    logger = mbc.logger().addLogger('webvfx_server'),
-    url = require('url'),
-    collections = mbc.config.Common.Collections,
-    uuid = require('node-uuid')
-    ;
+/* require all the libs we use */
+var _              = require('underscore'),
+    express        = require('express'),
+    path           = require('path'),
+    exec           = require('child_process').exec,
+    i18n           = require('i18n-abide'),
+    backboneio     = require('backbone.io'),
+    uuid           = require('node-uuid'),
+    url            = require('url'),
+/* shared mbc code */
+    mbc            = require('mbc-common'),
+    conf           = mbc.config.Webvfx,
+    collections    = mbc.config.Common.Collections,
+    db             = mbc.db(),
+    logger         = mbc.logger().addLogger('webvfx_server'),
+/* utilities */
+    maxage         = 365 * 24 * 60 * 60 * 1000,
+    backends       = require('./backends')(db),
+    iobackends     = new mbc.iobackends(db, backends)
+;
 
 var loggerStream = {
     write: function(message, encoding) {
@@ -72,41 +79,10 @@ server.configure('production', function(){
 
 require('./routes')(server);
 
-function debug_backend (backend) {
-    backend.use(function(req, res, next) {
-        logger.debug('Backend: ', req.backend);
-        logger.debug('Method: ', req.method);
-        logger.debug('Channel: ', req.channel);
-        logger.debug('Options: ', JSON.stringify(req.options));
-        logger.debug('Model: ', JSON.stringify(req.model));
-        next();
-    });
-}
-
-function id_middleware(req, res, next) {
-    if( req.method == 'create' && req.model._id === undefined) {
-        req.model._id = uuid.v1();
-    }
-    next();
-}
-
-var db = mbc.db();
-var appbackend = backboneio.createBackend();
-var sketchbackend = backboneio.createBackend();
-
-var backends = [ appbackend, sketchbackend ];
-_(backends).each (debug_backend);
-
-appbackend.use(backboneio.middleware.configStore());
-
-sketchbackend.use(id_middleware);
-sketchbackend.use(backboneio.middleware.mongoStore(db, collections.Sketchs, {}));
-
+var ios = iobackends.get_ios();
 var io = backboneio.listen(server.listen(server.get('port'), function(){
-    logger.info("Express server listening on port " + server.get('port') + " in mode " + server.settings.env);
-}), { appbackend: appbackend,
-      sketchbackend: sketchbackend,
-    });
+    logger.info("Express server listening on port " + server.get('port') + " in mode " + server.settings.env + '\nactive backends: ' +  _.keys(ios));
+}), ios);
 
 io.configure('production', function(){
     // send minified client
