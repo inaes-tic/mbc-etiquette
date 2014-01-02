@@ -109,9 +109,12 @@ var io = backboneio.listen(server.listen(server.get('port'), function(){
     });
 
 io.configure('production', function(){
-    io.enable('browser client minification');   // send minified client
-    io.enable('browser client etag');           // apply etag caching logic based on version number
-    io.enable('browser client gzip');           // gzip the file
+    // send minified client
+    io.enable('browser client minification');
+    // apply etag caching logic based on version number
+    io.enable('browser client etag');
+    // gzip the file
+    io.enable('browser client gzip');
 });
 
 if (process.env.HEROKU) {
