@@ -55,7 +55,6 @@ module.exports = function(server) {
     });
 
     server.post('/addImage', function(req, res){
-        conf.Dirs.uploads
         var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'uploads/' + req.body.images });
         var element = {};
         element.id = req.body.id;
