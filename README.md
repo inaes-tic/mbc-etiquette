@@ -55,6 +55,13 @@ Video preview in Editor Canvas
     git clone https://github.com/inaes-tic/stream-m
 ```
 
+Convert pngs zip files into animations in Editor
+
+
+```shell
+    apt-get install unzip imagemagick
+```
+
 ### Running the stream sample
 
 From a terminal, keep this running

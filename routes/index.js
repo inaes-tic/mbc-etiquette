@@ -6,7 +6,9 @@ module.exports = function(server) {
     , po2json = require('po2json')
     , i18n = require('i18n-abide')
     , _ = require('underscore')
-    , fs  = require('fs')
+    , os = require('os')
+    , fs = require('fs')
+    , exec = require('child_process').exec
     , mbc = require('mbc-common')
     , conf = mbc.config.Webvfx
     , commonConf = mbc.config.Common
@@ -27,7 +29,7 @@ module.exports = function(server) {
         next();
     };
 
-    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/remove', '/removeAll', '/addEffect', '/move', '/uploadImage' ];
+    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/addAnimation', '/remove', '/removeAll', '/addEffect', '/move', '/uploadFile' ];
     _.each(accessRoutes, function(route) {
         server.all(route, accessControl);
     });
@@ -57,6 +59,7 @@ module.exports = function(server) {
         var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'uploads/' + req.body.images });
         var element = {};
         element.id = req.body.id;
+        remove(element.id);
         element.type = 'image';
         element.src = full_url;
         element.top = req.body.top;
@@ -78,6 +81,7 @@ module.exports = function(server) {
     server.post('/addBanner', function(req, res){
         var element = {};
         element.id = req.body.id;
+        remove(element.id);
         element.type = 'banner';
         element.top = req.body.top;
         element.left = req.body.left;
@@ -101,6 +105,7 @@ module.exports = function(server) {
     server.post('/addWidget', function(req, res){
         var element = {};
         element.id = req.body.id;
+        remove(element.id);
         element.type = 'widget';
         element.options = JSON.parse(req.body.options);
         element.zindex = req.body.zindex;
@@ -113,17 +118,43 @@ module.exports = function(server) {
         return res.json({});
     });
 
-    server.post('/remove', function(req, res){
+    server.post('/addAnimation', function(req, res){
         var element = {};
-        element.id = req.body.elements;
+        element.id = req.body.id;
+        remove(element.id);
+        element.type = 'animation';
+        element.options = req.body;
+        element.options.image = url.format({
+            protocol: req.protocol,
+            host: req.get('host'),
+            pathname: 'uploads/' + req.body.name
+        });
         var event = {};
-        event.type = 'remove';
+        event.type = 'addAnimation';
         event.element = element;
         event.consumed = false;
         events.push(event);
+        elements.push(element);
+        return res.json({});
+    });
+
+    var remove = function(id) {
         elements = _.reject(elements, function(item) {
-            return item.id === element.id;
+            if (item.id === id) {
+                events.push({
+                    type: 'remove',
+                    element: {id: id},
+                    consumed: false
+                });
+                return true;
+            } else {
+                return false;
+            }
         });
+    };
+
+    server.post('/remove', function(req, res){
+        remove(req.body.elements);
         return res.json({});
     });
 
@@ -173,18 +204,83 @@ module.exports = function(server) {
         return res.json({});
     });
 
-    server.post('/uploadImage', function(req, res){
-        fs.readFile(req.files.uploadedFile.path, function (err, data) {
-            if(err) {
-                logger.error('Uploading file: ' + err);
-                return;
-            }
-            var newPath = path.join(conf.Dirs.uploads, req.files.uploadedFile.name);
-            fs.writeFile(newPath, data, function (err) {
-                return res.json({});
+    var regexFileTypes = /\.(zip|tar.gz|tgz)$/i;
+
+    server.post('/uploadFile', function(req, res) {
+        var uploadedFileName = req.files.uploadedFile.name;
+        var uploadedFilePath = req.files.uploadedFile.path;
+
+        if (regexFileTypes.test(uploadedFileName)) {
+            createAnimation(uploadedFileName, uploadedFilePath, function (err, data) {
+                if (err) {
+                    logger.error('Creating animation: ' + err);
+                    return res.json({error: err});
+                }
+                return res.json({
+                    type: 'animation',
+                    filename: data.filename,
+                    frames: data.frames,
+                });
             });
-        });
+        } else {
+            fs.readFile(uploadedFilePath, function (err, data) {
+                if (err) {
+                    logger.error('Uploading file: ' + err);
+                    return res.json({error: 'uploading files'});
+                }
+                var newPath = path.join(conf.Dirs.uploads, uploadedFileName);
+                fs.writeFile(newPath, data, function (err) {
+                    if (err) {
+                        logger.error('Writing file: ' + err);
+                        return res.json({error: 'writing file'});
+                    }
+                    return res.json({
+                        type: 'image',
+                        filename: uploadedFileName
+                    });
+                });
+            });
+        }
     });
+
+    var createAnimation = function(uploadedFileName, uploadedFilePath, callback) {
+        var tmpDir = uploadedFilePath + '.d';
+        fs.mkdirSync(tmpDir);
+
+        var cmd = /\.zip$/i.test(uploadedFileName)
+                ? "unzip -x " + uploadedFilePath + " -d " + tmpDir
+                : "tar xzf " + uploadedFilePath + " -C " + tmpDir;
+
+        exec(cmd, function(error, stdout, stderr) {
+            if (error) {
+                callback('decompressing file');
+            }
+
+            var cmd = "find " + tmpDir + " -iname '*.png' | sort";
+
+            exec(cmd, function(error, stdout, stderr) {
+                if (error) {
+                    callback('finding png files');
+                }
+
+                var files = stdout;
+                var frames = files.trim().split("\n").length;
+                var filename = uploadedFileName.replace(regexFileTypes, '.png');
+                var filepath = path.join(conf.Dirs.uploads, filename);
+
+                var cmd = "convert '" + files.trim().replace(/\n/g, "' '") + "' "
+                        + "+append -set 'OPCODE:frames' " + frames + " " + filepath;
+
+                exec(cmd, function(error, stdout, stderr) {
+                    if (error) {
+                        callback('creating single png');
+                    }
+
+                    callback(null, {filename: filename, frames: frames});
+                });
+            })
+        });
+    }
 
     server.get('/live.webm', function(req, res) {
         if(conf.Editor.stream_url) {
