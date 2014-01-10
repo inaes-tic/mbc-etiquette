@@ -107,6 +107,7 @@ module.exports = function(server) {
         remove(element.id);
         element.type = 'widget';
         element.options = JSON.parse(req.body.options);
+        element.options.woeid = conf.Widgets.woeid;
         element.zindex = req.body.zindex;
         var event = {};
         event.type = 'addWidget';
