@@ -10,11 +10,11 @@ var _              = require('underscore'),
 /* shared mbc code */
     mbc            = require('mbc-common'),
     conf           = mbc.config.Webvfx,
-    collections    = mbc.config.Common.Collections,
+    common_conf    = mbc.config.Common,
+    collections    = common_conf.Collections,
     db             = mbc.db(),
     logger         = mbc.logger().addLogger('webvfx_server'),
 /* utilities */
-    maxage         = 365 * 24 * 60 * 60 * 1000,
     backends       = require('./backends')(db),
     iobackends     = new mbc.iobackends(db, backends)
 ;
@@ -53,15 +53,15 @@ server.configure(function(){
     server.use(express.bodyParser());
     server.use(express.methodOverride());
     server.use(express.cookieParser());
-    server.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: maxage }}));
+    server.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: common_conf.Others.maxage }}));
     server.use(require('less-middleware')({
         src:  conf.Dirs.styles,
         dest: conf.Dirs.pub,
         compress: true}
     ));
-    server.use(express.static(conf.Dirs.pub, {maxAge: maxage}));
-    server.use('/models', express.static(conf.Dirs.models, {maxAge: maxage}));
-    server.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: maxage}));
+    server.use(express.static(conf.Dirs.pub, {maxAge: common_conf.Others.maxage}));
+    server.use('/models', express.static(conf.Dirs.models, {maxAge: common_conf.Others.maxage}));
+    server.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: common_conf.Others.maxage}));
     server.use(server.router);
 });
 
