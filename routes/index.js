@@ -124,6 +124,7 @@ module.exports = function(server) {
         remove(element.id);
         element.type = 'animation';
         element.options = req.body;
+        element.options.frameRate = mbc.config.Mosto.General.fps;
         element.options.image = url.format({
             protocol: req.protocol,
             host: req.get('host'),
