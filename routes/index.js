@@ -57,7 +57,7 @@ module.exports = function(server) {
     server.get("/images", function(req, res) {
         fs.readdir(conf.Dirs.uploads, function(err, files) {
             files.sort();
-            res.json({images: files});
+            return res.json({images: files});
         });
     });
 
@@ -66,6 +66,11 @@ module.exports = function(server) {
         var filepath = path.join(conf.Dirs.uploads, req.params.filename);
         var cmd = 'identify -format "%[' + opcodeKey + '*]" ' + filepath;
         exec(cmd, function(error, stdout, stderr) {
+            if (error) {
+                logger.error('Getting image info: ' + error);
+                return res.json({error: error});
+            }
+
             var metadata = {};
             var stdoutLines = stdout.trim().split("\n");
             _.each(stdoutLines, function(line) {
@@ -74,7 +79,7 @@ module.exports = function(server) {
                 metadata[chunks[0]] = chunks[1];
             })
             type = ('frames' in metadata) ? 'animation' : 'image';
-            res.json({filename: req.params.filename, type: type, metadata: metadata});
+            return res.json({filename: req.params.filename, type: type, metadata: metadata});
         });
     });
 
