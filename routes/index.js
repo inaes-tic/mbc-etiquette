@@ -68,7 +68,7 @@ module.exports = function(server) {
         exec(cmd, function(error, stdout, stderr) {
             if (error) {
                 logger.error('Getting image info: ' + error);
-                return res.json({error: error});
+                return res.json({error: 'getting image info'});
             }
 
             var metadata = {};
