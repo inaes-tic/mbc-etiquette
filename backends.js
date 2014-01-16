@@ -13,7 +13,7 @@ module.exports = function (db) {
             use: [middleware.uuid],
             mongo: {
                 db: db,
-               collection: collections.Sketchs,
+                collection: collections.Sketchs,
             }
         },
     }
