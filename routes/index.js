@@ -342,6 +342,7 @@ module.exports = function(server) {
         require.resolve('jquery-browser/lib/jquery.js'),
         require.resolve('jqueryui-browser/ui/jquery-ui.js'),
         require.resolve('underscore/underscore.js'),
+        require.resolve('node-uuid'),
         require.resolve('backbone/backbone.js'),
         require.resolve('jed'),
         require.resolve('knockout/build/output/knockout-latest.js'),
