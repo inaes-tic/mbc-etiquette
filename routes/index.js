@@ -29,7 +29,7 @@ module.exports = function(server) {
         next();
     };
 
-    accessRoutes = [ '/events', '/init', '/addImage', '/addBanner', '/addWidget', '/addAnimation', '/remove', '/removeAll', '/addEffect', '/move', '/uploadFile' ];
+    accessRoutes = [ '/events', '/init', '/images', '/addImage', '/addBanner', '/addWidget', '/addAnimation', '/remove', '/removeAll', '/addEffect', '/move', '/uploadFile' ];
     _.each(accessRoutes, function(route) {
         server.all(route, accessControl);
     });
@@ -51,6 +51,35 @@ module.exports = function(server) {
         res.json({elements: elements});
         events = _.reject(events, function(event) {
             return event.type === 'add' || event.type === 'remove';
+        });
+    });
+
+    server.get("/images", function(req, res) {
+        fs.readdir(conf.Dirs.uploads, function(err, files) {
+            files.sort();
+            return res.json({images: files});
+        });
+    });
+
+    server.get("/images/:filename", function(req, res) {
+        var opcodeKey = "OPCODE:";
+        var filepath = path.join(conf.Dirs.uploads, req.params.filename);
+        var cmd = 'identify -format "%[' + opcodeKey + '*]" ' + filepath;
+        exec(cmd, function(error, stdout, stderr) {
+            if (error) {
+                logger.error('Getting image info: ' + error);
+                return res.json({error: 'getting image info'});
+            }
+
+            var metadata = {};
+            var stdoutLines = stdout.trim().split("\n");
+            _.each(stdoutLines, function(line) {
+                line = line.replace(opcodeKey, '');
+                chunks = line.split("=");
+                metadata[chunks[0]] = chunks[1];
+            })
+            type = ('frames' in metadata) ? 'animation' : 'image';
+            return res.json({filename: req.params.filename, type: type, metadata: metadata});
         });
     });
 
@@ -313,6 +342,7 @@ module.exports = function(server) {
         require.resolve('jquery-browser/lib/jquery.js'),
         require.resolve('jqueryui-browser/ui/jquery-ui.js'),
         require.resolve('underscore/underscore.js'),
+        require.resolve('node-uuid'),
         require.resolve('backbone/backbone.js'),
         require.resolve('jed'),
         require.resolve('knockout/build/output/knockout-latest.js'),
