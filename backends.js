@@ -16,6 +16,9 @@ module.exports = function (db) {
                 collection: collections.Sketchs,
             }
         },
+        live: {
+            use: [backboneio.middleware.memoryStore()]
+        }
     }
     return backends;
 };
