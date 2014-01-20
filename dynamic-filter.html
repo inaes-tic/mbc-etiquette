@@ -57,7 +57,7 @@
 </head>
 <body>
     <img id="image" style="position:absolute" />
-    <div id="content", data-bind="foreach: items">
+    <div id="content" data-bind="foreach: items">
 
         <!-- ko if: type() == 'image' -->
         <img data-bind="attr: { src: src() }, style: { position: 'absolute', top: top(), width: width(), height: height(), left: left(), right: right(), bottom: bottom(), zIndex: zindex() }" />
