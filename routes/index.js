@@ -29,29 +29,9 @@ module.exports = function(server) {
         next();
     };
 
-    accessRoutes = [ '/events', '/init', '/images', '/addImage', '/addBanner', '/addWidget', '/addAnimation', '/remove', '/removeAll', '/addEffect', '/move', '/uploadFile' ];
+    accessRoutes = [ 'images', '/uploadFile' ];
     _.each(accessRoutes, function(route) {
         server.all(route, accessControl);
-    });
-
-    server.get("/events", function(req, res) {
-        var event = _.findWhere(events, {consumed: false});
-        if (event) {
-            logger.debug(event);
-            event.consumed = true;
-            res.json(event);
-        } else {
-            logger.debug('Event: NONE');
-            res.json({"type": "none"});
-        }
-    });
-
-    server.get("/init", function(req, res) {
-        logger.debug(elements);
-        res.json({elements: elements});
-        events = _.reject(events, function(event) {
-            return event.type === 'add' || event.type === 'remove';
-        });
     });
 
     server.get("/images", function(req, res) {
@@ -81,157 +61,6 @@ module.exports = function(server) {
             type = ('frames' in metadata) ? 'animation' : 'image';
             return res.json({filename: req.params.filename, type: type, metadata: metadata});
         });
-    });
-
-    server.post('/addImage', function(req, res){
-        var full_url = url.format( { protocol: req.protocol, host: req.get('host'), pathname: 'uploads/' + req.body.images });
-        var element = {};
-        element.id = req.body.id;
-        remove(element.id);
-        element.type = 'image';
-        element.src = full_url;
-        element.top = req.body.top;
-        element.left = req.body.left;
-        element.bottom = req.body.bottom;
-        element.right = req.body.right;
-        element.height = req.body.height;
-        element.width = req.body.width;
-        element.zindex = req.body.zindex;
-        var event = {};
-        event.type = 'addImage';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements.push(element);
-        return res.json({});
-    });
-
-    server.post('/addBanner', function(req, res){
-        var element = {};
-        element.id = req.body.id;
-        remove(element.id);
-        element.type = 'banner';
-        element.top = req.body.top;
-        element.left = req.body.left;
-        element.bottom = req.body.bottom;
-        element.right = req.body.right;
-        element.height = req.body.height;
-        element.width = req.body.width;
-        element.background_color = req.body.background_color;
-        element.color = req.body.color;
-        element.text = req.body.text;
-        element.scroll = req.body.scroll;
-        var event = {};
-        event.type = 'addBanner';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements.push(element);
-        return res.json({});
-    });
-
-    server.post('/addWidget', function(req, res){
-        var element = {};
-        element.id = req.body.id;
-        remove(element.id);
-        element.type = 'widget';
-        element.options = JSON.parse(req.body.options);
-        element.options.woeid = commonConf.Widgets.WeatherWoeid;
-        element.zindex = req.body.zindex;
-        var event = {};
-        event.type = 'addWidget';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements.push(element);
-        return res.json({});
-    });
-
-    server.post('/addAnimation', function(req, res){
-        var element = {};
-        element.id = req.body.id;
-        remove(element.id);
-        element.type = 'animation';
-        element.options = req.body;
-        element.options.frameRate = mbc.config.Mosto.General.fps;
-        element.options.image = url.format({
-            protocol: req.protocol,
-            host: req.get('host'),
-            pathname: 'uploads/' + req.body.name
-        });
-        var event = {};
-        event.type = 'addAnimation';
-        event.element = element;
-        event.consumed = false;
-        events.push(event);
-        elements.push(element);
-        return res.json({});
-    });
-
-    var remove = function(id) {
-        elements = _.reject(elements, function(item) {
-            if (item.id === id) {
-                events.push({
-                    type: 'remove',
-                    element: {id: id},
-                    consumed: false
-                });
-                return true;
-            } else {
-                return false;
-            }
-        });
-    };
-
-    server.post('/remove', function(req, res){
-        remove(req.body.elements);
-        return res.json({});
-    });
-
-    server.post('/removeAll', function(req, res){
-        events = [];
-        _.each(elements, function(e) {
-            var event = {};
-            event.type = 'remove';
-            event.element = {id: e.id};
-            event.consumed = false;
-            events.push(event);
-        })
-        elements = [];
-        return res.json({});
-    });
-
-    server.post('/addEffect', function(req, res){
-        var element = {};
-        element.id = req.body.elements;
-        var animation = {};
-        animation.name = req.body.effects;
-        animation.duration = req.body.duration;
-        animation.iterations = req.body.iterations;
-        animation.delay = req.body.delay;
-        var event = {};
-        event.type = 'animation';
-        event.element = element;
-        event.animation = animation;
-        event.consumed = false;
-        events.push(event);
-        return res.json({});
-    });
-
-    server.post('/move', function(req, res){
-        var element = {};
-        element.id = req.body.elements;
-        var move = {};
-        move.x = req.body.x;
-        move.y = req.body.y;
-        move.duration = req.body.duration;
-        var event = {};
-        event.type = 'move';
-        event.element = element;
-        event.move = move;
-        event.consumed = false;
-        events.push(event);
-        return res.json({});
     });
 
     var regexFileTypes = /\.(zip|tar.gz|tgz)$/i;
@@ -338,23 +167,40 @@ module.exports = function(server) {
 
     var lib_dir = path.join(__dirname, '..', 'vendor')
 
-    var vendorJs = new folio.Glossary([
+    var commonVendor = [
         require.resolve('jquery-browser/lib/jquery.js'),
-        require.resolve('jqueryui-browser/ui/jquery-ui.js'),
         require.resolve('underscore/underscore.js'),
-        require.resolve('node-uuid'),
         require.resolve('backbone/backbone.js'),
-        require.resolve('jed'),
         require.resolve('knockout/build/output/knockout-latest.js'),
         require.resolve('knockback/knockback-core.js'),
+    ];
+
+    var vendorJs = new folio.Glossary(commonVendor.concat([
+        require.resolve('jqueryui-browser/ui/jquery-ui.js'),
+        require.resolve('node-uuid'),
+        require.resolve('jed'),
         path.join(lib_dir, 'kinetic-v4.5.2.min.js'),
         path.join(lib_dir, 'backbone.modal-min.js'),
         require.resolve('backbone-pageable/lib/backbone-pageable.js'),
-    ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
+    ]), {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
     server.get('/js/vendor.js', folio.serve(vendorJs));
 
+    /**
+     * Filter Vendor Javascript Package
+     */
+    vendorFilterJs = new folio.Glossary(commonVendor.concat([
+    ]), {minify: false});
+
+    server.get('/js/vendor_filter.js', folio.serve(vendorFilterJs));
+
+    /* Ko binding need to load after all filter widgets */
+    vendorOthersJs = new folio.Glossary([
+        path.join(lib_dir, 'knockout-common-binding.js'),
+    ]);
+
+    server.get('/js/vendor_filter_others.js', folio.serve(vendorOthersJs));
 
     /**
      * Views Javascript Package
@@ -380,15 +226,19 @@ module.exports = function(server) {
      * Models Javascript Package
      */
 
+    var folioModels = function(models) {
+        return new folio.Glossary(
+            models.map (function (e) {
+                return require.resolve('mbc-common/models/' + e);
+            })
+        );
+    };
+
     var models = ['Default', 'App', 'Editor', 'Sketch'];
+    server.get('/js/models.js', folio.serve(folioModels(models)));
 
-    var modelsJs = new folio.Glossary(
-        models.map (function (e) {
-            return require.resolve('mbc-common/models/' + e);
-        })
-    );
-
-    server.get('/js/models.js', folio.serve(modelsJs));
+    var models_filter = [ 'Sketch' ];
+    server.get('/js/models_filter.js', folio.serve(folioModels(models_filter)));
 
     commonConf.Widgets.Files.forEach(function(widget) {
         server.get(
@@ -401,6 +251,18 @@ module.exports = function(server) {
         );
     });
 
+    /**
+     * Filter Widgets Javascript Package
+     */
+    var widgets = [ 'WebvfxSimpleWidget', 'WebvfxAnimationWidget' ];
+
+    var widgetsJs = new folio.Glossary(
+        widgets.map (function(widget) {
+            return require.resolve('mbc-common/widgets/' + widget);
+        })
+    );
+
+    server.get('/js/widgets_filter.js', folio.serve(widgetsJs));
 
     /**
      * Template Javascript Package
