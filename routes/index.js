@@ -167,23 +167,40 @@ module.exports = function(server) {
 
     var lib_dir = path.join(__dirname, '..', 'vendor')
 
-    var vendorJs = new folio.Glossary([
+    var commonVendor = [
         require.resolve('jquery-browser/lib/jquery.js'),
-        require.resolve('jqueryui-browser/ui/jquery-ui.js'),
         require.resolve('underscore/underscore.js'),
-        require.resolve('node-uuid'),
         require.resolve('backbone/backbone.js'),
-        require.resolve('jed'),
         require.resolve('knockout/build/output/knockout-latest.js'),
         require.resolve('knockback/knockback-core.js'),
+    ];
+
+    var vendorJs = new folio.Glossary(commonVendor.concat([
+        require.resolve('jqueryui-browser/ui/jquery-ui.js'),
+        require.resolve('node-uuid'),
+        require.resolve('jed'),
         path.join(lib_dir, 'kinetic-v4.5.2.min.js'),
         path.join(lib_dir, 'backbone.modal-min.js'),
         require.resolve('backbone-pageable/lib/backbone-pageable.js'),
-    ], {minify: false}); //XXX Hack Dont let uglify minify this: too slow
+    ]), {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
     server.get('/js/vendor.js', folio.serve(vendorJs));
 
+    /**
+     * Filter Vendor Javascript Package
+     */
+    vendorFilterJs = new folio.Glossary(commonVendor.concat([
+    ]), {minify: false});
+
+    server.get('/js/vendor_filter.js', folio.serve(vendorFilterJs));
+
+    /* Ko binding need to load after all filter widgets */
+    vendorOthersJs = new folio.Glossary([
+        path.join(lib_dir, 'knockout-common-binding.js'),
+    ]);
+
+    server.get('/js/vendor_filter_others.js', folio.serve(vendorOthersJs));
 
     /**
      * Views Javascript Package
@@ -209,15 +226,19 @@ module.exports = function(server) {
      * Models Javascript Package
      */
 
+    var folioModels = function(models) {
+        return new folio.Glossary(
+            models.map (function (e) {
+                return require.resolve('mbc-common/models/' + e);
+            })
+        );
+    };
+
     var models = ['Default', 'App', 'Editor', 'Sketch'];
+    server.get('/js/models.js', folio.serve(folioModels(models)));
 
-    var modelsJs = new folio.Glossary(
-        models.map (function (e) {
-            return require.resolve('mbc-common/models/' + e);
-        })
-    );
-
-    server.get('/js/models.js', folio.serve(modelsJs));
+    var models_filter = [ 'Sketch' ];
+    server.get('/js/models_filter.js', folio.serve(folioModels(models_filter)));
 
     commonConf.Widgets.Files.forEach(function(widget) {
         server.get(
@@ -230,6 +251,18 @@ module.exports = function(server) {
         );
     });
 
+    /**
+     * Filter Widgets Javascript Package
+     */
+    var widgets = [ 'WebvfxSimpleWidget', 'WebvfxAnimationWidget' ];
+
+    var widgetsJs = new folio.Glossary(
+        widgets.map (function(widget) {
+            return require.resolve('mbc-common/widgets/' + widget);
+        })
+    );
+
+    server.get('/js/widgets_filter.js', folio.serve(widgetsJs));
 
     /**
      * Template Javascript Package
