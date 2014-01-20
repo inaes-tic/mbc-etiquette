@@ -50,7 +50,10 @@
                 webvfx.imageTypeMap = { "video" : webvfx.SourceImageType };
                 webvfx.readyRender(true);
             }
-            window.addEventListener("load", init, false);
+
+            if (typeof webvfx != 'undefined') {
+                window.addEventListener("load", init, false);
+            }
 
         });
     </script>
