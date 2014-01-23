@@ -208,19 +208,29 @@ module.exports = function(app) {
     var localViews = [ 'header' ];
     var commonViews = [ 'editor' ];
 
-    var localViewsFiles  = localViews.map( function(e) {
+    var getViewFileName = function(e) {
         return path.join(__dirname, '..', 'public/js/views/', e + '.js');
-    });
-    var commonViewsFiles = commonViews.map( function(e) {
+    };
+
+    var getViewCommonFileName = function(e) {
         return require.resolve('mbc-common/views/js/' + e);
-    });
+    }
 
     var viewsJs = new folio.Glossary(
-        localViewsFiles.concat(commonViewsFiles),
-        { minify:app.get('minify') }
+        localViews.map(getViewFileName).concat(
+            commonViews.map(getViewCommonFileName
+        )
+    ), { minify:app.get('minify') }
     );
 
     app.get('/js/views.js', folio.serve(viewsJs));
+
+    var filterViews = [ 'liveview' ];
+    var viewsFilterJs = new folio.Glossary(filterViews.map(getViewFileName),
+        { minify:app.get('minify') }
+    );
+
+    app.get('/js/views_filter.js', folio.serve(viewsFilterJs));
 
     /**
      * Models Javascript Package
@@ -237,7 +247,7 @@ module.exports = function(app) {
     var models = ['Default', 'App', 'Editor', 'Sketch'];
     app.get('/js/models.js', folio.serve(folioModels(models)));
 
-    var models_filter = [ 'Sketch' ];
+    var models_filter = [ 'App', 'Sketch' ];
     app.get('/js/models_filter.js', folio.serve(folioModels(models_filter)));
 
     commonConf.Widgets.Files.forEach(function(widget) {
@@ -288,26 +298,50 @@ module.exports = function(app) {
         return require.resolve('mbc-common/views/templates/' + e + '.jade');
     };
 
+    var jade_runtime = require.resolve('jade/runtime.js');
+    var jade_compiler = function (name, source) {
+        return 'template[\'' + name + '\'] = ' +
+            jade.compile(source, {
+                filename: name,
+                client: true,
+                compileDebug: false
+            }) + ';';
+    };
+
     var templateJs = new folio.Glossary([
-        require.resolve('jade/runtime.js'),
+        jade_runtime,
         path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
-            localTemplates.map(getFileName), commonTemplates.map(getCommonFileName)
+            localTemplates.map(getFileName),
+            commonTemplates.map(getCommonFileName)
         ),
         {
-        compilers: {
-            jade: function (name, source) {
-                return 'template[\'' + name + '\'] = ' +
-                    jade.compile(source, {
-                        filename: getFileName(name),
-                        client: true,
-                        compileDebug: false
-                    }) + ';';
+            compilers: {
+                jade: jade_compiler,
             }
         }
-    });
+    );
 
     // serve using express
     app.get('/js/templates.js', folio.serve(templateJs));
+
+    var filterTemplates = [ 'liveview' ];
+    var templateFilterJs = new folio.Glossary([
+        jade_runtime,
+        path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
+            filterTemplates.map(getFileName)
+        ),
+        {
+            compilers: {
+                jade: jade_compiler
+            }
+        }
+    );
+
+    app.get('/js/templates_filter.js', folio.serve(templateFilterJs));
+
+    app.get('/filter', function(req, res) {
+        res.render('filter', {});
+    });
 
     app.get('*',  function(req, res) {
         res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
