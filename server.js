@@ -35,53 +35,53 @@ for (d in conf.Dirs) {
     });
 }
 
-var server = express();
+var app = express();
 
-server.configure(function(){
-    server.use(i18n.abide({
+app.configure(function(){
+    app.use(i18n.abide({
         supported_languages: ['en-US', 'es', 'db-LB', 'it-CH'],
         default_lang: 'es',
         debug_lang: 'it-CH',
         translation_directory: 'locale'
     }));
 
-    server.set('port', process.env.PORT || 3100);
-    server.set('views', conf.Dirs.views);
-    server.set('view engine', 'jade');
-    server.use(express.logger({ stream: loggerStream, format: 'dev' }));
-    server.use(express.compress());
-    server.use(express.bodyParser());
-    server.use(express.methodOverride());
-    server.use(express.cookieParser());
-    server.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: common_conf.Others.maxage }}));
-    server.use(require('less-middleware')({
+    app.set('port', process.env.PORT || 3100);
+    app.set('views', conf.Dirs.views);
+    app.set('view engine', 'jade');
+    app.use(express.logger({ stream: loggerStream, format: 'dev' }));
+    app.use(express.compress());
+    app.use(express.bodyParser());
+    app.use(express.methodOverride());
+    app.use(express.cookieParser());
+    app.use(express.cookieSession({ secret: 'your secret here', cookie: { maxAge: common_conf.Others.maxage }}));
+    app.use(require('less-middleware')({
         src:  conf.Dirs.styles,
         dest: conf.Dirs.pub,
         compress: true}
     ));
-    server.use(express.static(conf.Dirs.pub, {maxAge: common_conf.Others.maxage}));
-    server.use('/models', express.static(conf.Dirs.models, {maxAge: common_conf.Others.maxage}));
-    server.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: common_conf.Others.maxage}));
-    server.use(server.router);
+    app.use(express.static(conf.Dirs.pub, {maxAge: common_conf.Others.maxage}));
+    app.use('/models', express.static(conf.Dirs.models, {maxAge: common_conf.Others.maxage}));
+    app.use('/lib',    express.static(conf.Dirs.vendor, {maxAge: common_conf.Others.maxage}));
+    app.use(app.router);
 });
 
-server.configure('development', function(){
-  server.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-  server.set('io.loglevel', 100);
-  server.set('minify', false);
+app.configure('development', function(){
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.set('io.loglevel', 100);
+  app.set('minify', false);
 });
 
-server.configure('production', function(){
-  server.use(express.errorHandler());
-  server.set('io.loglevel', 1);
-  server.set('minify', true);
+app.configure('production', function(){
+  app.use(express.errorHandler());
+  app.set('io.loglevel', 1);
+  app.set('minify', true);
 });
 
-require('./routes')(server);
+require('./routes')(app);
 
 var ios = iobackends.get_ios();
-var io = backboneio.listen(server.listen(server.get('port'), function(){
-    logger.info("Express server listening on port " + server.get('port') + " in mode " + server.settings.env + '\nactive backends: ' +  _.keys(ios));
+var io = backboneio.listen(app.listen(app.get('port'), function(){
+    logger.info("Express server listening on port " + app.get('port') + " in mode " + app.settings.env + '\nactive backends: ' +  _.keys(ios));
 }), ios);
 
 io.configure('production', function(){

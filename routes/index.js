@@ -1,4 +1,4 @@
-module.exports = function(server) {
+module.exports = function(app) {
 
     var path = require('path')
     , folio = require('folio')
@@ -31,17 +31,17 @@ module.exports = function(server) {
 
     accessRoutes = [ 'images', '/uploadFile' ];
     _.each(accessRoutes, function(route) {
-        server.all(route, accessControl);
+        app.all(route, accessControl);
     });
 
-    server.get("/images", function(req, res) {
+    app.get("/images", function(req, res) {
         fs.readdir(conf.Dirs.uploads, function(err, files) {
             files.sort();
             return res.json({images: files});
         });
     });
 
-    server.get("/images/:filename", function(req, res) {
+    app.get("/images/:filename", function(req, res) {
         var opcodeKey = "OPCODE:";
         var filepath = path.join(conf.Dirs.uploads, req.params.filename);
         var cmd = 'identify -format "%[' + opcodeKey + '*]" ' + filepath;
@@ -65,7 +65,7 @@ module.exports = function(server) {
 
     var regexFileTypes = /\.(zip|tar.gz|tgz)$/i;
 
-    server.post('/uploadFile', function(req, res) {
+    app.post('/uploadFile', function(req, res) {
         var uploadedFileName = req.files.uploadedFile.name;
         var uploadedFilePath = req.files.uploadedFile.path;
 
@@ -141,7 +141,7 @@ module.exports = function(server) {
         });
     }
 
-    server.get('/live.webm', function(req, res) {
+    app.get('/live.webm', function(req, res) {
         if(conf.Editor.stream_url) {
             res.redirect(conf.Editor.stream_url);
         } else {
@@ -149,7 +149,7 @@ module.exports = function(server) {
         }
     });
 
-    server.get('/po/:id', function (req, res) {
+    app.get('/po/:id', function (req, res) {
         var lang = req.params.id;
         var locale = i18n.localeFrom(lang);
         var jsondata = '';
@@ -185,7 +185,7 @@ module.exports = function(server) {
     ]), {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
-    server.get('/js/vendor.js', folio.serve(vendorJs));
+    app.get('/js/vendor.js', folio.serve(vendorJs));
 
     /**
      * Filter Vendor Javascript Package
@@ -193,14 +193,14 @@ module.exports = function(server) {
     vendorFilterJs = new folio.Glossary(commonVendor.concat([
     ]), {minify: false});
 
-    server.get('/js/vendor_filter.js', folio.serve(vendorFilterJs));
+    app.get('/js/vendor_filter.js', folio.serve(vendorFilterJs));
 
     /* Ko binding need to load after all filter widgets */
     vendorOthersJs = new folio.Glossary([
         path.join(lib_dir, 'knockout-common-binding.js'),
     ]);
 
-    server.get('/js/vendor_filter_others.js', folio.serve(vendorOthersJs));
+    app.get('/js/vendor_filter_others.js', folio.serve(vendorOthersJs));
 
     /**
      * Views Javascript Package
@@ -217,10 +217,10 @@ module.exports = function(server) {
 
     var viewsJs = new folio.Glossary(
         localViewsFiles.concat(commonViewsFiles),
-        { minify:server.get('minify') }
+        { minify:app.get('minify') }
     );
 
-    server.get('/js/views.js', folio.serve(viewsJs));
+    app.get('/js/views.js', folio.serve(viewsJs));
 
     /**
      * Models Javascript Package
@@ -235,13 +235,13 @@ module.exports = function(server) {
     };
 
     var models = ['Default', 'App', 'Editor', 'Sketch'];
-    server.get('/js/models.js', folio.serve(folioModels(models)));
+    app.get('/js/models.js', folio.serve(folioModels(models)));
 
     var models_filter = [ 'Sketch' ];
-    server.get('/js/models_filter.js', folio.serve(folioModels(models_filter)));
+    app.get('/js/models_filter.js', folio.serve(folioModels(models_filter)));
 
     commonConf.Widgets.Files.forEach(function(widget) {
-        server.get(
+        app.get(
             '/js/widgets/' + widget + '.js',
             folio.serve(
                 new folio.Glossary([
@@ -262,7 +262,7 @@ module.exports = function(server) {
         })
     );
 
-    server.get('/js/widgets_filter.js', folio.serve(widgetsJs));
+    app.get('/js/widgets_filter.js', folio.serve(widgetsJs));
 
     /**
      * Template Javascript Package
@@ -307,9 +307,9 @@ module.exports = function(server) {
     });
 
     // serve using express
-    server.get('/js/templates.js', folio.serve(templateJs));
+    app.get('/js/templates.js', folio.serve(templateJs));
 
-    server.get('*',  function(req, res) {
+    app.get('*',  function(req, res) {
         res.render('index', { name: conf.Branding.name, description: conf.Branding.description });
     });
 
