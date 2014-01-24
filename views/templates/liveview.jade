@@ -2,7 +2,7 @@ block content
   img#image(style="position:absolute")
   #content(data-bind="foreach: items")
     <!-- ko if: type() == 'image' -->
-    img(data-bind="attr: { src: 'uploads/' + name() }, style: { position: 'absolute', top: top(), width: width(), height: height(), left: left(), right: right(), bottom: bottom(), zIndex: zindex() }")
+    img(data-bind="attr: { src: 'uploads/' + name() }, style: { position: 'absolute', top: top()+'px', width: width()+'px', height: height()+'px', left: left()+'px', right: right()+'px', bottom: bottom()+'px', zIndex: zindex() }")
     <!-- /ko -->
 
     <!-- ko if: type() == 'widget' -->
