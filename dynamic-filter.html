@@ -63,15 +63,15 @@
     <div id="content" data-bind="foreach: items">
 
         <!-- ko if: type() == 'image' -->
-        <img data-bind="attr: { src: src() }, style: { position: 'absolute', top: top(), width: width(), height: height(), left: left(), right: right(), bottom: bottom(), zIndex: zindex() }" />
+        <img data-bind="attr: { src: 'http://localhost:3100/uploads/' + name() }, style: { position: 'absolute', top: top(), width: width(), height: height(), left: left(), right: right(), bottom: bottom(), zIndex: zindex() }" />
         <!-- /ko -->
 
         <!-- ko if: type() == 'widget' -->
-        <div data-bind="WebvfxSimpleWidget: options"></div>
+        <div data-bind="WebvfxSimpleWidget: $data"></div>
         <!-- /ko -->
 
         <!-- ko if: type() == 'animation' -->
-        <div data-bind="WebvfxAnimationWidget: options"></div>
+        <div data-bind="WebvfxAnimationWidget: { data: $data, path: 'http://localhost:3100/uploads/' }"></div>
         <!-- /ko -->
 
     </div>
