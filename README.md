@@ -88,7 +88,13 @@ You can check if streaming is working at [8000](http://localhost:8000/consume/mb
 
 You should be able to access it from a browser at port [3100](http://localhost:3100)
 
-### Running the sample
+## Sample
+
+### Webserver
+
+You shoud able to access filters from browser at [http://localhost:3100/filter](http://localhost:3100/filter)
+
+### Melt with webvfx filter
 
 From another terminal, enter webvfx-dynamic-filter directory and run
 ```shell
