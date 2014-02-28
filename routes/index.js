@@ -166,6 +166,7 @@ module.exports = function(app) {
      */
 
     var lib_dir = path.join(__dirname, '..', 'vendor')
+    var common_lib_dir = path.join(__dirname, '..', 'node_modules/mbc-common/vendor')
 
     var commonVendor = [
         require.resolve('jquery-browser/lib/jquery.js'),
@@ -179,8 +180,8 @@ module.exports = function(app) {
         require.resolve('jqueryui-browser/ui/jquery-ui.js'),
         require.resolve('node-uuid'),
         require.resolve('jed'),
-        path.join(lib_dir, 'kinetic-v4.5.2.min.js'),
-        path.join(lib_dir, 'backbone.modal-min.js'),
+        path.join(common_lib_dir, 'kinetic-v4.5.2.min.js'),
+        path.join(common_lib_dir, 'backbone.modal-min.js'),
         require.resolve('backbone-pageable/lib/backbone-pageable.js'),
     ]), {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
