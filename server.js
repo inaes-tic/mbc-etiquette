@@ -111,3 +111,6 @@ if (process.env.HEROKU) {
 }
 
 io.set('logger', logger); // Log socket.io with custom logger
+
+var scheduler = require('./scheduler')
+scheduler.initScheduler();
