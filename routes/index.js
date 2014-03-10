@@ -290,6 +290,7 @@ module.exports = function(app) {
                            'alert',
                            'confirm',
                            'prompt',
+                           'schedule_prompt'
                           ];
 
     var getFileName = function (e) {
