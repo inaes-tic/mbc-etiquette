@@ -46,7 +46,6 @@ window.PlayerView= function(options) {
 
             this.scaleWidgets = function(scale) {
                 _.each(self.items(), function(vm) {
-                    console.log('vm.scale', vm.scale, 'vm.type()', vm.type());
                     if (vm.scale == undefined || vm.scale != scale) {
                         vm.scale = scale;
                         switch (vm.type()) {
