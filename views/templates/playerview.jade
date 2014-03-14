@@ -1,4 +1,14 @@
 block content
+  #controls
+    span scale
+    input(data-bind="value: scale")
+    //span
+    //    a(href="#", title="Fullscreen Video", onclick="document.getElementById('video').webkitEnterFullScreen();") fsVideo
+    //span
+    //    a(href="#", title="Fullscreen Webvfx", onclick="document.getElementById('content').webkitRequestFullScreen();") fsWebvfx
+
+  video(src="http://ia600508.us.archive.org/20/items/Sita_Sings_the_Blues/Sita_Sings_the_Blues_480p_2150kbps.mp4#t=40", controls="true", autoplay="true", id="video")
+
   img#image(style="position:absolute")
   #content(data-bind="foreach: items")
     <!-- ko if: type() == 'image' -->
