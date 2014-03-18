@@ -10,7 +10,8 @@ services:
   - redis-server
 before_script:
   - export NODE_CONFIG_DIR=$(pwd)/node_modules/mbc-common/config
-  - node server.js
+  - node server.js &
+  - sleep 30
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq imagemagick unzip
