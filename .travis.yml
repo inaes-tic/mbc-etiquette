@@ -7,3 +7,7 @@ env:
   - secure: L9+pdp2QCIpHE0iz1XfKet4S4S7liFmOeCQGvBp8xDBQJxfCMg20MAkC0SagZ3/hVsWWp/vBhbfS1u+KV+GF/SfbB44WoMCjpQLsTkEeSyreHL3LzJ2SsyO7ccmGq1sSia3VDo/TvMhmXHRx2rvG3qBQNH6c6q04Xom2DMjmtYI=
 before_script:
   - make
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq imagemagick unzip
+  - sudo apt-get install -qq libavahi-compat-libdnssd-dev
