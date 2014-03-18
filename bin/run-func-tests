@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Start Sauce Connect
+# This script requires the following two env variables:
+# SAUCE_OPCODE_USERNAME
+# SAUCE_OPCODE_ACCESS_KEY
+
+
+SAUCE_BIN=bin/Sauce-Connect.jar
+
+
+if [ -z "$SAUCE_OPCODE_USERNAME" ]
+then
+    echo "SAUCE_OPCODE_USERNAME is unset"
+    echo "Abort."
+    exit 1
+fi
+
+if [ -z "$SAUCE_OPCODE_ACCESS_KEY" ]
+then
+    echo "SAUCE_OPCODE_ACCESS_KEY is unset"
+    echo "Abort."
+    exit 1
+fi
+
+if [ ! -f $SAUCE_BIN ]
+then
+    echo "$SAUCE_BIN is missing"
+    echo "Abort."
+    exit 1
+fi
+
+READY_FILE="/tmp/connect-ready-$RANDOM"
+
+echo -n "Starting "
+java -jar $SAUCE_BIN \
+          --readyfile $READY_FILE \
+          --tunnel-identifier mbc-etiquette \
+          $SAUCE_OPCODE_USERNAME \
+          $SAUCE_OPCODE_ACCESS_KEY &
+SAUCE_PID=$!
+
+# Wait for Connect to be ready before exiting
+while [ ! -f $READY_FILE ]; do
+  sleep .5
+done
+echo "Done."
+
+#echo -n "Starting mbc-etiquette server... "
+#make serve_noweb &
+#NODE_PID=$!
+#echo "Done."
+
+echo "Testing..."
+node_modules/mocha/bin/mocha --timeout 50000 tests/func/sauce.js
+EXIT_STATUS=$?
+
+#echo -n "Killing node server... "
+#kill $NODE_PID
+#echo "Done."
+
+echo -n "Killing sauce connect... "
+kill $SAUCE_PID
+echo "Done."
+
+exit $EXIT_STATUS

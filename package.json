@@ -30,6 +30,11 @@
       "knockback"       : "0.17.x",
       "knockout"        : "2.2.x"
   },
+  "devDependencies": {
+      "mocha": "1.12.x",
+      "chai": "1.9.0",
+      "wd": "0.2.10"
+  },
   "license" : "agplv3",
   "engines" : {
       "node" : ">=0.8"
