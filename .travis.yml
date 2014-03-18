@@ -9,7 +9,7 @@ services:
   - mongodb
   - redis-server
 before_script:
-  - export NODE_CONFIG_DIR=`pwd`/node/modules/mbc-common/config
+  - export NODE_CONFIG_DIR=$(pwd)/node_modules/mbc-common/config
   - node server.js
 before_install:
   - sudo apt-get update -qq
