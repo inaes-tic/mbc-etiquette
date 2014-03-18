@@ -19,6 +19,8 @@ var _              = require('underscore'),
     iobackends     = new mbc.iobackends(db, backends)
 ;
 
+iobackends.patchBackbone();
+
 var loggerStream = {
     write: function(message, encoding) {
         logger.info(message);
@@ -109,3 +111,6 @@ if (process.env.HEROKU) {
 }
 
 io.set('logger', logger); // Log socket.io with custom logger
+
+var scheduler = require('./scheduler')
+scheduler.initScheduler();

@@ -18,7 +18,14 @@ module.exports = function (db) {
         },
         live: {
             use: [backboneio.middleware.memoryStore()]
-        }
+        },
+        sketchschedule: {
+            use: [middleware.uuid],
+            mongo: {
+                db: db,
+                collection: collections.SketchSchedules,
+            }
+        },
     }
     return backends;
 };

@@ -179,6 +179,7 @@ module.exports = function(app) {
     var vendorJs = new folio.Glossary(commonVendor.concat([
         require.resolve('jqueryui-browser/ui/jquery-ui.js'),
         require.resolve('node-uuid'),
+        require.resolve('moment'),
         require.resolve('jed'),
         path.join(common_lib_dir, 'kinetic-v4.5.2.min.js'),
         path.join(common_lib_dir, 'backbone.modal-min.js'),
@@ -289,6 +290,7 @@ module.exports = function(app) {
                            'alert',
                            'confirm',
                            'prompt',
+                           'schedule_prompt'
                           ];
 
     var getFileName = function (e) {
