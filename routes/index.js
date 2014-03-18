@@ -198,10 +198,11 @@ module.exports = function(app) {
 
     /* Ko binding need to load after all filter widgets */
     vendorOthersJs = new folio.Glossary([
+        require.resolve('backbone-relational/backbone-relational.js'),
         path.join(lib_dir, 'knockout-common-binding.js'),
     ]);
 
-    app.get('/js/vendor_filter_others.js', folio.serve(vendorOthersJs));
+    app.get('/js/vendor_others.js', folio.serve(vendorOthersJs));
 
     /**
      * Views Javascript Package
