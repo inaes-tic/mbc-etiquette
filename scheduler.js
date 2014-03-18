@@ -122,28 +122,32 @@ scheduler.prototype.getTimeout = function(sketch_id, load, timeout) {
 scheduler.prototype.loadSketch = function(id) {
     var self = this;
     var sketch = this.sketchs.get(id);
-    logger.info("Loading sketch", sketch.attributes.name);
-    _.each(sketch.attributes.data, function(data) {
-        data.origin = 'server';
-        var new_model = new Sketch.Live(data);
-        self.live.add(new_model);
-        new_model.save();
-    });
-    logger.debug("Sketch " + sketch.attributes.name + " loaded");
+    if (sketch) {
+        logger.info("Loading sketch", sketch.attributes.name);
+        _.each(sketch.attributes.data, function(data) {
+            data.origin = 'server';
+            var new_model = new Sketch.Live(data);
+            self.live.add(new_model);
+            new_model.save();
+        });
+        logger.debug("Sketch " + sketch.attributes.name + " loaded");
+    }
 };
 
 scheduler.prototype.unloadSketch = function(id) {
     var self = this;
     var sketch = this.sketchs.get(id);
-    logger.info("Unloading sketch", sketch.attributes.name);
-    self.live.fetch({success: function() {
-        _.each(sketch.attributes.data, function(data) {
-            var model = self.live.findWhere({element_id: data.element_id});
-            model.destroy();
-            logger.info('Sketch unloaded', sketch.attributes.name);
-        });
-    }});
-    logger.debug("Sketch " + sketch.attributes.name + " unloaded");
+    if (sketch) {
+        logger.info("Unloading sketch", sketch.attributes.name);
+        self.live.fetch({success: function() {
+            _.each(sketch.attributes.data, function(data) {
+                var model = self.live.findWhere({element_id: data.element_id});
+                model.destroy();
+                logger.info('Sketch unloaded', sketch.attributes.name);
+            });
+        }});
+        logger.debug("Sketch " + sketch.attributes.name + " unloaded");
+    }
 };
 
 exports = module.exports = scheduler;
