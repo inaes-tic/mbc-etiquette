@@ -22,7 +22,7 @@ scheduler.prototype.initScheduler = function() {
     this.scheds.fetch({success: function() {
         self.scheds.on({"add": function(sched, col, opts) {
                             logger.debug("ADD received", sched.toJSON());
-                            if (!opts.ignore) 
+                            if (!opts.ignore)
                                 self.processSched.bind(self)(sched);
                         },
                         "remove": function(sched, col, opts) {
@@ -65,9 +65,9 @@ scheduler.prototype._processSched = function(sched) {
     var end = false;
     if (sched.get("length"))
         end = start + sched.get("length");
-    if (!end || (end > now)) 
+    if (!end || (end > now))
         self.addSched.bind(self)(sched, start, end, now);
-    else 
+    else
         self.removeSched.bind(self)(sched);
 };
 
@@ -94,16 +94,16 @@ scheduler.prototype.addSched = function(sched, start, end, now) {
         if (sched.get("length"))
             end = start + sched.get("length");
     }
-    
-    if (start > now) 
+
+    if (start > now)
         sched.set("startTimeout", self.getTimeout(sched.get("sketch_id"), true, start - now));
-    else 
+    else
         self.loadSketch(sched.get("sketch_id"));
 
     if (end) {
-        if (end > now) 
+        if (end > now)
             sched.set("endTimeout", self.getTimeout(sched.get("sketch_id"), false, end - now));
-        else 
+        else
             self.unloadSketch(sched.get("sketch_id"));
     }
 };
