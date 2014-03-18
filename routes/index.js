@@ -187,6 +187,7 @@ module.exports = function(app) {
     var vendorBower = [
         'jqueryui/ui/minified/jquery-ui.min.js',
         'node-uuid/uuid.js',
+        'moment/moment.js',
         'jed/jed.js',
         'backbone-modal/backbone.modal-min.js',
     ];
