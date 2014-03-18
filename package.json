@@ -35,6 +35,9 @@
       "chai": "1.9.0",
       "wd": "0.2.10"
   },
+  "scripts": {
+      "test": "make test"
+  },
   "license" : "agplv3",
   "engines" : {
       "node" : ">=0.8"
