@@ -180,7 +180,7 @@ module.exports = function(app) {
         'jquery/jquery.min.js',
         'underscore/underscore.js',
         'backbone/backbone-min.js',
-        'knockoutjs/build/output/knockout-latest.js',
+        'knockout.js/knockout.js',
         'knockback/knockback-core.min.js',
     ];
 
