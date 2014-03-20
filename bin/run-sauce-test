@@ -52,7 +52,7 @@ echo "Done."
 #echo "Done."
 
 echo "Testing..."
-node_modules/mocha/bin/mocha --timeout 50000 tests/func/sauce.js
+SAUCELABS=1 node_modules/mocha/bin/mocha --timeout 50000 tests/func/gui.js
 EXIT_STATUS=$?
 
 #echo -n "Killing node server... "

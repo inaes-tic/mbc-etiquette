@@ -1,5 +1,11 @@
 export NODE_CONFIG_DIR ?= $(PWD)/node_modules/mbc-common/config
 
+ifeq ($(shell getconf LONG_BIT), 64)
+    CHROMEDRIVER = chromedriver_linux64.zip
+else
+    CHROMEDRIVER = chromedriver_linux32.zip
+endif
+
 all: update serve
 
 mos: locale/es/LC_MESSAGES/messages.mo
@@ -37,10 +43,23 @@ bin/Sauce-Connect.jar:
 	@cd bin/; unzip Sauce-Connect-latest.zip; rm Sauce-Connect-latest.zip; cd -
 	@echo 'Done.'
 
-functional_test:
-	@echo "Running funcional tests..."
-	@bin/run-func-tests
+bin/chromedriver:
+	@echo 'Downloading Chrome Driver $(CHROMEDRIVER)...'
+	@curl -o bin/$(CHROMEDRIVER) \
+		  http://chromedriver.storage.googleapis.com/2.9/$(CHROMEDRIVER)
+	@echo 'Done.'
+	@echo 'Unzipping Chrome Driver...'
+	@cd bin/; unzip $(CHROMEDRIVER); rm $(CHROMEDRIVER); cd -
+	@echo 'Done.'
 
-test: sauce_connect functional_test
+test_sauce:
+	@echo "Running funcional tests on saucelabs..."
+	@bin/run-sauce-test
+
+test_local: bin/chromedriver
+	@echo "Running local funcional tests..."
+	@bin/run-local-test
+
+test: sauce_connect test_sauce
 
 .PHONY: npm serve serve_noweb serve_debug

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Start Local Chromedriver
+
+CHROMEDRIVER=bin/chromedriver
+
+
+if [ ! -f $CHROMEDRIVER ]
+then
+    echo "$CHROMEDRIVER is missing"
+    echo "Abort."
+    exit 1
+fi
+
+echo "Starting Chrome Driver..."
+./$CHROMEDRIVER &
+PID=$!
+
+echo "Testing..."
+CHROMEDRIVER=1 node_modules/mocha/bin/mocha --timeout 20000 tests/func/gui.js
+EXIT_STATUS=$?
+
+echo -n "Killing Chrome Driver... "
+kill $PID
+echo "Done."
+
+exit $EXIT_STATUS
