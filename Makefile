@@ -37,7 +37,7 @@ sauce_connect: bin/Sauce-Connect.jar
 bin/Sauce-Connect.jar:
 	@echo 'Downloading Sauce Connect...'
 	@curl -o bin/Sauce-Connect-latest.zip \
-	      http://saucelabs.com/downloads/Sauce-Connect-latest.zip
+		  https://saucelabs.com/downloads/Sauce-Connect-3.0-r24.zip
 	@echo 'Done.'
 	@echo 'Unzipping Sauce Connect...'
 	@cd bin/; unzip Sauce-Connect-latest.zip; rm Sauce-Connect-latest.zip; cd -
