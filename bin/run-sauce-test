@@ -45,18 +45,9 @@ while [ ! -f $READY_FILE ]; do
 done
 echo "Done."
 
-#echo -n "Starting mbc-etiquette server... "
-#make serve_noweb &
-#NODE_PID=$!
-#echo "Done."
-
 echo "Testing..."
 SAUCELABS=1 node_modules/mocha/bin/mocha --timeout 50000 tests/func/gui.js
 EXIT_STATUS=$?
-
-#echo -n "Killing node server... "
-#kill $NODE_PID
-#echo "Done."
 
 echo -n "Killing sauce connect... "
 kill $SAUCE_PID
