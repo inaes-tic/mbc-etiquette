@@ -35,7 +35,6 @@ READY_FILE="/tmp/connect-ready-$RANDOM"
 echo -n "Starting "
 java -jar $SAUCE_BIN \
           --readyfile $READY_FILE \
-          --tunnel-identifier mbc-etiquette \
           $SAUCE_OPCODE_USERNAME \
           $SAUCE_OPCODE_ACCESS_KEY &
 SAUCE_PID=$!

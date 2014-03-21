@@ -30,7 +30,7 @@ describe('Test In-Out Video Editor', function() {
 
         var options = {
           browserName: 'chrome',
-          version: '26',
+          version: '31',
           platform: 'Linux',
           tags: ["mbc-etiquette"],
           name: "MBC-Etiquette Tests Suite"
@@ -59,29 +59,33 @@ describe('Test In-Out Video Editor', function() {
         });
 
         it('Should create an object', function(done) {
-            browser
-                .elementById('objects')
-                .click()
-                .elementByXPath('//*[@id="objects"]/option[5]')
-                .click()
-                .eval('$(".webvfx-obj").length', function(err, value) {
-                    expect(value).equals(1);
-                })
-                .nodeify(done);
+            setTimeout(function() {
+                browser
+                    .elementById('objects')
+                    .click()
+                    .elementByXPath('//*[@id="objects"]/option[5]')
+                    .click()
+                    .eval('$(".webvfx-obj").length', function(err, value) {
+                        expect(value).equals(1);
+                    })
+                    .nodeify(done);
+            }, 15000);
         });
 
         it('Should save a sketch', function(done) {
-            browser
-                .elementById('save-sketch')
-                .click()
-                .elementById('textkey')
-                .type('sketch-test')
-                .elementByClassName('submit')
-                .click()
-                .eval('$("#sketchs option").length', function(err, value) {
-                    expect(value).equals(2);
-                })
-                .nodeify(done);
+            setTimeout(function() {
+                browser
+                    .elementById('save-sketch')
+                    .click()
+                    .elementById('textkey')
+                    .type('sketch-test')
+                    .elementByClassName('submit')
+                    .click()
+                    .eval('$("#sketchs option").length', function(err, value) {
+                        expect(value).equals(2);
+                    })
+                    .nodeify(done);
+            }, 15000);
         });
 
     });
