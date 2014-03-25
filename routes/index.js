@@ -29,7 +29,7 @@ module.exports = function(app) {
         next();
     };
 
-    accessRoutes = [ 'images', '/uploadFile' ];
+    accessRoutes = [ '/images/', '/images/:filename', '/uploadFile' ];
     _.each(accessRoutes, function(route) {
         app.all(route, accessControl);
     });
