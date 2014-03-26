@@ -165,26 +165,41 @@ module.exports = function(app) {
      * Vendor Javascript Package
      */
 
-    var lib_dir = path.join(__dirname, '..', 'vendor')
-    var common_lib_dir = path.join(__dirname, '..', 'node_modules/mbc-common/vendor')
+    var lib_dir                 = path.join(__dirname, '..', 'vendor')
+    var common_dir              = path.join('node_modules','mbc-common')
+    var common_lib_dir          = path.join(__dirname, '..', common_dir, 'vendor')
+    var bower_common_lib_dir    = path.join(__dirname, '..', common_dir, 'bower_components')
 
-    var commonVendor = [
-        require.resolve('jquery-browser/lib/jquery.js'),
-        require.resolve('underscore/underscore.js'),
-        require.resolve('backbone/backbone.js'),
-        require.resolve('knockout/build/output/knockout-latest.js'),
-        require.resolve('knockback/knockback-core.js'),
+    var addPath = function (dir, libs) {
+        return _.map(libs, function(lib) {
+            return path.join(dir, lib);
+        });
+    }
+
+    var commonBower = [
+        'jquery/jquery.min.js',
+        'underscore/underscore.js',
+        'backbone/backbone-min.js',
+        'knockout.js/knockout.js',
+        'knockback/knockback-core.min.js',
     ];
 
-    var vendorJs = new folio.Glossary(commonVendor.concat([
-        require.resolve('jqueryui-browser/ui/jquery-ui.js'),
-        require.resolve('node-uuid'),
-        require.resolve('moment'),
-        require.resolve('jed'),
-        path.join(common_lib_dir, 'kinetic-v4.5.2.min.js'),
-        path.join(common_lib_dir, 'backbone.modal-min.js'),
-        require.resolve('backbone-pageable/lib/backbone-pageable.js'),
-    ]), {minify: false}); //XXX Hack Dont let uglify minify this: too slow
+    var vendorBower = [
+        'jqueryui/ui/minified/jquery-ui.min.js',
+        'node-uuid/uuid.js',
+        'moment/moment.js',
+        'jed/jed.js',
+        'backbone-modal/backbone.modal-min.js',
+    ];
+
+    var commonVendor = addPath(bower_common_lib_dir, commonBower);
+
+    var vendorJs = new folio.Glossary(
+        commonVendor.concat([
+            path.join(common_lib_dir, 'kinetic-v4.5.2.min.js'),
+            require.resolve('backbone-pageable/lib/backbone-pageable.js'),
+        ]).concat( addPath(bower_common_lib_dir, vendorBower)),
+    {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
     app.get('/js/vendor.js', folio.serve(vendorJs));
