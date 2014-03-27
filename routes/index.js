@@ -182,6 +182,7 @@ module.exports = function(app) {
         'backbone/backbone-min.js',
         'knockout.js/knockout.js',
         'knockback/knockback-core.min.js',
+        'screenfull/dist/screenfull.min.js',
     ];
 
     var vendorBower = [
