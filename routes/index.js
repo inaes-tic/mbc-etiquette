@@ -191,14 +191,13 @@ module.exports = function(app) {
         'moment/moment.js',
         'jed/jed.js',
         'backbone-modal/backbone.modal-min.js',
+        'backbone-pageable/lib/backbone-pageable.js'
     ];
 
     var commonVendor = addPath(bower_common_lib_dir, commonBower);
 
     var vendorJs = new folio.Glossary(
-        commonVendor.concat([
-            require.resolve('backbone-pageable/lib/backbone-pageable.js'),
-        ]).concat( addPath(bower_common_lib_dir, vendorBower)),
+        commonVendor.concat( addPath(bower_common_lib_dir, vendorBower)),
     {minify: false}); //XXX Hack Dont let uglify minify this: too slow
 
     // serve using express
@@ -212,11 +211,14 @@ module.exports = function(app) {
 
     app.get('/js/vendor_filter.js', folio.serve(vendorFilterJs));
 
+    var vendorOtherBower = [
+        'backbone-relational/backbone-relational.js',
+    ];
+
     /* Ko binding need to load after all filter widgets */
     vendorOthersJs = new folio.Glossary([
-        require.resolve('backbone-relational/backbone-relational.js'),
         path.join(lib_dir, 'knockout-common-binding.js'),
-    ]);
+    ].concat(addPath(bower_common_lib_dir, vendorOtherBower)));
 
     app.get('/js/vendor_others.js', folio.serve(vendorOthersJs));
 
