@@ -185,6 +185,7 @@ module.exports = function(app) {
     ];
 
     var vendorBower = [
+        'kineticjs/kinetic.min.js',
         'jqueryui/ui/minified/jquery-ui.min.js',
         'node-uuid/uuid.js',
         'moment/moment.js',
@@ -196,7 +197,6 @@ module.exports = function(app) {
 
     var vendorJs = new folio.Glossary(
         commonVendor.concat([
-            path.join(common_lib_dir, 'kinetic-v4.5.2.min.js'),
             require.resolve('backbone-pageable/lib/backbone-pageable.js'),
         ]).concat( addPath(bower_common_lib_dir, vendorBower)),
     {minify: false}); //XXX Hack Dont let uglify minify this: too slow
