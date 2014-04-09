@@ -225,140 +225,51 @@ module.exports = function(app) {
     /**
      * Views Javascript Package
      */
-    var localViews = [ 'header' ];
-    var commonViews = [ 'editor' ];
-
-    var getViewFileName = function(e) {
-        return path.join(__dirname, '..', 'public/js/views/', e + '.js');
-    };
-
-    var getViewCommonFileName = function(e) {
-        return require.resolve('mbc-common/views/js/' + e);
-    }
-
-    var viewsJs = new folio.Glossary(
-        localViews.map(getViewFileName).concat(
-            commonViews.map(getViewCommonFileName
-        )
-    ), { minify:app.get('minify') }
-    );
-
-    app.get('/js/views.js', folio.serve(viewsJs));
-
-    var filterViews = [ 'liveview' ];
-    var viewsFilterJs = new folio.Glossary(filterViews.map(getViewFileName),
-        { minify:app.get('minify') }
-    );
-
-    app.get('/js/views_filter.js', folio.serve(viewsFilterJs));
-
-    /**
-     * Models Javascript Package
-     */
-
-    var folioModels = function(models) {
-        return new folio.Glossary(
-            models.map (function (e) {
-                return require.resolve('mbc-common/models/' + e);
-            })
-        );
-    };
-
-    var models = ['Default', 'App', 'Editor', 'Sketch'];
-    app.get('/js/models.js', folio.serve(folioModels(models)));
-
-    var models_filter = [ 'App', 'Sketch' ];
-    app.get('/js/models_filter.js', folio.serve(folioModels(models_filter)));
-
-    commonConf.Widgets.Files.forEach(function(widget) {
-        app.get(
-            '/js/widgets/' + widget + '.js',
-            folio.serve(
-                new folio.Glossary([
-                    require.resolve('mbc-common/widgets/' + widget)
-                ])
-            )
-        );
-    });
-
-    /**
-     * Filter Widgets Javascript Package
-     */
-    var widgets = [ 'WebvfxSimpleWidget', 'WebvfxAnimationWidget' ];
-
-    var widgetsJs = new folio.Glossary(
-        widgets.map (function(widget) {
-            return require.resolve('mbc-common/widgets/' + widget);
-        })
-    );
-
-    app.get('/js/widgets_filter.js', folio.serve(widgetsJs));
-
-    /**
-     * Template Javascript Package
-     *
-     * We are going to use pre-compiled
-     * jade on the client-side.
-     */
-
-    var localTemplates = ['header'];
-
-    var commonTemplates = ['editor',
-                           'objects',
-                           'alert',
-                           'confirm',
-                           'prompt',
-                           'schedule_prompt'
-                          ];
 
     var getFileName = function (e) {
         return path.join(__dirname, '..', 'views/templates/', e + '.jade');
     };
 
-    var getCommonFileName = function (e) {
-        return require.resolve('mbc-common/views/templates/' + e + '.jade');
+    var getViewFileName = function(e) {
+        return path.join(__dirname, '..', 'public/js/views/', e + '.js');
     };
 
-    var jade_runtime = require.resolve('jade/runtime.js');
-    var jade_compiler = function (name, source) {
-        return 'template[\'' + name + '\'] = ' +
-            jade.compile(source, {
-                filename: name,
-                client: true,
-                compileDebug: false
-            }) + ';';
+    var views = {
+        header: {
+            js:         [ getViewFileName('header') ],
+            templates:  [ getFileName('header') ],
+            styles:     [],
+            images:     [],
+            models:     [],
+        },
+        liveview: {
+            js:         [ getViewFileName('liveview') ],
+            templates:  [ getFileName('liveview') ],
+            styles:     [],
+            images:     [],
+            models:     ['App.js', 'Sketch.js'],
+            widgets:    ['WebvfxSimpleWidget', 'WebvfxAnimationWidget'],
+        }
     };
 
-    var templateJs = new folio.Glossary([
-        jade_runtime,
-        path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
-            localTemplates.map(getFileName),
-            commonTemplates.map(getCommonFileName)
-        ),
-        {
-            compilers: {
-                jade: jade_compiler,
-            }
-        }
-    );
+    _.extend(mbc.views.views, views);
 
-    // serve using express
-    app.get('/js/templates.js', folio.serve(templateJs));
+    var merge = mbc.views.mergeViews('header','editor');
+    var folios = mbc.views.makeViewFolios(merge);
 
-    var filterTemplates = [ 'liveview' ];
-    var templateFilterJs = new folio.Glossary([
-        jade_runtime,
-        path.join(__dirname, '..', 'views/templates/js/header.js')].concat(
-            filterTemplates.map(getFileName)
-        ),
-        {
-            compilers: {
-                jade: jade_compiler
-            }
-        }
-    );
+    app.get('/js/views.js', folio.serve(folios.js));
+    app.get('/js/models.js', folio.serve(folios.models));
+    app.get('/js/templates.js', folio.serve(folios.templates));
+    app.get('/js/widgets.js', folio.serve(folios.widgets));
 
-    app.get('/js/templates_filter.js', folio.serve(templateFilterJs));
+    mbc.views.views.liveview = mbc.views.setupView(mbc.views.views.liveview);
+    var merge = mbc.views.mergeViews('liveview');
+    var folios = mbc.views.makeViewFolios(merge);
+
+    app.get('/js/views_filter.js', folio.serve(folios.js));
+    app.get('/js/models_filter.js', folio.serve(folios.models));
+    app.get('/js/templates_filter.js', folio.serve(folios.templates));
+    app.get('/js/widgets_filter.js', folio.serve(folios.widgets));
 
     app.get('/filter', function(req, res) {
         res.render('filter', {});
